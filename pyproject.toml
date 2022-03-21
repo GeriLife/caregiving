@@ -1,9 +1,9 @@
 [tool.poetry]
-name = "django-bootstrap-quick-start"
+name = "gerilife-caregiving"
 version = "0.1.0"
-description = "A Django boilerplate to start your projects faster."
+description = "Caregiving visualization tool to promote wellness in elder-care communities. "
 authors = ["Brylie Christopher Oxley <brylie@amble.fi>"]
-license = "MIT"
+license = "EUPL-1.2"
 
 [tool.poetry.dependencies]
 python = "^3.9"
