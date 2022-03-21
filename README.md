@@ -1,9 +1,9 @@
-# django-bootstrap-quick-start
-A Django boilerplate to start your projects faster.
+# GeriLife Caregiving
+A toolkit for caregivers working to promote wellness in elder-care communities.
 
 
-## Thanks
+## License
 
-This project was made possible by the following resources.
+Copyright © 2022
 
-- Will Vincent [Django Best Practices: Custom User Model](https://learndjango.com/tutorials/django-custom-user-model)
+The source code of this program is licensed under the [EUPL v1.2 license](https://ec.europa.eu/info/european-union-public-licence_en).
