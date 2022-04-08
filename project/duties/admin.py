@@ -1,3 +1,12 @@
 from django.contrib import admin
 
-# Register your models here.
+from .models import Duty, DutyType
+
+@admin.register(Duty)
+class DutyAdmin(admin.ModelAdmin):
+    pass
+
+
+@admin.register(DutyType)
+class DutyTypeAdmin(admin.ModelAdmin):
+    pass
