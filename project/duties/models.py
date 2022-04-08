@@ -19,4 +19,5 @@ class Duty(models.Model):
     duration = models.PositiveIntegerField()
 
     class Meta:
-        verbose_name_plural = "duties"
+    def __str__(self):
+        return f"{ self.home } - { self.caregiver_role } - { self.type } - { self.date } - { self.duration }"
