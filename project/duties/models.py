@@ -17,3 +17,6 @@ class Duty(models.Model):
     caregiver_role = models.ForeignKey(CaregiverRole, related_name="+", on_delete=models.PROTECT)
     date = models.DateField()
     duration = models.PositiveIntegerField()
+
+    class Meta:
+        verbose_name_plural = "duties"
