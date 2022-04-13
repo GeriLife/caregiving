@@ -6,10 +6,19 @@
 
     {% comment %} TODO: create a conditional to check whether any work has been recorded {% endcomment %}
     {% if duties_daily_sum %}
+    {{ duties_daily_sum|json_script:"duties-daily-sum-data" }}
+    {{ duties_daily_sum_max|json_script:"duties-daily-sum-max-data" }}
+    {{ duties_type_sum|json_script:"duties-by-type-sum-data" }}
+    
+
     <div class="row">
-        <div id="duties-daily-sum-chart" style="width: 100%;height:400px;"></div>
-        {{ duties_daily_sum|json_script:"duties-daily-sum-data" }}
-        {{ duties_daily_sum_max|json_script:"duties-daily-sum-max-data" }}
+        <div id="duties-daily-sum-chart" style="width: 100%;height:350px;"></div>
+    </div>
+
+    <div class="row">
+        <div class="col">
+            <div id="duties-by-type-sum-chart" style="width: 100%;height:350px;"></div>
+        </div>
     </div>
     {% else %}
         <p>No work has been recorded yet.</p>
@@ -31,7 +40,7 @@
 
         // Get daily sum analytics data
         const dutiesDailySumText = document.getElementById("duties-daily-sum-data").textContent;
-        const DutiesDailySumData = JSON.parse(dutiesDailySumText);
+        const dutiesDailySumData = JSON.parse(dutiesDailySumText);
         const dutiesDailySumMaxText = document.getElementById("duties-daily-sum-max-data").textContent;
         const dutiesDailySumMaxData = JSON.parse(dutiesDailySumMaxText);
 
@@ -79,7 +88,7 @@
             },
             dataset: {
                 dimensions: ['date', 'total_minutes'],
-                source: DutiesDailySumData,
+                source: dutiesDailySumData,
             },
             series: {
                 type: 'heatmap',
@@ -89,5 +98,43 @@
 
         dutiesDailySumChart.setOption(dutiesDailySumChartOptions);
     });
+</script>
+
+<script type="text/javascript">
+document.addEventListener("DOMContentLoaded", function(){    
+    var dutiesByTypeSumChartElement = document.getElementById('duties-by-type-sum-chart');
+    var dutiesByTypeSumChart = echarts.init(dutiesByTypeSumChartElement);
+    var dutiesByTypeSumChartOptions;
+
+    // Get duties summed by type analytics data
+    const dutiesByTypeSumText = document.getElementById('duties-by-type-sum-data').textContent;
+    const dutiesByTypeSumData = JSON.parse(dutiesByTypeSumText);
+
+    console.log(dutiesByTypeSumData)
+    dutiesByTypeSumChartOptions = {
+        dataset: {
+            dimensions: ['type__name', 'total_minutes'],
+            source: dutiesByTypeSumData,
+        },
+        title: {
+            top: 30,
+            left: 'center',
+            text: 'Caregiving minutes by type of work'
+        },
+        xAxis: {
+          type: 'category',
+        },
+        yAxis: {
+          type: 'value'
+        },
+        series: [
+          {
+            type: 'bar'
+          }
+        ]
+      };
+      
+      dutiesByTypeSumChart.setOption(dutiesByTypeSumChartOptions);
+})
 </script>
 {% endblock extra_js %}
