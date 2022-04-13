@@ -1,5 +1,93 @@
 {% extends 'base.html' %}
 
+
 {% block content %}
 <h1 class="h2">Duties report</h1>
+
+<div class="row">
+    {% if duties_daily_sum %}
+        <div id="duties-daily-sum-chart" style="width: 100%;height:400px;"></div>
+        {{ duties_daily_sum|json_script:"duties-daily-sum-data" }}
+        {{ duties_daily_sum_max|json_script:"duties-daily-sum-max-data" }}
+    {% else %}
+        <p>No work has been recorded yet.</p>
+    {% endif %}
+</div>
+
 {% endblock content %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/echarts@5/dist/echarts.min.js"></script>
+
+<script type="text/javascript">
+    document.addEventListener("DOMContentLoaded", function(){    
+        var dutiesDailySumChartElement = document.getElementById('duties-daily-sum-chart');
+        var dutiesDailySumChart = echarts.init(dutiesDailySumChartElement);
+        var dutiesDailySumChartOptions;
+
+        // TODO: determine how to dynamically select the chart year
+        // E.g. with the current year or based on user selection
+        const chartYear = '2022';
+
+        // Get daily sum analytics data
+        const dutiesDailySumText = document.getElementById("duties-daily-sum-data").textContent;
+        const DutiesDailySumData = JSON.parse(dutiesDailySumText);
+        const dutiesDailySumMaxText = document.getElementById("duties-daily-sum-max-data").textContent;
+        const dutiesDailySumMaxData = JSON.parse(dutiesDailySumMaxText);
+
+        
+        dutiesDailySumChartOptions = {
+            title: {
+                top: 30,
+                left: 'center',
+                text: 'Daily Caregiving Minutes'
+            },
+            tooltip: {},
+            visualMap: {
+                min: 0,
+                max: dutiesDailySumMaxData,
+                type: 'piecewise',
+                orient: 'horizontal',
+                left: 'center',
+                top: 65
+            },
+            calendar: {
+                dayLabel: {
+                    firstDay: 1,
+                    // TODO: enable Finnish locale
+                    // https://echarts.apache.org/en/option.html#calendar.dayLabel.nameMap
+                    nameMap: 'en',
+                },
+                monthLabel: {
+                    // TODO: enable Finnish locale
+                    // https://echarts.apache.org/en/option.html#calendar.monthLabel.nameMap
+                    nameMap: 'en',
+                },
+                top: 120,
+                left: 30,
+                right: 30,
+                cellSize: ['auto', 14],
+                // TODO: determine how best to choose the data range
+                // e.g. data min/max?
+                // Note: this may affect the chart layout,
+                // which currently has a hard-coded height
+                range: chartYear,
+                itemStyle: {
+                    borderWidth: 0.5
+                },
+                yearLabel: { show: true }
+            },
+            dataset: {
+                dimensions: ['date', 'total_minutes'],
+                source: DutiesDailySumData,
+            },
+            series: {
+                type: 'heatmap',
+                coordinateSystem: 'calendar',
+            }
+        };
+
+        dutiesDailySumChart.setOption(dutiesDailySumChartOptions);
+    });
+</script>
+{% endblock extra_js %}
