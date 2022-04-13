@@ -127,9 +127,15 @@ document.addEventListener("DOMContentLoaded", function(){
             text: 'Caregiving minutes by type of work'
         },
         xAxis: {
+          name: 'Type of work',
+          nameLocation: 'middle',
+          nameGap: 30,
           type: 'category',
         },
         yAxis: {
+          name: 'Minutes',
+          nameLocation: 'middle',
+          nameGap: 30,
           type: 'value'
         },
         series: [
@@ -165,9 +171,16 @@ document.addEventListener("DOMContentLoaded", function(){
                 text: 'Caregiving minutes by caregiver role'
             },
             xAxis: {
+              name: 'Caregiver role',
+              nameLocation: 'middle',
+              nameGap: 30,
               type: 'category',
             },
             yAxis: {
+              name: 'Minutes',
+              nameLocation: 'middle',
+              nameGap: 30,
+              nameRotate: 90,
               type: 'value'
             },
             series: [
