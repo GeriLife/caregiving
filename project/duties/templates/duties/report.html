@@ -9,6 +9,7 @@
     {{ duties_daily_sum|json_script:"duties-daily-sum-data" }}
     {{ duties_daily_sum_max|json_script:"duties-daily-sum-max-data" }}
     {{ duties_type_sum|json_script:"duties-by-type-sum-data" }}
+    {{ duties_caregiver_role_sum|json_script:"duties-by-caregiver-role-sum-data" }}
     
 
     <div class="row">
@@ -18,6 +19,10 @@
     <div class="row">
         <div class="col">
             <div id="duties-by-type-sum-chart" style="width: 100%;height:350px;"></div>
+        </div>
+
+        <div class="col">
+            <div id="duties-by-caregiver-role-sum-chart" style="width: 100%;height:350px;"></div>
         </div>
     </div>
     {% else %}
@@ -135,6 +140,44 @@ document.addEventListener("DOMContentLoaded", function(){
       };
       
       dutiesByTypeSumChart.setOption(dutiesByTypeSumChartOptions);
-})
+});
 </script>
+
+<script type="text/javascript">
+    document.addEventListener("DOMContentLoaded", function(){    
+        var dutiesByCaregiverRoleSumChartElement = document.getElementById('duties-by-caregiver-role-sum-chart');
+        var dutiesByCaregiverRoleSumChart = echarts.init(dutiesByCaregiverRoleSumChartElement);
+        var dutiesByCaregiverRoleSumChartOptions;
+    
+        // Get duties summed by type analytics data
+        const dutiesByCaregiverRoleSumText = document.getElementById('duties-by-caregiver-role-sum-data').textContent;
+        const dutiesByCaregiverRoleSumData = JSON.parse(dutiesByCaregiverRoleSumText);
+    
+        console.log(dutiesByCaregiverRoleSumData)
+        dutiesByCaregiverRoleSumChartOptions = {
+            dataset: {
+                dimensions: ['caregiver_role__name', 'total_minutes'],
+                source: dutiesByCaregiverRoleSumData,
+            },
+            title: {
+                top: 30,
+                left: 'center',
+                text: 'Caregiving minutes by caregiver role'
+            },
+            xAxis: {
+              type: 'category',
+            },
+            yAxis: {
+              type: 'value'
+            },
+            series: [
+              {
+                type: 'bar'
+              }
+            ]
+          };
+          
+          dutiesByCaregiverRoleSumChart.setOption(dutiesByCaregiverRoleSumChartOptions);
+    });
+    </script>
 {% endblock extra_js %}
