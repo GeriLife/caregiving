@@ -4,16 +4,16 @@
 {% block content %}
 <h1 class="h2">Duties report</h1>
 
-<div class="row">
+    {% comment %} TODO: create a conditional to check whether any work has been recorded {% endcomment %}
     {% if duties_daily_sum %}
+    <div class="row">
         <div id="duties-daily-sum-chart" style="width: 100%;height:400px;"></div>
         {{ duties_daily_sum|json_script:"duties-daily-sum-data" }}
         {{ duties_daily_sum_max|json_script:"duties-daily-sum-max-data" }}
+    </div>
     {% else %}
         <p>No work has been recorded yet.</p>
     {% endif %}
-</div>
-
 {% endblock content %}
 
 {% block extra_js %}
