@@ -1,7 +1,8 @@
 from django.urls import path
 
-from .views import DutiesReportView
+from .views import DutyFormView, DutiesReportView
 
 urlpatterns = [
-    path('report/', DutiesReportView.as_view(), name='duties-report-view'),
+    path("submit/", DutyFormView.as_view(), name="duty-form-view"),
+    path("report/", DutiesReportView.as_view(), name="duties-report-view"),
 ]

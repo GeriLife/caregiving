@@ -2,7 +2,9 @@ from typing import Any, Dict
 
 from django.db.models import Sum
 from django.views.generic import TemplateView
+from django.views.generic.edit import FormView
 
+from .forms import DutyForm
 from .models import Duty
 
 
@@ -17,7 +19,9 @@ class DutiesReportView(TemplateView):
             .order_by("date")
             .annotate(total_minutes=Sum("duration"))
         )
-        context["duties_daily_sum_max"] = max(daily_sum["total_minutes"] for daily_sum in context["duties_daily_sum"])
+        context["duties_daily_sum_max"] = max(
+            daily_sum["total_minutes"] for daily_sum in context["duties_daily_sum"]
+        )
 
         context["duties_type_sum"] = list(
             Duty.objects.values("type__name")
@@ -33,3 +37,16 @@ class DutiesReportView(TemplateView):
 
         return context
 
+
+class DutyFormView(FormView):
+    template_name = "duties/duty_form.html"
+    form_class = DutyForm
+    success_url = "/"
+
+    def form_valid(self, form):
+        # save the form before redirecting to success URL
+        # Note: this may be unnecessary, 
+        # but the form wasn't saving previously
+        form.save()
+        
+        return super().form_valid(form)
