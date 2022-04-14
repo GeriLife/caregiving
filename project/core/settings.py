@@ -41,8 +41,8 @@ INSTALLED_APPS = [
     'crispy_bootstrap5',
     'accounts',
     'caregivers',
-    'duties',
     'homes',
+    'work',
 ]
 
 CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
@@ -74,7 +74,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
-                'duties.context_processors.get_add_duty_form',
+                'work.context_processors.get_work_form',
             ],
         },
     },
