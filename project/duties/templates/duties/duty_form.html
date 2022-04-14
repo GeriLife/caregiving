@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+
+{% block content %}
+<form action="{% url 'duty-form-view' %}" method="post">
+    {% csrf_token %}
+
+    {{ add_duty_form|crispy }}
+
+    <button type="submit" class="btn btn-primary">Add work</button>
+</form>
+{% endblock content %}
