@@ -13,9 +13,9 @@ RUN pip install gunicorn
 RUN pip install poetry
 
 WORKDIR /app/
-COPY /project/* /app/
-COPY pyproject.toml /app/
-COPY poetry.lock /app/
+COPY /project/ /app
+COPY pyproject.toml /app
+COPY poetry.lock /app
 
 # Note: we don't want Poetry to create a virtual environment
 # Instead, it should use a local directory
