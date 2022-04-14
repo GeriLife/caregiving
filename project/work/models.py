@@ -9,6 +9,7 @@ class WorkType(models.Model):
     name = models.CharField(max_length=25)
 
     class Meta:
+        db_table = "work_type"
         verbose_name = _("work type")
         verbose_name_plural = _("work types")
 
@@ -24,6 +25,7 @@ class Work(models.Model):
     duration = models.PositiveIntegerField(help_text=_("The number of minutes used performing this work."))
 
     class Meta:
+        db_table = "work"
         verbose_name = _("work")
         verbose_name_plural = _("work")
 
