@@ -1,11 +1,11 @@
 from django import forms
 
-from .models import Duty
+from .models import Work
 
 
-class DutyForm(forms.ModelForm):
+class WorkForm(forms.ModelForm):
     class Meta:
-        model = Duty
+        model = Work
         fields = "__all__"
         widgets = {
             "date": forms.DateInput(attrs={"type": "date"}),

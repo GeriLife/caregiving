@@ -5,24 +5,24 @@
 <h1 class="h2">Work report</h1>
 
     {% comment %} TODO: create a conditional to check whether any work has been recorded {% endcomment %}
-    {% if duties_daily_sum %}
-    {{ duties_daily_sum|json_script:"duties-daily-sum-data" }}
-    {{ duties_daily_sum_max|json_script:"duties-daily-sum-max-data" }}
-    {{ duties_type_sum|json_script:"duties-by-type-sum-data" }}
-    {{ duties_caregiver_role_sum|json_script:"duties-by-caregiver-role-sum-data" }}
+    {% if work_daily_sum %}
+    {{ work_daily_sum|json_script:"work-daily-sum-data" }}
+    {{ work_daily_sum_max|json_script:"work-daily-sum-max-data" }}
+    {{ work_type_sum|json_script:"work-by-type-sum-data" }}
+    {{ work_caregiver_role_sum|json_script:"work-by-caregiver-role-sum-data" }}
     
 
     <div class="row">
-        <div id="duties-daily-sum-chart" style="width: 100%;height:350px;"></div>
+        <div id="work-daily-sum-chart" style="width: 100%;height:350px;"></div>
     </div>
 
     <div class="row">
         <div class="col">
-            <div id="duties-by-type-sum-chart" style="width: 100%;height:350px;"></div>
+            <div id="work-by-type-sum-chart" style="width: 100%;height:350px;"></div>
         </div>
 
         <div class="col">
-            <div id="duties-by-caregiver-role-sum-chart" style="width: 100%;height:350px;"></div>
+            <div id="work-by-caregiver-role-sum-chart" style="width: 100%;height:350px;"></div>
         </div>
     </div>
     {% else %}
@@ -35,22 +35,22 @@
 
 <script type="text/javascript">
     document.addEventListener("DOMContentLoaded", function(){    
-        var dutiesDailySumChartElement = document.getElementById('duties-daily-sum-chart');
-        var dutiesDailySumChart = echarts.init(dutiesDailySumChartElement);
-        var dutiesDailySumChartOptions;
+        var workDailySumChartElement = document.getElementById('work-daily-sum-chart');
+        var workDailySumChart = echarts.init(workDailySumChartElement);
+        var workDailySumChartOptions;
 
         // TODO: determine how to dynamically select the chart year
         // E.g. with the current year or based on user selection
         const chartYear = '2022';
 
         // Get daily sum analytics data
-        const dutiesDailySumText = document.getElementById("duties-daily-sum-data").textContent;
-        const dutiesDailySumData = JSON.parse(dutiesDailySumText);
-        const dutiesDailySumMaxText = document.getElementById("duties-daily-sum-max-data").textContent;
-        const dutiesDailySumMaxData = JSON.parse(dutiesDailySumMaxText);
+        const workDailySumText = document.getElementById("work-daily-sum-data").textContent;
+        const workDailySumData = JSON.parse(workDailySumText);
+        const workDailySumMaxText = document.getElementById("work-daily-sum-max-data").textContent;
+        const workDailySumMaxData = JSON.parse(workDailySumMaxText);
 
         
-        dutiesDailySumChartOptions = {
+        workDailySumChartOptions = {
             title: {
                 top: 30,
                 left: 'center',
@@ -59,7 +59,7 @@
             tooltip: {},
             visualMap: {
                 min: 0,
-                max: dutiesDailySumMaxData,
+                max: workDailySumMaxData,
                 type: 'piecewise',
                 orient: 'horizontal',
                 left: 'center',
@@ -93,7 +93,7 @@
             },
             dataset: {
                 dimensions: ['date', 'total_minutes'],
-                source: dutiesDailySumData,
+                source: workDailySumData,
             },
             series: {
                 type: 'heatmap',
@@ -101,25 +101,24 @@
             }
         };
 
-        dutiesDailySumChart.setOption(dutiesDailySumChartOptions);
+        workDailySumChart.setOption(workDailySumChartOptions);
     });
 </script>
 
 <script type="text/javascript">
 document.addEventListener("DOMContentLoaded", function(){    
-    var dutiesByTypeSumChartElement = document.getElementById('duties-by-type-sum-chart');
-    var dutiesByTypeSumChart = echarts.init(dutiesByTypeSumChartElement);
-    var dutiesByTypeSumChartOptions;
+    var workByTypeSumChartElement = document.getElementById('work-by-type-sum-chart');
+    var workByTypeSumChart = echarts.init(workByTypeSumChartElement);
+    var workByTypeSumChartOptions;
 
-    // Get duties summed by type analytics data
-    const dutiesByTypeSumText = document.getElementById('duties-by-type-sum-data').textContent;
-    const dutiesByTypeSumData = JSON.parse(dutiesByTypeSumText);
+    // Get work summed by type analytics data
+    const workByTypeSumText = document.getElementById('work-by-type-sum-data').textContent;
+    const workByTypeSumData = JSON.parse(workByTypeSumText);
 
-    console.log(dutiesByTypeSumData)
-    dutiesByTypeSumChartOptions = {
+    workByTypeSumChartOptions = {
         dataset: {
             dimensions: ['type__name', 'total_minutes'],
-            source: dutiesByTypeSumData,
+            source: workByTypeSumData,
         },
         title: {
             top: 30,
@@ -145,25 +144,24 @@ document.addEventListener("DOMContentLoaded", function(){
         ]
       };
       
-      dutiesByTypeSumChart.setOption(dutiesByTypeSumChartOptions);
+      workByTypeSumChart.setOption(workByTypeSumChartOptions);
 });
 </script>
 
 <script type="text/javascript">
     document.addEventListener("DOMContentLoaded", function(){    
-        var dutiesByCaregiverRoleSumChartElement = document.getElementById('duties-by-caregiver-role-sum-chart');
-        var dutiesByCaregiverRoleSumChart = echarts.init(dutiesByCaregiverRoleSumChartElement);
-        var dutiesByCaregiverRoleSumChartOptions;
+        var workByCaregiverRoleSumChartElement = document.getElementById('work-by-caregiver-role-sum-chart');
+        var workByCaregiverRoleSumChart = echarts.init(workByCaregiverRoleSumChartElement);
+        var workByCaregiverRoleSumChartOptions;
     
-        // Get duties summed by type analytics data
-        const dutiesByCaregiverRoleSumText = document.getElementById('duties-by-caregiver-role-sum-data').textContent;
-        const dutiesByCaregiverRoleSumData = JSON.parse(dutiesByCaregiverRoleSumText);
+        // Get work summed by type analytics data
+        const workByCaregiverRoleSumText = document.getElementById('work-by-caregiver-role-sum-data').textContent;
+        const workByCaregiverRoleSumData = JSON.parse(workByCaregiverRoleSumText);
     
-        console.log(dutiesByCaregiverRoleSumData)
-        dutiesByCaregiverRoleSumChartOptions = {
+        workByCaregiverRoleSumChartOptions = {
             dataset: {
                 dimensions: ['caregiver_role__name', 'total_minutes'],
-                source: dutiesByCaregiverRoleSumData,
+                source: workByCaregiverRoleSumData,
             },
             title: {
                 top: 30,
@@ -190,7 +188,7 @@ document.addEventListener("DOMContentLoaded", function(){
             ]
           };
           
-          dutiesByCaregiverRoleSumChart.setOption(dutiesByCaregiverRoleSumChartOptions);
+          workByCaregiverRoleSumChart.setOption(workByCaregiverRoleSumChartOptions);
     });
     </script>
 {% endblock extra_js %}

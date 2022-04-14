@@ -4,33 +4,33 @@ from django.db.models import Sum
 from django.views.generic import TemplateView
 from django.views.generic.edit import FormView
 
-from .forms import DutyForm
-from .models import Duty
+from .forms import WorkForm
+from .models import Work
 
 
-class DutiesReportView(TemplateView):
-    template_name = "duties/report.html"
+class WorkReportView(TemplateView):
+    template_name = "work/report.html"
 
     def get_context_data(self, **kwargs: Any) -> Dict[str, Any]:
         context = super().get_context_data(**kwargs)
 
-        context["duties_daily_sum"] = list(
-            Duty.objects.values("date")
+        context["work_daily_sum"] = list(
+            Work.objects.values("date")
             .order_by("date")
             .annotate(total_minutes=Sum("duration"))
         )
-        context["duties_daily_sum_max"] = max(
-            daily_sum["total_minutes"] for daily_sum in context["duties_daily_sum"]
+        context["work_daily_sum_max"] = max(
+            daily_sum["total_minutes"] for daily_sum in context["work_daily_sum"]
         )
 
-        context["duties_type_sum"] = list(
-            Duty.objects.values("type__name")
+        context["work_type_sum"] = list(
+            Work.objects.values("type__name")
             .order_by("type__name")
             .annotate(total_minutes=Sum("duration"))
         )
 
-        context["duties_caregiver_role_sum"] = list(
-            Duty.objects.values("caregiver_role__name")
+        context["work_caregiver_role_sum"] = list(
+            Work.objects.values("caregiver_role__name")
             .order_by("caregiver_role__name")
             .annotate(total_minutes=Sum("duration"))
         )
@@ -38,9 +38,9 @@ class DutiesReportView(TemplateView):
         return context
 
 
-class DutyFormView(FormView):
-    template_name = "duties/duty_form.html"
-    form_class = DutyForm
+class WorkFormView(FormView):
+    template_name = "work/form.html"
+    form_class = WorkForm
     success_url = "/"
 
     def form_valid(self, form):

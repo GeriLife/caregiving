@@ -9,19 +9,19 @@ class Migration(migrations.Migration):
     dependencies = [
         ('caregivers', '0001_initial'),
         ('homes', '0001_initial'),
-        ('duties', '0001_initial'),
+        ('work', '0001_initial'),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='Duty',
+            name='Work',
             fields=[
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('date', models.DateField()),
                 ('duration', models.PositiveIntegerField()),
                 ('caregiver_role', models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, related_name='+', to='caregivers.caregiverrole')),
-                ('home', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='duties_performed', to='homes.home')),
-                ('type', models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, related_name='+', to='duties.dutytype')),
+                ('home', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='work_performed', to='homes.home')),
+                ('type', models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, related_name='+', to='work.worktype')),
             ],
         ),
     ]
