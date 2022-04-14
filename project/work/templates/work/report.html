@@ -1,194 +1,26 @@
 {% extends 'base.html' %}
-
+{% load static %}
 
 {% block content %}
 <h1 class="h2">Work report</h1>
 
-    {% comment %} TODO: create a conditional to check whether any work has been recorded {% endcomment %}
-    {% if work_daily_sum %}
-    {{ work_daily_sum|json_script:"work-daily-sum-data" }}
-    {{ work_daily_sum_max|json_script:"work-daily-sum-max-data" }}
-    {{ work_type_sum|json_script:"work-by-type-sum-data" }}
-    {{ work_caregiver_role_sum|json_script:"work-by-caregiver-role-sum-data" }}
-    
-
-    <div class="row">
-        <div id="work-daily-sum-chart" style="width: 100%;height:350px;"></div>
-    </div>
-
-    <div class="row">
-        <div class="col">
-            <div id="work-by-type-sum-chart" style="width: 100%;height:350px;"></div>
-        </div>
-
-        <div class="col">
-            <div id="work-by-caregiver-role-sum-chart" style="width: 100%;height:350px;"></div>
-        </div>
-    </div>
+    <!-- only load analytics charts if work has been recorded -->
+    {% if work_has_been_recorded %}
+        {% include "work/charts.html" %}
     {% else %}
         <p>No work has been recorded yet.</p>
     {% endif %}
 {% endblock content %}
 
 {% block extra_js %}
-<script src="https://cdn.jsdelivr.net/npm/echarts@5/dist/echarts.min.js"></script>
+    <!-- only load analytics JS if work has been recorded -->
+    {% if work_has_been_recorded %}
+        <script src="https://cdn.jsdelivr.net/npm/echarts@5/dist/echarts.min.js"></script>
 
-<script type="text/javascript">
-    document.addEventListener("DOMContentLoaded", function(){    
-        var workDailySumChartElement = document.getElementById('work-daily-sum-chart');
-        var workDailySumChart = echarts.init(workDailySumChartElement);
-        var workDailySumChartOptions;
+        <script src="{% static 'js/work-daily-sum-chart.js' %}"></script>
 
-        // TODO: determine how to dynamically select the chart year
-        // E.g. with the current year or based on user selection
-        const chartYear = '2022';
+        <script src="{% static 'js/work-by-type-sum-chart.js' %}"></script>
 
-        // Get daily sum analytics data
-        const workDailySumText = document.getElementById("work-daily-sum-data").textContent;
-        const workDailySumData = JSON.parse(workDailySumText);
-        const workDailySumMaxText = document.getElementById("work-daily-sum-max-data").textContent;
-        const workDailySumMaxData = JSON.parse(workDailySumMaxText);
-
-        
-        workDailySumChartOptions = {
-            title: {
-                top: 30,
-                left: 'center',
-                text: 'Daily Caregiving Minutes'
-            },
-            tooltip: {},
-            visualMap: {
-                min: 0,
-                max: workDailySumMaxData,
-                type: 'piecewise',
-                orient: 'horizontal',
-                left: 'center',
-                top: 65
-            },
-            calendar: {
-                dayLabel: {
-                    firstDay: 1,
-                    // TODO: enable Finnish locale
-                    // https://echarts.apache.org/en/option.html#calendar.dayLabel.nameMap
-                    nameMap: 'en',
-                },
-                monthLabel: {
-                    // TODO: enable Finnish locale
-                    // https://echarts.apache.org/en/option.html#calendar.monthLabel.nameMap
-                    nameMap: 'en',
-                },
-                top: 120,
-                left: 30,
-                right: 30,
-                cellSize: ['auto', 14],
-                // TODO: determine how best to choose the data range
-                // e.g. data min/max?
-                // Note: this may affect the chart layout,
-                // which currently has a hard-coded height
-                range: chartYear,
-                itemStyle: {
-                    borderWidth: 0.5
-                },
-                yearLabel: { show: true }
-            },
-            dataset: {
-                dimensions: ['date', 'total_minutes'],
-                source: workDailySumData,
-            },
-            series: {
-                type: 'heatmap',
-                coordinateSystem: 'calendar',
-            }
-        };
-
-        workDailySumChart.setOption(workDailySumChartOptions);
-    });
-</script>
-
-<script type="text/javascript">
-document.addEventListener("DOMContentLoaded", function(){    
-    var workByTypeSumChartElement = document.getElementById('work-by-type-sum-chart');
-    var workByTypeSumChart = echarts.init(workByTypeSumChartElement);
-    var workByTypeSumChartOptions;
-
-    // Get work summed by type analytics data
-    const workByTypeSumText = document.getElementById('work-by-type-sum-data').textContent;
-    const workByTypeSumData = JSON.parse(workByTypeSumText);
-
-    workByTypeSumChartOptions = {
-        dataset: {
-            dimensions: ['type__name', 'total_minutes'],
-            source: workByTypeSumData,
-        },
-        title: {
-            top: 30,
-            left: 'center',
-            text: 'Caregiving minutes by type of work'
-        },
-        xAxis: {
-          name: 'Type of work',
-          nameLocation: 'middle',
-          nameGap: 30,
-          type: 'category',
-        },
-        yAxis: {
-          name: 'Minutes',
-          nameLocation: 'middle',
-          nameGap: 30,
-          type: 'value'
-        },
-        series: [
-          {
-            type: 'bar'
-          }
-        ]
-      };
-      
-      workByTypeSumChart.setOption(workByTypeSumChartOptions);
-});
-</script>
-
-<script type="text/javascript">
-    document.addEventListener("DOMContentLoaded", function(){    
-        var workByCaregiverRoleSumChartElement = document.getElementById('work-by-caregiver-role-sum-chart');
-        var workByCaregiverRoleSumChart = echarts.init(workByCaregiverRoleSumChartElement);
-        var workByCaregiverRoleSumChartOptions;
-    
-        // Get work summed by type analytics data
-        const workByCaregiverRoleSumText = document.getElementById('work-by-caregiver-role-sum-data').textContent;
-        const workByCaregiverRoleSumData = JSON.parse(workByCaregiverRoleSumText);
-    
-        workByCaregiverRoleSumChartOptions = {
-            dataset: {
-                dimensions: ['caregiver_role__name', 'total_minutes'],
-                source: workByCaregiverRoleSumData,
-            },
-            title: {
-                top: 30,
-                left: 'center',
-                text: 'Caregiving minutes by caregiver role'
-            },
-            xAxis: {
-              name: 'Caregiver role',
-              nameLocation: 'middle',
-              nameGap: 30,
-              type: 'category',
-            },
-            yAxis: {
-              name: 'Minutes',
-              nameLocation: 'middle',
-              nameGap: 30,
-              nameRotate: 90,
-              type: 'value'
-            },
-            series: [
-              {
-                type: 'bar'
-              }
-            ]
-          };
-          
-          workByCaregiverRoleSumChart.setOption(workByCaregiverRoleSumChartOptions);
-    });
-    </script>
+        <script src="{% static 'js/work-by-caregiver-role-sum-chart.js' %}"></script>
+    {% endif %}
 {% endblock extra_js %}
