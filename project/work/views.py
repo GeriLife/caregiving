@@ -11,9 +11,8 @@ from .models import Work
 class WorkReportView(TemplateView):
     template_name = "work/report.html"
 
-    def get_context_data(self, **kwargs: Any) -> Dict[str, Any]:
-        context = super().get_context_data(**kwargs)
-
+    def prepare_analytics(self, context):
+        """Prepare analytics aggregations and add them to the template context"""
         context["work_daily_sum"] = list(
             Work.objects.values("date")
             .order_by("date")
@@ -34,6 +33,19 @@ class WorkReportView(TemplateView):
             .order_by("caregiver_role__name")
             .annotate(total_minutes=Sum("duration"))
         )
+
+        return context
+
+    def get_context_data(self, **kwargs: Any) -> Dict[str, Any]:
+        context = super().get_context_data(**kwargs)
+
+        # Check if work has been recorded
+        # by selecting one record
+        context["work_has_been_recorded"] = Work.objects.all()[:1].exists()
+        
+        # Only prepare analytics if work has been recorded
+        if context["work_has_been_recorded"]:
+            context = self.prepare_analytics(context)
 
         return context
 
