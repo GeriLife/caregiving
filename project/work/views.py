@@ -27,7 +27,7 @@ def get_total_minutes_by_role_and_work_type():
     from work
     left join work_type on type_id = work_type.id
     left join caregiver_role on caregiver_role_id = caregiver_role.id
-    group by caregiver_role_id, type_id;
+    group by role_name, work_type;
     """
 
     with connection.cursor() as cursor:
