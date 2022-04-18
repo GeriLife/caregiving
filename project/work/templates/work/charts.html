@@ -2,7 +2,7 @@
 {{ work_daily_sum_max|json_script:"work-daily-sum-max-data" }}
 {{ work_type_sum|json_script:"work-by-type-sum-data" }}
 {{ work_caregiver_role_sum|json_script:"work-by-caregiver-role-sum-data" }}
-
+{{ total_minutes_by_role_and_work_type|json_script:"work-by-role-and-type-sum-data" }}
 
 <div class="row">
     <div id="work-daily-sum-chart" style="width: 100%;height:350px;"></div>
@@ -15,5 +15,11 @@
 
     <div class="col">
         <div id="work-by-caregiver-role-sum-chart" style="width: 100%;height:350px;"></div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col">
+        <div id="work-by-role-and-type-sum-chart" style="width: 100%;height:350px;"></div>
     </div>
 </div>
