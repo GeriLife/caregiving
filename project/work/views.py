@@ -15,7 +15,7 @@ from .models import Work
 
 
 def dictfetchall(cursor):
-    "Return all rows from a cursor as a dict"
+    """Return a list of dictionaries containing all rows from a database cursor"""
     columns = [col[0] for col in cursor.description]
     return [dict(zip(columns, row)) for row in cursor.fetchall()]
 
@@ -107,9 +107,7 @@ class WorkReportView(TemplateView):
             .annotate(total_minutes=Sum("duration"))
         )
 
-        context["work_by_type"] = work_by_type
-
-        work_by_type_chart = px.bar(
+        context["work_by_type_chart"] = px.bar(
             work_by_type,
             x="type__name",
             y="total_minutes",
@@ -120,15 +118,13 @@ class WorkReportView(TemplateView):
             },
         ).to_html()
 
-        context["work_by_type_chart"] = work_by_type_chart
-
         work_by_caregiver_role = list(
             Work.objects.values("caregiver_role__name")
             .order_by("caregiver_role__name")
             .annotate(total_minutes=Sum("duration"))
         )
 
-        work_by_caregiver_role_chart = px.bar(
+        context["work_by_caregiver_role_chart"] = px.bar(
             work_by_caregiver_role,
             x="caregiver_role__name",
             y="total_minutes",
@@ -138,10 +134,6 @@ class WorkReportView(TemplateView):
                 "total_minutes": _("Total minutes"),
             },
         ).to_html()
-
-        context["work_by_caregiver_role_chart"] = work_by_caregiver_role_chart
-
-        context["work_caregiver_role_sum"] = work_by_caregiver_role
 
         context[
             "total_minutes_by_role_and_work_type"
