@@ -3,10 +3,12 @@ from typing import Any, Dict
 
 from django.db import connection
 from django.db.models import Sum
+from django.utils.translation import gettext as _
 from django.views.generic import TemplateView
 from django.views.generic.edit import FormView
 
 import pandas as pd
+import plotly.express as px
 
 from .forms import WorkForm
 from .models import Work
@@ -88,26 +90,58 @@ class WorkReportView(TemplateView):
 
     def prepare_analytics(self, context):
         """Prepare analytics aggregations and add them to the template context"""
-        context["work_daily_sum"] = list(
+        work_daily_sum = list(
             Work.objects.values("date")
             .order_by("date")
             .annotate(total_minutes=Sum("duration"))
         )
+        context["work_daily_sum"] = work_daily_sum
+
         context["work_daily_sum_max"] = max(
             daily_sum["total_minutes"] for daily_sum in context["work_daily_sum"]
         )
 
-        context["work_type_sum"] = list(
+        work_by_type = list(
             Work.objects.values("type__name")
             .order_by("type__name")
             .annotate(total_minutes=Sum("duration"))
         )
 
-        context["work_caregiver_role_sum"] = list(
+        context["work_by_type"] = work_by_type
+
+        work_by_type_chart = px.bar(
+            work_by_type,
+            x="type__name",
+            y="total_minutes",
+            title=_("Work minutes by type"),
+            labels={
+                "type__name": _("Type of work"),
+                "total_minutes": _("Total minutes"),
+            },
+        ).to_html()
+
+        context["work_by_type_chart"] = work_by_type_chart
+
+        work_by_caregiver_role = list(
             Work.objects.values("caregiver_role__name")
             .order_by("caregiver_role__name")
             .annotate(total_minutes=Sum("duration"))
         )
+
+        work_by_caregiver_role_chart = px.bar(
+            work_by_caregiver_role,
+            x="caregiver_role__name",
+            y="total_minutes",
+            title=_("Work minutes by caregiver role"),
+            labels={
+                "caregiver_role__name": _("Caregiver role"),
+                "total_minutes": _("Total minutes"),
+            },
+        ).to_html()
+
+        context["work_by_caregiver_role_chart"] = work_by_caregiver_role_chart
+
+        context["work_caregiver_role_sum"] = work_by_caregiver_role
 
         context[
             "total_minutes_by_role_and_work_type"
