@@ -40,56 +40,11 @@ def get_total_minutes_by_role_and_work_type():
     return result
 
 
-def pivot_minutes_by_role_and_work_type(data):
-    """
-    Pivot the raw aggregation data to a columnar format needed for the chart.
-
-    Each primary sub-group should be a role name with columns for each work type continaing the number of minutes as a value.
-    """
-    df = pd.DataFrame(data)
-    table = pd.pivot_table(
-        df, 
-        values="total_minutes",
-        index=["role_name"],
-        columns=["work_type"],
-        fill_value=0,
-    )
-
-    return table
-
-def prepare_work_minutes_by_role_and_type_chart_traces(pivot_table):
-    """Convert pivot table to list of chart traces based on pivot table keys"""
-    table_dict = pivot_table.to_dict()
-
-    chart_traces = []
-
-    for role_name, work_performed in table_dict.items():
-        work_type_keys = work_performed.keys()
-        trace = {
-            "name": role_name,
-            "x": [work_type for work_type in work_type_keys],
-            "y": [work_performed[work_type] for work_type in work_type_keys],
-            "type": "bar",
-        }
-
-        chart_traces.append(trace)
-
-    return chart_traces
-
-
-def prepare_minutes_by_role_and_work_type_aggregate():
-    data = get_total_minutes_by_role_and_work_type()
-    pivot_table = pivot_minutes_by_role_and_work_type(data)
-    traces_list = prepare_work_minutes_by_role_and_type_chart_traces(pivot_table)
-
-    return traces_list
-
-
 class WorkReportView(TemplateView):
     template_name = "work/report.html"
 
-    def prepare_analytics(self, context):
-        """Prepare analytics aggregations and add them to the template context"""
+    def prepare_charts(self, context):
+        """Prepare charts and add them to the template context"""
         work_daily_sum = list(
             Work.objects.values("date")
             .order_by("date")
@@ -135,9 +90,20 @@ class WorkReportView(TemplateView):
             },
         ).to_html()
 
-        context[
-            "total_minutes_by_role_and_work_type"
-        ] = prepare_minutes_by_role_and_work_type_aggregate()
+        work_by_caregiver_role_and_type = get_total_minutes_by_role_and_work_type()
+
+        context["work_by_caregiver_role_and_type_chart"] = px.histogram(
+            work_by_caregiver_role_and_type,
+            x="role_name",
+            y="total_minutes",
+            color="work_type",
+            title=_("Work minutes by caregiver role and work type"),
+            labels={
+                "role_name": _("Caregiver role"),
+                "total_minutes": _("total minutes"),
+                "work_type": _("Type of work"),
+            },
+        ).to_html()
 
         return context
 
@@ -148,9 +114,9 @@ class WorkReportView(TemplateView):
         # by selecting one record
         context["work_has_been_recorded"] = Work.objects.all()[:1].exists()
 
-        # Only prepare analytics if work has been recorded
+        # Only prepare charts if work has been recorded
         if context["work_has_been_recorded"]:
-            context = self.prepare_analytics(context)
+            context = self.prepare_charts(context)
 
         return context
 
