@@ -20,16 +20,29 @@ def dictfetchall(cursor):
     return [dict(zip(columns, row)) for row in cursor.fetchall()]
 
 
-def get_total_minutes_by_role_and_work_type():
+def get_total_minutes_by_role_and_work_type_with_percent():
     query = """
+    with work_totals_by_type as (
+        select 
+            caregiver_role.name as role_name,
+            work_type.name as work_type, 
+            sum(duration) as total_minutes
+        from work
+        left join work_type on type_id = work_type.id
+        left join caregiver_role on caregiver_role_id = caregiver_role.id
+        group by role_name, work_type
+    ),
+    work_totals_by_type_with_role_total_minutes as (
+        select 
+            *,
+            sum(total_minutes) over (partition by role_name) as role_total_minutes
+        from work_totals_by_type
+    )
+
     select 
-        caregiver_role.name as role_name,
-        work_type.name as work_type, 
-        sum(duration) as total_minutes
-    from work
-    left join work_type on type_id = work_type.id
-    left join caregiver_role on caregiver_role_id = caregiver_role.id
-    group by role_name, work_type;
+        *,
+        CAST(total_minutes as float) / CAST(role_total_minutes as float) as percent_of_role_total_minutes
+    from work_totals_by_type_with_role_total_minutes;
     """
 
     with connection.cursor() as cursor:
@@ -90,10 +103,27 @@ class WorkReportView(TemplateView):
             },
         ).to_html()
 
-        work_by_caregiver_role_and_type = get_total_minutes_by_role_and_work_type()
+        work_by_caregiver_role_and_type_with_percent = get_total_minutes_by_role_and_work_type_with_percent()
+
+        work_by_caregiver_role_and_type_with_percent_chart = px.bar(
+            work_by_caregiver_role_and_type_with_percent,
+            x="role_name",
+            y="percent_of_role_total_minutes",
+            color="work_type",
+            title=_("Work percent by caregiver role and work type"),
+            labels={
+                "role_name": _("Caregiver role"),
+                "percent_of_role_total_minutes": _("Work percent"),
+                "work_type": _("Type of work"),
+            },
+            text_auto=True,
+        )
+        work_by_caregiver_role_and_type_with_percent_chart.layout.yaxis.tickformat = ",.0%"
+
+        context["work_by_caregiver_role_and_type_with_percent_chart"] = work_by_caregiver_role_and_type_with_percent_chart.to_html()
 
         work_by_caregiver_role_and_type_chart = px.bar(
-            work_by_caregiver_role_and_type,
+            work_by_caregiver_role_and_type_with_percent,
             x="role_name",
             y="total_minutes",
             color="work_type",
