@@ -92,7 +92,7 @@ class WorkReportView(TemplateView):
 
         work_by_caregiver_role_and_type = get_total_minutes_by_role_and_work_type()
 
-        work_by_caregiver_role_and_type_chart = px.histogram(
+        work_by_caregiver_role_and_type_chart = px.bar(
             work_by_caregiver_role_and_type,
             x="role_name",
             y="total_minutes",
@@ -101,20 +101,10 @@ class WorkReportView(TemplateView):
             labels={
                 "role_name": _("Caregiver role"),
                 "total_minutes": _("Total minutes"),
-                "work_type": _("Work type"),
+                "work_type": _("Type of work"),
             },
         
         )
-
-        # Note: For correct localization, we need to remove the English text "sum of" from the
-        # y-axis label and hover template, as per the following comment.
-        # https://github.com/plotly/plotly.py/issues/2876#issuecomment-1111339561
-        #
-        # The feature request below asks for English texts to not be prepended
-        # to the axis label and hover template, which will hopefully obsolete the next lines of code.
-        # https://github.com/plotly/plotly.py/issues/3694
-        work_by_caregiver_role_and_type_chart.for_each_trace(lambda t: t.update(hovertemplate=t.hovertemplate.replace("sum of ", "")))
-        work_by_caregiver_role_and_type_chart.for_each_yaxis(lambda a: a.update(title_text=a.title.text.replace("sum of ", "")))
 
         context["work_by_caregiver_role_and_type_chart"] = work_by_caregiver_role_and_type_chart.to_html()
 
