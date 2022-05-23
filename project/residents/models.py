@@ -1,5 +1,6 @@
 import uuid
 from django.db import models
+from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 
 
@@ -19,3 +20,6 @@ class Resident(models.Model):
 
     def __str__(self) -> str:
         return self.full_name()
+
+    def get_absolute_url(self):
+        return reverse("resident-detail", kwargs={"pk": self.pk})
