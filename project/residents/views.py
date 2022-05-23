@@ -1,3 +1,10 @@
-from django.shortcuts import render
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.views.generic.detail import DetailView
 
-# Create your views here.
+from .models import Resident
+
+
+class ResidentDetailView(LoginRequiredMixin,DetailView):
+    model = Resident
+    context_object_name = "resident"
+    template_name = "residents/resident_detail.html"
