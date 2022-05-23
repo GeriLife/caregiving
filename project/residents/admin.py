@@ -1,3 +1,8 @@
 from django.contrib import admin
 
-# Register your models here.
+
+from .models import Resident
+
+@admin.register(Resident)
+class ResidentAdmin(admin.ModelAdmin):
+    pass
