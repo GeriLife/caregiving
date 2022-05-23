@@ -20,6 +20,40 @@ def dictfetchall(cursor):
     return [dict(zip(columns, row)) for row in cursor.fetchall()]
 
 
+def get_daily_total_minutes_by_role_and_work_type_with_percent():
+    query = """
+    with daily_work_totals_by_type as (
+        select
+            date,
+            caregiver_role.name as role_name,
+            work_type.name as work_type, 
+            sum(duration) as daily_total_minutes
+        from work
+        left join work_type on type_id = work_type.id
+        left join caregiver_role on caregiver_role_id = caregiver_role.id
+        group by date, role_name, work_type
+    ),
+    daily_work_totals_by_type_with_role_total_minutes as (
+        select 
+            *,
+            sum(daily_total_minutes) over (partition by date, role_name) as daily_role_total_minutes
+        from daily_work_totals_by_type
+    )
+
+    select 
+        *,
+        CAST(daily_total_minutes as float) / CAST(daily_role_total_minutes as float) as percent_of_daily_role_total_minutes
+    from daily_work_totals_by_type_with_role_total_minutes;
+    """
+
+    with connection.cursor() as cursor:
+        cursor.execute(query)
+
+        result = dictfetchall(cursor)
+
+    return result
+
+
 def get_total_minutes_by_role_and_work_type_with_percent():
     query = """
     with work_totals_by_type as (
@@ -102,6 +136,76 @@ class WorkReportView(TemplateView):
                 "total_minutes": _("Total minutes"),
             },
         ).to_html()
+
+        daily_total_minutes_by_role_and_work_type_with_percent = get_daily_total_minutes_by_role_and_work_type_with_percent()
+
+        tmp_data = [
+            {
+              "date": "2022-04-17",
+              "role_name": "Nurse",
+              "work_type": "Cleaning",
+              "daily_total_minutes": 45,
+              "percent_of_daily_role_total_minutes": 0.41,  
+            },
+            {
+              "date": "2022-04-17",
+              "role_name": "Nurse",
+              "work_type": "Food preparation",
+              "percent_of_daily_role_total_minutes": 0.59,  
+            },
+            {
+              "date": "2022-04-17",
+              "role_name": "Volunteer",
+              "work_type": "Cleaning",
+              "percent_of_daily_role_total_minutes": 0.26,  
+            },
+            {
+              "date": "2022-04-17",
+              "role_name": "Volunteer",
+              "work_type": "Food preparation",
+              "percent_of_daily_role_total_minutes": 0.74,  
+            },
+            {
+              "date": "2022-05-06",
+              "role_name": "Volunteer",
+              "work_type": "Food preparation",
+              "percent_of_daily_role_total_minutes": 1.0,  
+            },
+            {
+              "date": "2022-05-07",
+              "role_name": "Volunteer",
+              "work_type": "Cleaning",
+              "percent_of_daily_role_total_minutes": 0.49,  
+            },
+            {
+              "date": "2022-05-07",
+              "role_name": "Volunteer",
+              "work_type": "Food preparation",
+              "percent_of_daily_role_total_minutes": 0.51,  
+            },
+        ]
+
+        daily_work_by_caregiver_role_and_type_with_percent_chart = px.bar(
+            tmp_data,
+            x="date",
+            y="percent_of_daily_role_total_minutes",
+            facet_row="role_name",
+            color="work_type",
+            title=_("Daily work percent by caregiver role and work type"),
+            labels={
+                "role_name": _("Caregiver role"),
+                "percent_of_daily_role_total_minutes": _("Work percent"),
+                "work_type": _("Type of work"),
+            },
+            text_auto=True,
+        )
+
+        # Format y-axis as percentages
+        daily_work_by_caregiver_role_and_type_with_percent_chart.layout.yaxis.tickformat = ",.0%"
+        # Remove facet prefix from facet row labels
+        daily_work_by_caregiver_role_and_type_with_percent_chart.for_each_annotation(lambda a: a.update(text=a.text.split("=")[-1]))
+
+        context["daily_work_by_caregiver_role_and_type_with_percent_chart"] = daily_work_by_caregiver_role_and_type_with_percent_chart.to_html()
 
         work_by_caregiver_role_and_type_with_percent = get_total_minutes_by_role_and_work_type_with_percent()
 
