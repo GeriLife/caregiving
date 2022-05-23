@@ -47,6 +47,7 @@ INSTALLED_APPS = [
     'accounts',
     'caregivers',
     'homes',
+    'residents',
     'work',
 ]
 
