@@ -197,13 +197,19 @@ class WorkReportView(TemplateView):
                 "percent_of_daily_role_total_minutes": _("Work percent"),
                 "work_type": _("Type of work"),
             },
+            # Add numeric text on bars
             text_auto=True,
         )
 
         # Format y-axis as percentages
         daily_work_by_caregiver_role_and_type_with_percent_chart.layout.yaxis.tickformat = ",.0%"
+        
         # Remove facet prefix from facet row labels
         daily_work_by_caregiver_role_and_type_with_percent_chart.for_each_annotation(lambda a: a.update(text=a.text.split("=")[-1]))
+        
+        # Ensure that all bar widths are one day (where units are in milliseconds)
+        one_day = 24 * 60 * 60 * 1000
+        daily_work_by_caregiver_role_and_type_with_percent_chart.update_traces(width=one_day)
 
         context["daily_work_by_caregiver_role_and_type_with_percent_chart"] = daily_work_by_caregiver_role_and_type_with_percent_chart.to_html()
 
