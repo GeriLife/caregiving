@@ -139,54 +139,8 @@ class WorkReportView(TemplateView):
 
         daily_total_minutes_by_role_and_work_type_with_percent = get_daily_total_minutes_by_role_and_work_type_with_percent()
 
-        tmp_data = [
-            {
-              "date": "2022-04-17",
-              "role_name": "Nurse",
-              "work_type": "Cleaning",
-              "daily_total_minutes": 45,
-              "percent_of_daily_role_total_minutes": 0.41,  
-            },
-            {
-              "date": "2022-04-17",
-              "role_name": "Nurse",
-              "work_type": "Food preparation",
-              "percent_of_daily_role_total_minutes": 0.59,  
-            },
-            {
-              "date": "2022-04-17",
-              "role_name": "Volunteer",
-              "work_type": "Cleaning",
-              "percent_of_daily_role_total_minutes": 0.26,  
-            },
-            {
-              "date": "2022-04-17",
-              "role_name": "Volunteer",
-              "work_type": "Food preparation",
-              "percent_of_daily_role_total_minutes": 0.74,  
-            },
-            {
-              "date": "2022-05-06",
-              "role_name": "Volunteer",
-              "work_type": "Food preparation",
-              "percent_of_daily_role_total_minutes": 1.0,  
-            },
-            {
-              "date": "2022-05-07",
-              "role_name": "Volunteer",
-              "work_type": "Cleaning",
-              "percent_of_daily_role_total_minutes": 0.49,  
-            },
-            {
-              "date": "2022-05-07",
-              "role_name": "Volunteer",
-              "work_type": "Food preparation",
-              "percent_of_daily_role_total_minutes": 0.51,  
-            },
-        ]
-
         daily_work_by_caregiver_role_and_type_with_percent_chart = px.bar(
-            tmp_data,
+            daily_total_minutes_by_role_and_work_type_with_percent,
             x="date",
             y="percent_of_daily_role_total_minutes",
             facet_row="role_name",
