@@ -86,121 +86,151 @@ def get_total_minutes_by_role_and_work_type_with_percent():
 
     return result
 
+def prepare_work_daily_sum_max(context):
+    context["work_daily_sum"] = list(
+        Work.objects.values("date")
+        .order_by("date")
+        .annotate(total_minutes=Sum("duration"))
+    )
+
+    context["work_daily_sum_max"] = max(
+        daily_sum["total_minutes"] for daily_sum in context["work_daily_sum"]
+    )
+
+    return context
+
+def prepare_work_by_type_chart():
+    work_by_type = list(
+        Work.objects.values("type__name")
+        .order_by("type__name")
+        .annotate(total_minutes=Sum("duration"))
+    )
+
+    work_by_type_chart = px.bar(
+        work_by_type,
+        x="type__name",
+        y="total_minutes",
+        title=_("Work minutes by type"),
+        labels={
+            "type__name": _("Type of work"),
+            "total_minutes": _("Total minutes"),
+        },
+    ).to_html()
+
+    return work_by_type_chart
+
+def prepare_work_by_caregiver_role_chart():
+    work_by_caregiver_role = list(
+        Work.objects.values("caregiver_role__name")
+        .order_by("caregiver_role__name")
+        .annotate(total_minutes=Sum("duration"))
+    )
+
+    work_by_caregiver_role_chart = px.bar(
+        work_by_caregiver_role,
+        x="caregiver_role__name",
+        y="total_minutes",
+        title=_("Work minutes by caregiver role"),
+        labels={
+            "caregiver_role__name": _("Caregiver role"),
+            "total_minutes": _("Total minutes"),
+        },
+    ).to_html()
+
+    return work_by_caregiver_role_chart
+
+def prepare_daily_work_percent_by_caregiver_role_and_type_chart():
+    daily_total_minutes_by_role_and_work_type_with_percent = get_daily_total_minutes_by_role_and_work_type_with_percent()
+
+    daily_work_percent_by_caregiver_role_and_type_chart = px.bar(
+        daily_total_minutes_by_role_and_work_type_with_percent,
+        x="date",
+        y="percent_of_daily_role_total_minutes",
+        facet_row="role_name",
+        color="work_type",
+        title=_("Daily work percent by caregiver role and work type"),
+        labels={
+            "role_name": _("Caregiver role"),
+            "percent_of_daily_role_total_minutes": _("Work percent"),
+            "work_type": _("Type of work"),
+        },
+        # Add numeric text on bars
+        text_auto=True,
+    )
+
+    # Format y-axis as percentages
+    daily_work_percent_by_caregiver_role_and_type_chart.update_yaxes(tickformat = ",.0%")
+    
+    # Remove facet prefix from facet row labels
+    daily_work_percent_by_caregiver_role_and_type_chart.for_each_annotation(lambda a: a.update(text=a.text.split("=")[-1]))
+    
+    # Ensure that all bar widths are one day (where units are in milliseconds)
+    one_day = 24 * 60 * 60 * 1000
+    daily_work_percent_by_caregiver_role_and_type_chart.update_traces(width=one_day)
+
+    return daily_work_percent_by_caregiver_role_and_type_chart.to_html()
+
+def prepare_work_percent_by_caregiver_role_and_type_chart(work_by_caregiver_role_and_type_with_percent):
+    work_percent_by_caregiver_role_and_type_chart = px.bar(
+        work_by_caregiver_role_and_type_with_percent,
+        x="role_name",
+        y="percent_of_role_total_minutes",
+        color="work_type",
+        title=_("Work percent by caregiver role and work type"),
+        labels={
+            "role_name": _("Caregiver role"),
+            "percent_of_role_total_minutes": _("Work percent"),
+            "work_type": _("Type of work"),
+        },
+        text_auto=True,
+    )
+    work_percent_by_caregiver_role_and_type_chart.layout.yaxis.tickformat = ",.0%"
+
+    return work_percent_by_caregiver_role_and_type_chart.to_html()
+
+def prepare_work_by_caregiver_role_and_type_chart(work_by_caregiver_role_and_type_with_percent):
+    work_by_caregiver_role_and_type_chart = px.bar(
+        work_by_caregiver_role_and_type_with_percent,
+        x="role_name",
+        y="total_minutes",
+        color="work_type",
+        title=_("Work minutes by caregiver role and work type"),
+        labels={
+            "role_name": _("Caregiver role"),
+            "total_minutes": _("Total minutes"),
+            "work_type": _("Type of work"),
+        },
+    
+    )
+
+    return work_by_caregiver_role_and_type_chart.to_html()
+
+
+def prepare_work_by_caregiver_role_and_type_charts(context):
+    work_by_caregiver_role_and_type_with_percent = get_total_minutes_by_role_and_work_type_with_percent()
+
+    context["work_percent_by_caregiver_role_and_type_chart"] = prepare_work_percent_by_caregiver_role_and_type_chart(work_by_caregiver_role_and_type_with_percent)
+
+    context["work_by_caregiver_role_and_type_chart"] = prepare_work_by_caregiver_role_and_type_chart(work_by_caregiver_role_and_type_with_percent)
+
+    return context
+
 
 class WorkReportView(TemplateView):
     template_name = "work/report.html"
 
     def prepare_charts(self, context):
         """Prepare charts and add them to the template context"""
-        work_daily_sum = list(
-            Work.objects.values("date")
-            .order_by("date")
-            .annotate(total_minutes=Sum("duration"))
-        )
-        context["work_daily_sum"] = work_daily_sum
 
-        context["work_daily_sum_max"] = max(
-            daily_sum["total_minutes"] for daily_sum in context["work_daily_sum"]
-        )
+        context = prepare_work_daily_sum_max(context)
 
-        work_by_type = list(
-            Work.objects.values("type__name")
-            .order_by("type__name")
-            .annotate(total_minutes=Sum("duration"))
-        )
+        context["work_by_type_chart"] = prepare_work_by_type_chart()
 
-        context["work_by_type_chart"] = px.bar(
-            work_by_type,
-            x="type__name",
-            y="total_minutes",
-            title=_("Work minutes by type"),
-            labels={
-                "type__name": _("Type of work"),
-                "total_minutes": _("Total minutes"),
-            },
-        ).to_html()
+        context["work_by_caregiver_role_chart"] = prepare_work_by_caregiver_role_chart()
 
-        work_by_caregiver_role = list(
-            Work.objects.values("caregiver_role__name")
-            .order_by("caregiver_role__name")
-            .annotate(total_minutes=Sum("duration"))
-        )
+        context["daily_work_percent_by_caregiver_role_and_type_chart"] = prepare_daily_work_percent_by_caregiver_role_and_type_chart()
 
-        context["work_by_caregiver_role_chart"] = px.bar(
-            work_by_caregiver_role,
-            x="caregiver_role__name",
-            y="total_minutes",
-            title=_("Work minutes by caregiver role"),
-            labels={
-                "caregiver_role__name": _("Caregiver role"),
-                "total_minutes": _("Total minutes"),
-            },
-        ).to_html()
-
-        daily_total_minutes_by_role_and_work_type_with_percent = get_daily_total_minutes_by_role_and_work_type_with_percent()
-
-        daily_work_by_caregiver_role_and_type_with_percent_chart = px.bar(
-            daily_total_minutes_by_role_and_work_type_with_percent,
-            x="date",
-            y="percent_of_daily_role_total_minutes",
-            facet_row="role_name",
-            color="work_type",
-            title=_("Daily work percent by caregiver role and work type"),
-            labels={
-                "role_name": _("Caregiver role"),
-                "percent_of_daily_role_total_minutes": _("Work percent"),
-                "work_type": _("Type of work"),
-            },
-            # Add numeric text on bars
-            text_auto=True,
-        )
-
-        # Format y-axis as percentages
-        daily_work_by_caregiver_role_and_type_with_percent_chart.update_yaxes(tickformat = ",.0%")
-        
-        # Remove facet prefix from facet row labels
-        daily_work_by_caregiver_role_and_type_with_percent_chart.for_each_annotation(lambda a: a.update(text=a.text.split("=")[-1]))
-        
-        # Ensure that all bar widths are one day (where units are in milliseconds)
-        one_day = 24 * 60 * 60 * 1000
-        daily_work_by_caregiver_role_and_type_with_percent_chart.update_traces(width=one_day)
-
-        context["daily_work_by_caregiver_role_and_type_with_percent_chart"] = daily_work_by_caregiver_role_and_type_with_percent_chart.to_html()
-
-        work_by_caregiver_role_and_type_with_percent = get_total_minutes_by_role_and_work_type_with_percent()
-
-        work_by_caregiver_role_and_type_with_percent_chart = px.bar(
-            work_by_caregiver_role_and_type_with_percent,
-            x="role_name",
-            y="percent_of_role_total_minutes",
-            color="work_type",
-            title=_("Work percent by caregiver role and work type"),
-            labels={
-                "role_name": _("Caregiver role"),
-                "percent_of_role_total_minutes": _("Work percent"),
-                "work_type": _("Type of work"),
-            },
-            text_auto=True,
-        )
-        work_by_caregiver_role_and_type_with_percent_chart.layout.yaxis.tickformat = ",.0%"
-
-        context["work_by_caregiver_role_and_type_with_percent_chart"] = work_by_caregiver_role_and_type_with_percent_chart.to_html()
-
-        work_by_caregiver_role_and_type_chart = px.bar(
-            work_by_caregiver_role_and_type_with_percent,
-            x="role_name",
-            y="total_minutes",
-            color="work_type",
-            title=_("Work minutes by caregiver role and work type"),
-            labels={
-                "role_name": _("Caregiver role"),
-                "total_minutes": _("Total minutes"),
-                "work_type": _("Type of work"),
-            },
-        
-        )
-
-        context["work_by_caregiver_role_and_type_chart"] = work_by_caregiver_role_and_type_chart.to_html()
+        context = prepare_work_by_caregiver_role_and_type_charts(context)
 
         return context
 
