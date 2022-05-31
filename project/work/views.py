@@ -202,7 +202,7 @@ class WorkReportView(TemplateView):
         )
 
         # Format y-axis as percentages
-        daily_work_by_caregiver_role_and_type_with_percent_chart.layout.yaxis.tickformat = ",.0%"
+        daily_work_by_caregiver_role_and_type_with_percent_chart.update_yaxes(tickformat = ",.0%")
         
         # Remove facet prefix from facet row labels
         daily_work_by_caregiver_role_and_type_with_percent_chart.for_each_annotation(lambda a: a.update(text=a.text.split("=")[-1]))
