@@ -2,7 +2,15 @@
 {% load i18n %}
 
 {% block content %}
-<h1>{% translate "Residents" %}</h1>
+<h1>
+    {% translate "Residents" %}
+    <a 
+        class="btn btn-sm btn-outline-primary"
+        href="{% url 'resident-create-view' %}"    
+    >
+        {% translate "Create" %}
+    </a>
+</h1>
 
 {% if residents %}
 <table class="table table-hover">
