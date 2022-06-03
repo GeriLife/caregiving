@@ -15,7 +15,10 @@
 {% if residents %}
 <table class="table table-hover">
     <thead>
-        <tr scope="col">
+        <tr>
+            <th scope="col">
+                {% translate "View" %}
+            </th>
             <th scope="col">
                 {% translate "First name" %}
             </th>
@@ -27,6 +30,17 @@
     <tbody>
         {% for resident in residents %}
         <tr>
+            <td>
+                <a 
+                    href="{% url 'resident-detail-view' resident.id %}"
+                    class="btn btn-sm btn-outline-primary"
+                    data-toggle="tooltip"
+                    data-placement="right"
+                    title="{% translate 'View resident' %}"
+                    >
+                    <i class="bi bi-eye-fill"></i>
+                </a>
+            </td>
             <td>{{ resident.first_name }}</td>
             <td>{{ resident.last_initial }}</td>
         </tr>
