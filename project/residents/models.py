@@ -29,7 +29,7 @@ class Resident(models.Model):
         return self.full_name
 
     def get_absolute_url(self):
-        return reverse("resident-detail", kwargs={"pk": self.pk})
+        return reverse("resident-detail-view", kwargs={"pk": self.pk})
 
 
 class Residency(models.Model):
