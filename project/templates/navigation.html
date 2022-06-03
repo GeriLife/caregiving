@@ -1,4 +1,5 @@
 {% load crispy_forms_tags %}
+{% load i18n %}
 
 <nav class="navbar navbar-expand-lg navbar-light bg-light">
     <div class="container">
@@ -18,6 +19,12 @@
                 <li class="nav-item">
                     <a href="{% url 'work-report-view' %}" class="nav-link">
                         Work Report
+                    </a>
+                </li>
+
+                <li class="nav-item">
+                    <a href="{% url 'resident-list-view' %}" class="nav-link">
+                        {% translate "Residents" %}
                     </a>
                 </li>
             </ul>
