@@ -3,4 +3,29 @@
 
 {% block content %}
 <h1>{% translate "Residents" %}</h1>
+
+{% if residents %}
+<table class="table table-hover">
+    <thead>
+        <tr scope="col">
+            <th scope="col">
+                {% translate "First name" %}
+            </th>
+            <th scope="col">
+                {% translate "Last initial" %}
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for resident in residents %}
+        <tr>
+            <td>{{ resident.first_name }}</td>
+            <td>{{ resident.last_initial }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% else %}
+<p>{% translate "No residents found." %}</p>
+{% endif %}
 {% endblock content %}
