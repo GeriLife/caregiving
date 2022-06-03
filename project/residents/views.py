@@ -13,3 +13,4 @@ class ResidentDetailView(LoginRequiredMixin,DetailView):
 
 class ResidentListView(ListView):
     model = Resident
+    context_object_name = "residents"
