@@ -11,12 +11,3 @@
         <p>No work has been recorded yet.</p>
     {% endif %}
 {% endblock content %}
-
-{% block extra_js %}
-    <!-- only load analytics JS if work has been recorded -->
-    {% if work_has_been_recorded %}
-        <script src="https://cdn.jsdelivr.net/npm/echarts@5/dist/echarts.min.js"></script>
-
-        <script src="{% static 'js/work-daily-sum-chart.js' %}"></script>
-    {% endif %}
-{% endblock extra_js %}
