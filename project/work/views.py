@@ -86,19 +86,6 @@ def get_total_minutes_by_role_and_work_type_with_percent():
 
     return result
 
-def prepare_work_daily_sum_max(context):
-    context["work_daily_sum"] = list(
-        Work.objects.values("date")
-        .order_by("date")
-        .annotate(total_minutes=Sum("duration"))
-    )
-
-    context["work_daily_sum_max"] = max(
-        daily_sum["total_minutes"] for daily_sum in context["work_daily_sum"]
-    )
-
-    return context
-
 def prepare_work_by_type_chart():
     work_by_type = list(
         Work.objects.values("type__name")
@@ -221,8 +208,6 @@ class WorkReportView(TemplateView):
 
     def prepare_charts(self, context):
         """Prepare charts and add them to the template context"""
-
-        context = prepare_work_daily_sum_max(context)
 
         context["work_by_type_chart"] = prepare_work_by_type_chart()
 
