@@ -1,4 +1,17 @@
-{% extends 'base.html' %} 
+{% extends 'base.html' %}
+
+{% load i18n %}
+
+
 {% block content %}
-<h1>{{ resident.full_name }}</h1>
+<h1>
+    {{ resident.full_name }}
+
+    <a 
+        class="btn btn-sm btn-outline-primary"
+        href="{% url 'resident-update-view' resident.id %}"    
+    >
+    {% translate "Edit" %}
+    </a>
+</h1>
 {% endblock content %}
