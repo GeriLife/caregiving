@@ -33,7 +33,7 @@ RUN chown -R wagtail /app
 USER wagtail
 
 # Port used by this container to serve HTTP.
-EXPOSE 8000
+EXPOSE 5000
 
 # Run the server
-CMD set -xe; gunicorn --worker-tmp-dir /dev/shm core.wsgi:application --workers 3
+CMD set -xe; gunicorn --worker-tmp-dir /dev/shm core.wsgi:application --bind 0.0.0.0:5000 --workers 3
