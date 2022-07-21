@@ -1,0 +1,31 @@
+<div class="row">
+    {{ daily_work_percent_by_caregiver_role_and_type_chart|safe }}
+</div>
+
+<div class="row">
+    <!--
+        Note: these column dimensions must be specified,
+        so that Plotly charts will not overlap.
+    -->
+    <div class="col-sm-12 col-md-6 col-lg-6">
+        {{ work_by_type_chart|safe }}
+    </div>
+
+    <div class="col-sm-12 col-md-6 col-lg-6">
+        {{ work_by_caregiver_role_chart|safe }}
+    </div>
+</div>
+
+<div class="row">
+    <!--
+        Note: these column dimensions must be specified,
+        so that Plotly charts will not overlap.
+    -->
+    <div class="col-sm-12 col-md-6 col-lg-6">
+        {{ work_percent_by_caregiver_role_and_type_chart|safe }}
+    </div>
+
+    <div class="col-sm-12 col-md-6 col-lg-6">
+        {{ work_by_caregiver_role_and_type_chart|safe }}
+    </div>
+</div>

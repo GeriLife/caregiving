@@ -2,4 +2,11 @@
 
 {% block content %}
 <h1>{{ home.name }}</h1>
+
+<!-- only load analytics charts if work has been recorded -->
+    {% if work_has_been_recorded %}
+        {% include "homes/home_detail_charts.html" %}
+    {% else %}
+        <p>No work has been recorded yet.</p>
+    {% endif %}
 {% endblock content %}
