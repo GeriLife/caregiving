@@ -3,9 +3,13 @@
 {% load i18n %}
 
 {% block content %}
-<h1>{% translate "Homes" %}</h1>
+    <h1>{% translate "Homes" %}</h1>
 
-{% for home in homes %}
-<h2>{{ home.name }}</h2>
-{% endfor %}
+    {% for home in homes %}
+    <h2>
+        <a href="{% url "home-detail-view" home.id %}">
+            {{ home.name }}
+        </a>
+    </h2>
+    {% endfor %}
 {% endblock content %}
