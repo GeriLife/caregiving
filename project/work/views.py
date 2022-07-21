@@ -7,7 +7,6 @@ from django.utils.translation import gettext as _
 from django.views.generic import TemplateView
 from django.views.generic.edit import FormView
 
-import pandas as pd
 import plotly.express as px
 
 from .forms import WorkForm
