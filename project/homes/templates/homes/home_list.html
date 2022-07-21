@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+
+{% load i18n %}
+
+{% block content %}
+<h1>{% translate "Homes" %}</h1>
+
+{% for home in homes %}
+<h2>{{ home.name }}</h2>
+{% endfor %}
+{% endblock content %}
