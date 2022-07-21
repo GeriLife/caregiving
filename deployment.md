@@ -2,7 +2,7 @@
 
 This section is a work-in-progress and outlines issues that arise during or relate to deployment. The main assumption is that we are deploying to [Dokku PaaS](https://dokku.com).
 
-## Configure initial app and database
+## Configure initial app and domain
 
 Configure the initial Dokku app and database with the following commands.
 
@@ -10,25 +10,22 @@ Configure the initial Dokku app and database with the following commands.
 - configure app domain `sudo dokku domains:add caregiving-app <example.com>`
 - set `DJANGO_ALLOWED_HOSTS` to include app domain `dokku config:set caregiving-app DJANGO_ALLOWED_HOSTS=<example.com>`
 - set `DJANGO_CSRF_TRUSTED_ORIGINS` to include app domain with scheme (e.g., https://) `dokku config:set caregiving-app DJANGO_CSRF_TRUSTED_ORIGINS=<https://example.com>`
-- install Postgres plugin `dokku plugin:install https://github.com/dokku/dokku-postgres.git`
-- create Postgres DB `dokku postgres:create caregiving-db`
-- link DB to app `dokku postgres:link caregiving-db caregiving-app`
 
 ## Set up SSL
 
 Enable HTTPS support with the following commands on the Dokku server.
 
 - install Let's Encrypt `dokku plugin:install https://github.com/dokku/dokku-letsencrypt.git`
-- configure Let's Encrypt email `sudo dokku config:set --no-restart --global DOKKU_LETSENCRYPT_EMAIL=<user@email.com>`
-- enable Let's Encrypt for app `sudo dokku letsencrypt:enable caregiving-app`
-- auto-update Let's Encrypt certificate `sudo dokku letsencrypt:cron-job --add`
+- configure Let's Encrypt email `dokku config:set --no-restart --global DOKKU_LETSENCRYPT_EMAIL=<user@email.com>`
+- enable Let's Encrypt for app `dokku letsencrypt:enable caregiving-app`
+- auto-update Let's Encrypt certificate `dokku letsencrypt:cron-job --add`'
+  - `dokku letsencrypt:auto-renew caregiving-app`
 
-## Configure app proxy ports
+## Set up database
 
-We need to configure port 443 to forward to the Django default port 8000 with the following commands.
-
-- clear default proxy ports `dokku proxy:ports-clear caregiving-app`
-- configure correct app proxy port `dokku proxy:ports-add caregiving-app https:443:8000`
+- install Postgres plugin `dokku plugin:install https://github.com/dokku/dokku-postgres.git`
+- create Postgres DB `dokku postgres:create caregiving-db`
+- link DB to app `dokku postgres:link caregiving-db caregiving-app`
 
 ## Push code from local computer
 
