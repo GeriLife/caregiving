@@ -81,6 +81,34 @@ def get_total_minutes_by_role_and_work_type_with_percent(home_id):
 
     return result
 
+
+def get_home_total_minutes_by_role_with_percent(home_id):
+    query = """
+    with work_totals_by_caregiver_role as (
+        select
+            home.name as home_name,
+            caregiver_role.name as role_name,
+            CAST(sum(duration) as FLOAT) as total_minutes
+        from work
+        left join home on home_id = home.id
+        left join caregiver_role on caregiver_role_id = caregiver_role.id
+        where home_id = %s
+        group by role_name
+    )
+
+    select
+        *,
+        (total_minutes / SUM(total_minutes) over ()) as percent_of_role_total_minutes
+    from work_totals_by_caregiver_role;
+    """
+
+    with connection.cursor() as cursor:
+        cursor.execute(query, [home_id])
+
+        result = dictfetchall(cursor)
+
+    return result
+
 def prepare_work_by_type_chart(home):
     work_by_type = list(
         home.work_performed.values("type__name")
