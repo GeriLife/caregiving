@@ -2,14 +2,31 @@
 
 {% load i18n %}
 
+{% load home_work_percent_by_role %}
+
 {% block content %}
     <h1>{% translate "Homes" %}</h1>
 
     {% for home in homes %}
-    <h2>
-        <a href="{% url "home-detail-view" home.id %}">
-            {{ home.name }}
-        </a>
-    </h2>
+        <div class="row">
+            <div class="col-4 col-md-3 col-lg-2">
+                <div class="d-grid">
+                    <a href="{{ home.get_absolute_url }}" class="btn btn-lg btn-outline-primary mt-2 text-start">
+                        <i class="bi bi-house"></i>
+                        {{ home.name }}
+                    </a>
+                </div>
+            </div>
+
+            <div class="col">
+                {% if home.work_performed.exists %}
+                    {{ home | work_percent_by_role_chart | safe}}
+                {% else %}
+                    <p class="mt-3">
+                        {% translate "No work recorded." %}
+                    </p>
+                {% endif %}
+            </div>
+        </div>
     {% endfor %}
 {% endblock content %}
