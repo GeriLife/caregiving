@@ -180,6 +180,43 @@ def prepare_daily_work_percent_by_caregiver_role_and_type_chart(home):
 
     return daily_work_percent_by_caregiver_role_and_type_chart.to_html()
 
+def prepare_home_work_percent_by_caregiver_role_chart(home):
+    home_work_percent_by_caregiver_role = get_home_total_minutes_by_role_with_percent(home.id)
+    
+    home_work_percent_by_caregiver_role_chart = px.bar(
+        home_work_percent_by_caregiver_role,
+        color="role_name",
+        x="percent_of_role_total_minutes",
+        y="home_name",
+        labels={
+            "role_name": _("Caregiver role"),
+            "percent_of_role_total_minutes": "",
+            "home_name": "",
+        },
+    )
+
+    home_work_percent_by_caregiver_role_chart.update_layout(
+        height=100,
+        margin={
+            "b": 0,
+            "l": 0,
+            "r": 0,
+            "t": 0,
+            "pad": 0,
+        },
+        plot_bgcolor= "rgba(0, 0, 0, 0)",
+        showlegend=False,
+        xaxis={
+            "tickformat": ",.0%",
+        },
+        yaxis={
+            "visible": False,
+        },
+    )
+    
+    return home_work_percent_by_caregiver_role_chart.to_html()
+
+
 def prepare_work_percent_by_caregiver_role_and_type_chart(work_by_caregiver_role_and_type_with_percent):
     work_percent_by_caregiver_role_and_type_chart = px.bar(
         work_by_caregiver_role_and_type_with_percent,
