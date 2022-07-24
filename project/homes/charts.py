@@ -214,7 +214,11 @@ def prepare_home_work_percent_by_caregiver_role_chart(home):
         },
     )
     
-    return home_work_percent_by_caregiver_role_chart.to_html()
+    return home_work_percent_by_caregiver_role_chart.to_html(
+        config={
+            "displayModeBar": False,
+        },
+    )
 
 
 def prepare_work_percent_by_caregiver_role_and_type_chart(work_by_caregiver_role_and_type_with_percent):
