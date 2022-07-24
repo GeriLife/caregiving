@@ -93,7 +93,7 @@ def get_home_total_minutes_by_role_with_percent(home_id):
         left join home on home_id = home.id
         left join caregiver_role on caregiver_role_id = caregiver_role.id
         where home_id = %s
-        group by role_name
+        group by home_name, role_name
     )
 
     select
