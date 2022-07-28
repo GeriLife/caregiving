@@ -86,15 +86,19 @@ def get_total_hours_by_role_and_work_type_with_percent():
 
     return result
 
-def prepare_work_by_type_chart():
-    work_by_type = list(
-        Work.objects.values("type__name")
-        .order_by("type__name")
-        .annotate(total_hours=Sum("duration") / minutes_in_hour)
+def get_work_by_type_data():
+    work_by_type = (
+        Work.objects
+            .values("type__name")
+            .order_by("type__name")
+            .annotate(total_hours=Sum("duration") / minutes_in_hour)
     )
 
+    return list(work_by_type)
+
+def prepare_work_by_type_chart(data):
     work_by_type_chart = px.bar(
-        work_by_type,
+        data,
         x="type__name",
         y="total_hours",
         title=_("Work hours by work type"),
@@ -106,15 +110,20 @@ def prepare_work_by_type_chart():
 
     return work_by_type_chart
 
-def prepare_work_by_caregiver_role_chart():
-    work_by_caregiver_role = list(
-        Work.objects.values("caregiver_role__name")
-        .order_by("caregiver_role__name")
-        .annotate(total_hours=Sum("duration") / 60.0)
+
+def get_work_by_caregiver_role_data():
+    work_by_caregiver_role_data = (
+        Work.objects
+            .values("caregiver_role__name")
+            .order_by("caregiver_role__name")
+            .annotate(total_hours=Sum("duration") / 60.0)
     )
 
+    return list(work_by_caregiver_role_data)
+
+def prepare_work_by_caregiver_role_chart(data):
     work_by_caregiver_role_chart = px.bar(
-        work_by_caregiver_role,
+        data,
         x="caregiver_role__name",
         y="total_hours",
         title=_("Work hours by caregiver role"),
@@ -126,11 +135,10 @@ def prepare_work_by_caregiver_role_chart():
 
     return work_by_caregiver_role_chart
 
-def prepare_daily_work_percent_by_caregiver_role_and_type_chart():
-    daily_total_hours_by_role_and_work_type_with_percent = get_daily_total_hours_by_role_and_work_type_with_percent()
 
+def prepare_daily_work_percent_by_caregiver_role_and_type_chart(data):
     daily_work_percent_by_caregiver_role_and_type_chart = px.bar(
-        daily_total_hours_by_role_and_work_type_with_percent,
+        data,
         x="date",
         y="percent_of_daily_role_total_hours",
         facet_row="role_name",
@@ -157,9 +165,9 @@ def prepare_daily_work_percent_by_caregiver_role_and_type_chart():
 
     return daily_work_percent_by_caregiver_role_and_type_chart.to_html()
 
-def prepare_work_percent_by_caregiver_role_and_type_chart(work_by_caregiver_role_and_type_with_percent):
+def prepare_work_percent_by_caregiver_role_and_type_chart(data):
     work_percent_by_caregiver_role_and_type_chart = px.bar(
-        work_by_caregiver_role_and_type_with_percent,
+        data,
         x="role_name",
         y="percent_of_role_total_hours",
         color="work_type",
@@ -175,9 +183,9 @@ def prepare_work_percent_by_caregiver_role_and_type_chart(work_by_caregiver_role
 
     return work_percent_by_caregiver_role_and_type_chart.to_html()
 
-def prepare_work_by_caregiver_role_and_type_chart(work_by_caregiver_role_and_type_with_percent):
+def prepare_work_by_caregiver_role_and_type_chart(data):
     work_by_caregiver_role_and_type_chart = px.bar(
-        work_by_caregiver_role_and_type_with_percent,
+        data,
         x="role_name",
         y="total_hours",
         color="work_type",
@@ -193,29 +201,29 @@ def prepare_work_by_caregiver_role_and_type_chart(work_by_caregiver_role_and_typ
     return work_by_caregiver_role_and_type_chart.to_html()
 
 
-def prepare_work_by_caregiver_role_and_type_charts(context):
-    work_by_caregiver_role_and_type_with_percent = get_total_hours_by_role_and_work_type_with_percent()
-
-    context["work_percent_by_caregiver_role_and_type_chart"] = prepare_work_percent_by_caregiver_role_and_type_chart(work_by_caregiver_role_and_type_with_percent)
-
-    context["work_by_caregiver_role_and_type_chart"] = prepare_work_by_caregiver_role_and_type_chart(work_by_caregiver_role_and_type_with_percent)
-
-    return context
-
-
 class WorkReportView(TemplateView):
     template_name = "work/report.html"
 
     def prepare_charts(self, context):
-        """Prepare charts and add them to the template context"""
+        """Prepare data/charts and add them to the template context"""
+        work_by_type_data = get_work_by_type_data()
+        context["work_by_type_chart"] = prepare_work_by_type_chart(work_by_type_data)
 
-        context["work_by_type_chart"] = prepare_work_by_type_chart()
+        work_by_caregiver_role_data = get_work_by_caregiver_role_data()
+        context["work_by_caregiver_role_chart"] = prepare_work_by_caregiver_role_chart(work_by_caregiver_role_data)
 
-        context["work_by_caregiver_role_chart"] = prepare_work_by_caregiver_role_chart()
+        daily_total_hours_by_role_and_work_type_with_percent_data = get_daily_total_hours_by_role_and_work_type_with_percent()
+        context["daily_work_percent_by_caregiver_role_and_type_chart"] = prepare_daily_work_percent_by_caregiver_role_and_type_chart(
+            daily_total_hours_by_role_and_work_type_with_percent_data
+        )
 
-        context["daily_work_percent_by_caregiver_role_and_type_chart"] = prepare_daily_work_percent_by_caregiver_role_and_type_chart()
-
-        context = prepare_work_by_caregiver_role_and_type_charts(context)
+        work_by_caregiver_role_and_type_with_percent = get_total_hours_by_role_and_work_type_with_percent()
+        context["work_percent_by_caregiver_role_and_type_chart"] = prepare_work_percent_by_caregiver_role_and_type_chart(
+            work_by_caregiver_role_and_type_with_percent
+        )
+        context["work_by_caregiver_role_and_type_chart"] = prepare_work_by_caregiver_role_and_type_chart(
+            work_by_caregiver_role_and_type_with_percent
+        )
 
         return context
 
