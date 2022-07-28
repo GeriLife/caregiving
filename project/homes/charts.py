@@ -193,6 +193,7 @@ def prepare_home_work_percent_by_caregiver_role_chart(home):
             "percent_of_role_total_minutes": "",
             "home_name": "",
         },
+        text_auto=True,
     )
 
     home_work_percent_by_caregiver_role_chart.update_layout(
