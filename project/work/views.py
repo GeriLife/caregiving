@@ -206,15 +206,16 @@ class WorkReportView(TemplateView):
 
     def prepare_charts(self, context):
         """Prepare data/charts and add them to the template context"""
-        work_by_type_data = get_work_by_type_data()
-        context["work_by_type_chart"] = prepare_work_by_type_chart(work_by_type_data)
+        context["work_by_type_chart"] = prepare_work_by_type_chart(
+            get_work_by_type_data()
+        )
 
-        work_by_caregiver_role_data = get_work_by_caregiver_role_data()
-        context["work_by_caregiver_role_chart"] = prepare_work_by_caregiver_role_chart(work_by_caregiver_role_data)
+        context["work_by_caregiver_role_chart"] = prepare_work_by_caregiver_role_chart(
+            get_work_by_caregiver_role_data()
+        )
 
-        daily_total_hours_by_role_and_work_type_with_percent_data = get_daily_total_hours_by_role_and_work_type_with_percent()
         context["daily_work_percent_by_caregiver_role_and_type_chart"] = prepare_daily_work_percent_by_caregiver_role_and_type_chart(
-            daily_total_hours_by_role_and_work_type_with_percent_data
+            get_daily_total_hours_by_role_and_work_type_with_percent()
         )
 
         work_by_caregiver_role_and_type_with_percent = get_total_hours_by_role_and_work_type_with_percent()
