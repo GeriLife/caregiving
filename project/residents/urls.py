@@ -24,8 +24,8 @@ urlpatterns = [
         ResidentListView.as_view(),
         name="resident-list-view",
     ),
-    # . Translators: Make sure to leave the "<slug:pk>/"
     path(
+        # . Translators: Make sure to leave the "<slug:pk>/"
         _("<slug:pk>/update"),
         ResidentUpdateView.as_view(),
         name="resident-update-view",
