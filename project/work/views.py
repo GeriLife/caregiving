@@ -27,7 +27,7 @@ def get_daily_total_hours_by_role_and_work_type_with_percent():
             date,
             caregiver_role.name as role_name,
             work_type.name as work_type, 
-            sum(duration) / 60.0 as daily_total_hours
+            sum(duration_hours) as daily_total_hours
         from work
         left join work_type on type_id = work_type.id
         left join caregiver_role on caregiver_role_id = caregiver_role.id
@@ -60,7 +60,7 @@ def get_total_hours_by_role_and_work_type_with_percent():
         select 
             caregiver_role.name as role_name,
             work_type.name as work_type, 
-            sum(duration) / 60.0 as total_hours
+            sum(duration_hours) as total_hours
         from work
         left join work_type on type_id = work_type.id
         left join caregiver_role on caregiver_role_id = caregiver_role.id
@@ -91,7 +91,7 @@ def get_work_by_type_data():
         Work.objects
             .values("type__name")
             .order_by("type__name")
-            .annotate(total_hours=Sum("duration") / minutes_in_hour)
+            .annotate(total_hours=Sum("duration_hours"))
     )
 
     return list(work_by_type)
@@ -116,7 +116,7 @@ def get_work_by_caregiver_role_data():
         Work.objects
             .values("caregiver_role__name")
             .order_by("caregiver_role__name")
-            .annotate(total_hours=Sum("duration") / 60.0)
+            .annotate(total_hours=Sum("duration_hours"))
     )
 
     return list(work_by_caregiver_role_data)
