@@ -1,18 +1,25 @@
 {% load i18n %}
 {% get_current_language as LANGUAGE_CODE %}
 
-<form class="d-flex" action="{% url 'set_language' %}" method="post">
-    {% csrf_token %}
-    <input name="next" type="hidden" value="{{ redirect_to }}">
-    <select class="form-control me-2" name="language">
-        {% get_current_language as LANGUAGE_CODE %}
-        {% get_available_languages as LANGUAGES %}
-        {% get_language_info_list for LANGUAGES as languages %}
-        {% for language in languages %}
-            <option value="{{ language.code }}"{% if language.code == LANGUAGE_CODE %} selected{% endif %}>
-                {{ language.name_local }} ({{ language.code }})
-            </option>
-        {% endfor %}
-    </select>
-    <input class="btn btn-outline-success" type="submit" value='{% translate "Change language" %}'>
-</form>
+<div class="btn-group navbar-right language menu">
+    <button class="btn btn-outline-secondary btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+        {% get_language_info for LANGUAGE_CODE as lang %}
+        {{ lang.name_local }} ({{ lang.code }})
+    </button>
+
+    {% get_current_language as LANGUAGE_CODE %}
+    {% get_available_languages as LANGUAGES %}
+    {% get_language_info_list for LANGUAGES as languages %}
+    <ul class="dropdown-menu">
+    {% for language in languages %}
+        <li>
+            <form action="{% url 'set_language' %}" method="post">
+                {% csrf_token %}
+                <input name="next" type="hidden" value="{{ redirect_to }}" />
+                <input name="language" type="hidden" value="{{ language.code }}" />
+                <input class="dropdown-item" type="submit" value="{{ language.name_local }} ({{ language.code }})" />
+            </form>
+        </li>
+    {% endfor %}
+    </ul>
+</div>
