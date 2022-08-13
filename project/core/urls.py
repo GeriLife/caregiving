@@ -20,11 +20,17 @@ from django.views.generic.base import TemplateView
 
 urlpatterns = [
     path("", TemplateView.as_view(template_name="home.html"), name="home"),
+    # . Translators: Make sure to leave the trailing slash "/"
     path(_("admin/"), admin.site.urls),
     path("i18n/", include("django.conf.urls.i18n")),
+    # . Translators: Make sure to leave the trailing slash "/"
     path(_("accounts/"), include("accounts.urls")),
+    # . Translators: Make sure to leave the trailing slash "/"
     path(_("accounts/"), include("django.contrib.auth.urls")),
+    # . Translators: Make sure to leave the trailing slash "/"
     path(_("homes/"), include("homes.urls")),
+    # . Translators: Make sure to leave the trailing slash "/"
     path(_("residents/"), include("residents.urls")),
+    # . Translators: Make sure to leave the trailing slash "/"
     path(_("work/"), include("work.urls")),
 ]

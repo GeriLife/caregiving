@@ -9,8 +9,25 @@ from .views import (
 )
 
 urlpatterns = [
-    path(_("create"), ResidentCreateView.as_view(), name="resident-create-view",),
-    path("<slug:pk>/", ResidentDetailView.as_view(), name="resident-detail-view",),
-    path("", ResidentListView.as_view(), name="resident-list-view",),
-    path(_("<slug:pk>/update"), ResidentUpdateView.as_view(), name="resident-update-view",),
+    path(
+        _("create"),
+        ResidentCreateView.as_view(),
+        name="resident-create-view",
+    ),
+    path(
+        "<slug:pk>/",
+        ResidentDetailView.as_view(),
+        name="resident-detail-view",
+    ),
+    path(
+        "",
+        ResidentListView.as_view(),
+        name="resident-list-view",
+    ),
+    # . Translators: Make sure to leave the "<slug:pk>/"
+    path(
+        _("<slug:pk>/update"),
+        ResidentUpdateView.as_view(),
+        name="resident-update-view",
+    ),
 ]
