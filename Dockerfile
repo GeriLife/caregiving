@@ -16,6 +16,7 @@ WORKDIR /app/
 COPY /project/ /app
 COPY pyproject.toml /app
 COPY poetry.lock /app
+COPY Procfile /app
 
 # Note: we don't want Poetry to create a virtual environment
 # Instead, it should use a local directory
