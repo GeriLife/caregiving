@@ -6,8 +6,6 @@ from django.utils.translation import gettext_lazy as _
 from caregivers.models import CaregiverRole
 from homes.models import Home
 
-minutes_in_hour = 60
-
 
 class WorkType(models.Model):
     name = models.CharField(max_length=25)
@@ -41,9 +39,14 @@ class Work(models.Model):
                 name='work_duration_hours_gte_zero'
             ),
         )
+
+    def get_duration_hours(self):
+        minutes_in_hour = 60
+        
+        return self.duration_minutes / minutes_in_hour
     
     def save(self, *args, **kwargs):
-        self.duration_hours = self.duration_minutes / minutes_in_hour
+        self.duration_hours = self.get_duration_hours()
         super(Work, self).save(*args, **kwargs)
 
     def __str__(self):
