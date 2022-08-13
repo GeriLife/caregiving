@@ -26,7 +26,7 @@ class Work(models.Model):
     type = models.ForeignKey(WorkType, related_name="+", on_delete=models.PROTECT, help_text=_("The general type of work performed."))
     caregiver_role = models.ForeignKey(CaregiverRole, related_name="+", on_delete=models.PROTECT, help_text=_("The role or job title of the person who performed this work."))
     date = models.DateField(help_text=_("The date this work was performed."))
-    duration = models.PositiveIntegerField(help_text=_("The number of minutes used performing this work."))
+    duration_minutes = models.PositiveIntegerField(help_text=_("The number of minutes used performing this work."))
     duration_hours = models.FloatField(
         validators=[MinValueValidator(0.0),]
     )
@@ -43,7 +43,7 @@ class Work(models.Model):
         )
     
     def save(self, *args, **kwargs):
-        self.duration_hours = self.duration / minutes_in_hour
+        self.duration_hours = self.duration_minutes / minutes_in_hour
         super(Work, self).save(*args, **kwargs)
 
     def __str__(self):
