@@ -1,8 +1,10 @@
 {% extends 'base.html' %}
 
-{% block title %}Home{% endblock title %}
+{% load i18n %}
+
+{% block title %}{% translate "Home" %}{% endblock title %}
 
 {% block content %}
-<h1>Welcome</h1>
-<p>Welcome to GeriLife Caregivers.</p>
+<h1>{% translate "Welcome" %}</h1>
+<p>{% translate "Welcome to GeriLife Caregivers." %}</p>
 {% endblock content %}

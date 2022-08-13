@@ -1,4 +1,6 @@
 {% extends 'base.html' %}
+
+{% load i18n %}
 {% load static %}
 
 {% block content %}
@@ -8,6 +10,6 @@
     {% if work_has_been_recorded %}
         {% include "work/charts.html" %}
     {% else %}
-        <p>No work has been recorded yet.</p>
+        <p>{% translate "No work has been recorded yet." %}</p>
     {% endif %}
 {% endblock content %}

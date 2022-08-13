@@ -15,14 +15,15 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import include, path
+from django.utils.translation import gettext_lazy as _
 from django.views.generic.base import TemplateView
 
 urlpatterns = [
     path("", TemplateView.as_view(template_name="home.html"), name="home"),
-    path("admin/", admin.site.urls),
-    path('accounts/', include('accounts.urls')),
-    path('accounts/', include('django.contrib.auth.urls')),
-    path('homes/', include('homes.urls')),
-    path('residents/', include('residents.urls')),
-    path('work/', include('work.urls')),
+    path(_("admin/"), admin.site.urls),
+    path(_('accounts/'), include('accounts.urls')),
+    path(_('accounts/'), include('django.contrib.auth.urls')),
+    path(_('homes/'), include('homes.urls')),
+    path(_('residents/'), include('residents.urls')),
+    path(_('work/'), include('work.urls')),
 ]
