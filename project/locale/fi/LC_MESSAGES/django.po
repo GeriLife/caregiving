@@ -1,306 +1,296 @@
-# SOME DESCRIPTIVE TITLE.
-# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
-# This file is distributed under the same license as the PACKAGE package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
-#
-#, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: PACKAGE VERSION\n"
-"Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-08-13 12:38+0000\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
-"Language: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: POEditor.com\n"
+"Project-Id-Version: GeriLife Caregivers\n"
+"Language: fi\n"
 
 #: accounts/models.py:10
 msgid "user"
-msgstr ""
+msgstr "käyttäjä"
 
 #: accounts/models.py:11
 msgid "users"
-msgstr ""
+msgstr "käyttäjiä"
 
 #: accounts/templates/registration/login.html:9
 #: accounts/templates/registration/login.html:14 templates/navigation.html:48
 msgid "Log in"
-msgstr ""
+msgstr "Kirjaudu sisään"
 
 #: accounts/templates/registration/signup.html:6
 #: accounts/templates/registration/signup.html:9
 #: accounts/templates/registration/signup.html:14 templates/navigation.html:51
 msgid "Sign up"
-msgstr ""
+msgstr "Kirjaudu"
 
 #: accounts/urls.py:6
 msgid "signup/"
-msgstr ""
+msgstr "kirjaudu/"
 
 #: caregivers/models.py:10
 msgid "caregiver role"
-msgstr ""
+msgstr "hoitajan rooli"
 
 #: caregivers/models.py:11
 msgid "caregiver roles"
-msgstr ""
+msgstr "hoitajan roolit"
 
 #: core/settings.py:137
 msgid "English"
-msgstr ""
+msgstr "Englanti"
 
 #: core/settings.py:138
 msgid "Suomi"
-msgstr ""
+msgstr "Suomi"
 
 #. Translators: Make sure to leave the trailing slash "/"
 #: core/urls.py:24
 msgid "admin/"
-msgstr ""
+msgstr "hallinto/"
 
 #. Translators: Make sure to leave the trailing slash "/"
 #: core/urls.py:27 core/urls.py:29
 msgid "accounts/"
-msgstr ""
+msgstr "tilit/"
 
 #. Translators: Make sure to leave the trailing slash "/"
 #: core/urls.py:31
 msgid "homes/"
-msgstr ""
+msgstr "koteja/"
 
 #. Translators: Make sure to leave the trailing slash "/"
 #: core/urls.py:33
 msgid "residents/"
-msgstr ""
+msgstr "asukkaille/"
 
 #. Translators: Make sure to leave the trailing slash "/"
 #: core/urls.py:35
 msgid "work/"
-msgstr ""
+msgstr "työ/"
 
 #: homes/charts.py:121
 msgid "Work hours by type"
-msgstr ""
+msgstr "Työajat tyypeittäin"
 
 #: homes/charts.py:123 homes/charts.py:163 homes/charts.py:233
 #: homes/charts.py:251 work/views.py:106 work/views.py:150 work/views.py:178
 #: work/views.py:196
 msgid "Type of work"
-msgstr ""
+msgstr "Työn tyyppi"
 
 #: homes/charts.py:124 homes/charts.py:144 homes/charts.py:250
 #: work/views.py:107 work/views.py:132 work/views.py:195
 msgid "Total hours"
-msgstr ""
+msgstr "Tunteja yhteensä"
 
 #: homes/charts.py:141 work/views.py:129
 msgid "Work hours by caregiver role"
-msgstr ""
+msgstr "Työajat hoitajan roolin mukaan"
 
 #: homes/charts.py:143 homes/charts.py:161 homes/charts.py:190
 #: homes/charts.py:231 homes/charts.py:249 work/views.py:131 work/views.py:148
 #: work/views.py:176 work/views.py:194
 msgid "Caregiver role"
-msgstr ""
+msgstr "Omaishoitajan rooli"
 
 #: homes/charts.py:159 work/views.py:146
 msgid "Daily work percent by caregiver role and work type"
-msgstr ""
+msgstr "Päivittäinen työprosentti hoitajan roolin ja työtyypin mukaan"
 
 #: homes/charts.py:162 homes/charts.py:232 work/views.py:149 work/views.py:177
 msgid "Work percent"
-msgstr ""
+msgstr "Työprosentti"
 
 #: homes/charts.py:229 work/views.py:174
 msgid "Work percent by caregiver role and work type"
-msgstr ""
+msgstr "Työprosentti hoitajan roolin ja työtyypin mukaan"
 
 #: homes/charts.py:247 work/views.py:192
 msgid "Work hours by caregiver role and work type"
-msgstr ""
+msgstr "Työajat hoitajan roolin ja työtyypin mukaan"
 
 #: homes/models.py:11
 msgid "home"
-msgstr ""
+msgstr "koti"
 
 #: homes/models.py:12
 msgid "homes"
-msgstr ""
+msgstr "koteja"
 
 #: homes/templates/homes/home_detail.html:11 work/templates/work/report.html:13
 msgid "No work has been recorded yet."
-msgstr ""
+msgstr "Työtä ei ole vielä tallennettu."
 
 #: homes/templates/homes/home_list.html:8 templates/navigation.html:29
 msgid "Homes"
-msgstr ""
+msgstr "Kodit"
 
 #: homes/templates/homes/home_list.html:12
 msgid "Home name"
-msgstr ""
+msgstr "Kodin nimi"
 
 #: homes/templates/homes/home_list.html:16
 msgid "Work percent by role"
-msgstr ""
+msgstr "Työskentele prosentteina roolin mukaan"
 
 #: homes/templates/homes/home_list.html:36
 msgid "No work recorded."
-msgstr ""
+msgstr "Ei tallennettua työtä."
 
 #: residents/models.py:25
 msgid "resident"
-msgstr ""
+msgstr "asukas"
 
 #: residents/models.py:26
 msgid "residents"
-msgstr ""
+msgstr "asukkaille"
 
 #: residents/models.py:54
 msgid "residency"
-msgstr ""
+msgstr "residenssi"
 
 #: residents/models.py:55
 msgid "residencies"
-msgstr ""
+msgstr "residenssit"
 
 #: residents/models.py:89
 msgid "Move-in date should preceed move-out date."
-msgstr ""
+msgstr "Muuttopäivän tulee olla ennen muuttopäivää."
 
 #: residents/models.py:93
 msgid "Resident can not have overlapping residencies."
-msgstr ""
+msgstr "Asukkaalla ei voi olla päällekkäisiä asuntoja."
 
 #: residents/templates/residents/resident_detail.html:14
 msgid "Edit"
-msgstr ""
+msgstr "Muokata"
 
 #: residents/templates/residents/resident_form.html:7
 msgid "Resident"
-msgstr ""
+msgstr "Asukas"
 
 #: residents/templates/residents/resident_form.html:16
 msgid "Save"
-msgstr ""
+msgstr "Tallentaa"
 
 #: residents/templates/residents/resident_list.html:6
 #: templates/navigation.html:35
 msgid "Residents"
-msgstr ""
+msgstr "Asukkaat"
 
 #: residents/templates/residents/resident_list.html:11
 msgid "Create"
-msgstr ""
+msgstr "Luoda"
 
 #: residents/templates/residents/resident_list.html:20
 msgid "View"
-msgstr ""
+msgstr "Näytä"
 
 #: residents/templates/residents/resident_list.html:23
 msgid "First name"
-msgstr ""
+msgstr "Etunimi"
 
 #: residents/templates/residents/resident_list.html:26
 msgid "Last initial"
-msgstr ""
+msgstr "Viimeinen alkukirjain"
 
 #: residents/templates/residents/resident_list.html:39
 msgid "View resident"
-msgstr ""
+msgstr "Näytä asukas"
 
 #: residents/templates/residents/resident_list.html:51
 msgid "No residents found."
-msgstr ""
+msgstr "Asukkaita ei löytynyt."
 
 #: residents/urls.py:13
 msgid "create"
-msgstr ""
+msgstr "luoda"
 
 #. Translators: Make sure to leave the "<slug:pk>/"
 #: residents/urls.py:29
 msgid "<slug:pk>/update"
-msgstr ""
+msgstr "<slug:pk>/päivittää"
 
 #: templates/home.html:5
 msgid "Home"
-msgstr ""
+msgstr "Koti"
 
 #: templates/home.html:8
 msgid "Welcome"
-msgstr ""
+msgstr "Tervetuloa"
 
 #. Translators: Leave the text "GeriLife Caregivers" as it is.
 #: templates/home.html:11
 msgid "Welcome to GeriLife Caregivers."
-msgstr ""
+msgstr "Tervetuloa GeriLife Caregivers -palveluun."
 
 #: templates/i18n.html:17
 msgid "Change language"
-msgstr ""
+msgstr "Vaihda kieltä"
 
 #: templates/navigation.html:17 templates/navigation.html:65
 #: templates/navigation.html:79
 msgid "Add work"
-msgstr ""
+msgstr "Lisää töitä"
 
 #: templates/navigation.html:23
 msgid "Work Report"
-msgstr ""
+msgstr "Työraportti"
 
 #: templates/navigation.html:44
 msgid "Log out"
-msgstr ""
+msgstr "Kirjautua ulos"
 
 #: templates/navigation.html:76
 msgid "Cancel"
-msgstr ""
+msgstr "Peruuttaa"
 
 #: work/models.py:15
 msgid "work type"
-msgstr ""
+msgstr "työtyyppi"
 
 #: work/models.py:16
 msgid "work types"
-msgstr ""
+msgstr "työtyypit"
 
 #: work/models.py:23
 msgid "The home in which this work was performed."
-msgstr ""
+msgstr "Koti, jossa tämä työ tehtiin"
 
 #: work/models.py:24
 msgid "The general type of work performed."
-msgstr ""
+msgstr "Suoritetun työn yleinen tyyppi"
 
 #: work/models.py:25
 msgid "The role or job title of the person who performed this work."
-msgstr ""
+msgstr "Tämän työn suorittaneen henkilön rooli tai tehtävänimike"
 
 #: work/models.py:26
 msgid "The date this work was performed."
-msgstr ""
+msgstr "Päivämäärä, jolloin tämä työ tehtiin"
 
 #: work/models.py:27
 msgid "The number of minutes used performing this work."
-msgstr ""
+msgstr "Tämän työn suorittamiseen käytetty minuuttimäärä"
 
 #: work/models.py:34 work/models.py:35
 msgid "work"
-msgstr ""
+msgstr "työ"
 
 #. Translators: Make sure to leave the trailing slash "/"
 #: work/urls.py:8
 msgid "submit/"
-msgstr ""
+msgstr "lähetä/"
 
 #. Translators: Make sure to leave the trailing slash "/"
 #: work/urls.py:10
 msgid "report/"
-msgstr ""
+msgstr "raportti/"
 
 #: work/views.py:104
 msgid "Work hours by work type"
-msgstr ""
+msgstr "Työajat työtyypeittäin"
+
