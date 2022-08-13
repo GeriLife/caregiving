@@ -1,11 +1,13 @@
 msgid ""
 msgstr ""
+"Project-Id-Version: GeriLife Caregivers\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2022-08-13 12:58+0000\n"
+"Language: fi\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: POEditor.com\n"
-"Project-Id-Version: GeriLife Caregivers\n"
-"Language: fi\n"
 
 #: accounts/models.py:10
 msgid "user"
@@ -256,27 +258,37 @@ msgstr "työtyyppi"
 msgid "work types"
 msgstr "työtyypit"
 
-#: work/models.py:23
-msgid "The home in which this work was performed."
+#: work/models.py:27
+#, fuzzy
+#| msgid "The home in which this work was performed."
+msgid "The home in which this work was performed"
 msgstr "Koti, jossa tämä työ tehtiin"
 
-#: work/models.py:24
-msgid "The general type of work performed."
+#: work/models.py:33
+#, fuzzy
+#| msgid "The general type of work performed."
+msgid "The general type of work performed"
 msgstr "Suoritetun työn yleinen tyyppi"
 
-#: work/models.py:25
-msgid "The role or job title of the person who performed this work."
+#: work/models.py:39
+#, fuzzy
+#| msgid "The role or job title of the person who performed this work."
+msgid "The role or job title of the person who performed this work"
 msgstr "Tämän työn suorittaneen henkilön rooli tai tehtävänimike"
 
-#: work/models.py:26
-msgid "The date this work was performed."
+#: work/models.py:41
+#, fuzzy
+#| msgid "The date this work was performed."
+msgid "The date this work was performed"
 msgstr "Päivämäärä, jolloin tämä työ tehtiin"
 
-#: work/models.py:27
-msgid "The number of minutes used performing this work."
+#: work/models.py:43
+#, fuzzy
+#| msgid "The number of minutes used performing this work."
+msgid "The number of minutes used performing this work"
 msgstr "Tämän työn suorittamiseen käytetty minuuttimäärä"
 
-#: work/models.py:34 work/models.py:35
+#: work/models.py:53 work/models.py:54
 msgid "work"
 msgstr "työ"
 
@@ -293,4 +305,3 @@ msgstr "raportti/"
 #: work/views.py:104
 msgid "Work hours by work type"
 msgstr "Työajat työtyypeittäin"
-
