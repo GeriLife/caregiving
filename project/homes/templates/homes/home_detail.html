@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load i18n %}
 
 {% block content %}
 <h1>{{ home.name }}</h1>
@@ -7,6 +8,6 @@
     {% if work_has_been_recorded %}
         {% include "homes/home_detail_charts.html" %}
     {% else %}
-        <p>No work has been recorded yet.</p>
+        <p>{% translate "No work has been recorded yet." %}</p>
     {% endif %}
 {% endblock content %}
