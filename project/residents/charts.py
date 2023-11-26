@@ -3,8 +3,12 @@ from django.utils.translation import gettext as _
 import pandas as pd
 import plotly.express as px
 
+from activities.models import Activity
 
-def prepare_daily_activity_minutes_scatter_chart(activities: models.QuerySet) -> str:
+
+def prepare_daily_activity_minutes_scatter_chart(
+    activities: models.QuerySet[Activity],
+) -> str:
     """Prepare a scatter chart of daily activity minutes for a resident."""
     activities_agg = (
         activities.values("date")
@@ -37,6 +41,48 @@ def prepare_daily_activity_minutes_scatter_chart(activities: models.QuerySet) ->
         },
         xaxis_title=_("Date"),
         yaxis_title=_("Duration in minutes"),
+        legend_title="",
+        template="plotly_dark",
+    )
+
+    return fig.to_html()
+
+
+def prepare_activity_minutes_by_type_chart(
+    activities: models.QuerySet[Activity],
+) -> str:
+    """Prepare a bar chart of activity counts by type for a resident."""
+    # This must be a float so that the division below returns a float
+    minutes_in_hour = 60.0
+
+    activities_agg = (
+        activities.values("activity_type")
+        .annotate(total_hours=models.Sum("duration_minutes") / minutes_in_hour)
+        .order_by("activity_type")
+    )
+
+    df_activities = pd.DataFrame(activities_agg)
+
+    fig = px.bar(
+        df_activities,
+        x="activity_type",
+        y="total_hours",
+        title=_("Activity minutes by type"),
+        labels={
+            "activity_type": _("Type of activity"),
+            "total_hours": _("Duration in hours"),
+        },
+    )
+
+    fig.update_layout(
+        title={
+            "y": 0.9,
+            "x": 0.5,
+            "xanchor": "center",
+            "yanchor": "top",
+        },
+        xaxis_title=_("Type of activity"),
+        yaxis_title=_("Duration in hours"),
         legend_title="",
         template="plotly_dark",
     )
