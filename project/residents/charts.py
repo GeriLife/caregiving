@@ -48,7 +48,7 @@ def prepare_daily_activity_minutes_scatter_chart(
     return fig.to_html()
 
 
-def prepare_activity_minutes_by_type_chart(
+def prepare_activity_hours_by_type_chart(
     activities: models.QuerySet[Activity],
 ) -> str:
     """Prepare a bar chart of activity counts by type for a resident."""
@@ -61,15 +61,27 @@ def prepare_activity_minutes_by_type_chart(
         .order_by("activity_type")
     )
 
+    # Retrieve the label for each activity_type
+    activities_agg = [
+        {
+            "activity_type": activity["activity_type"],
+            "activity_type_label": str(
+                Activity.ActivityTypeChoices(activity["activity_type"]).label,
+            ),
+            "total_hours": activity["total_hours"],
+        }
+        for activity in activities_agg
+    ]
+
     df_activities = pd.DataFrame(activities_agg)
 
     fig = px.bar(
         df_activities,
-        x="activity_type",
+        x="activity_type_label",  # Use activity_type_label instead of activity_type
         y="total_hours",
-        title=_("Activity minutes by type"),
+        title=_("Activity hours by type"),
         labels={
-            "activity_type": _("Type of activity"),
+            "activity_type_label": _("Type of activity"),  # Update the label for x-axis
             "total_hours": _("Duration in hours"),
         },
     )
@@ -90,7 +102,7 @@ def prepare_activity_minutes_by_type_chart(
     return fig.to_html()
 
 
-def prepare_activity_hours_by_facilitator_role_chart(
+def prepare_activity_hours_by_caregiver_role_chart(
     activities: models.QuerySet[Activity],
 ) -> str:
     """Prepare a bar chart of activity counts by type for a resident."""
@@ -98,20 +110,32 @@ def prepare_activity_hours_by_facilitator_role_chart(
     minutes_in_hour = 60.0
 
     activities_agg = (
-        activities.values("facilitator_role__title")
+        activities.values("caregiver_role")
         .annotate(total_hours=models.Sum("duration_minutes") / minutes_in_hour)
-        .order_by("facilitator_role")
+        .order_by("caregiver_role")
     )
+
+    # Retrieve the label for each caregiver_role
+    activities_agg = [
+        {
+            "caregiver_role": activity["caregiver_role"],
+            "caregiver_role_label": str(
+                Activity.CaregiverRoleChoices(activity["caregiver_role"]).label,
+            ),
+            "total_hours": activity["total_hours"],
+        }
+        for activity in activities_agg
+    ]
 
     df_activities = pd.DataFrame(activities_agg)
 
     fig = px.bar(
         df_activities,
-        x="facilitator_role",
+        x="caregiver_role_label",
         y="total_hours",
-        title=_("Activity minutes by facilitator role"),
+        title=_("Activity hours by caregiver role"),
         labels={
-            "facilitator_role": _("Facilitator role"),
+            "caregiver_role_label": _("Caregiver role"),
             "total_hours": _("Duration in hours"),
         },
     )
@@ -123,7 +147,7 @@ def prepare_activity_hours_by_facilitator_role_chart(
             "xanchor": "center",
             "yanchor": "top",
         },
-        xaxis_title=_("Facilitator role"),
+        xaxis_title=_("Caregiver role"),
         yaxis_title=_("Duration in hours"),
         legend_title="",
         template="plotly_dark",
