@@ -38,36 +38,21 @@ class Resident(models.Model):
         medium, or high activity.
 
         Based on the count of activities in the past seven days:
-        - inactive: 0 (red)
-        - low: 1-2 (orange)
-        - medium: 3-4 (yellow)
-        - good: 5+ (green)
+        - danger: 0-1
+        - warning: 2-4
+        - success: 5+
         """
 
-        activity_count = self.activity_set.filter(
+        activity_count = self.activities.filter(
             date__gte=timezone.now() - timezone.timedelta(days=7),
         ).count()
 
-        if activity_count == 0:
-            return {
-                "level": "inactive",
-                "color": "red",
-            }
-        elif activity_count <= 2:
-            return {
-                "level": "low",
-                "color": "orange",
-            }
+        if activity_count <= 1:
+            return "danger"
         elif activity_count <= 4:
-            return {
-                "level": "medium",
-                "color": "yellow",
-            }
+            return "warning"
         else:
-            return {
-                "level": "good",
-                "color": "green",
-            }
+            return "success"
 
 
 class Residency(models.Model):

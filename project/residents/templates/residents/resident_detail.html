@@ -14,6 +14,14 @@
             {% translate "Edit" %}
         </a>
     </h1>
+
+    <p>
+        <strong>{% translate "Activity level" %}:</strong>
+        <span class="badge text-bg-{{ resident.activity_level }}">
+            {{ resident.activity_level }}
+        </span>
+    </p>
+
     <div class="container">
         <!--
             Note: these column dimensions must be specified,
