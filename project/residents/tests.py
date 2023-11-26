@@ -1,25 +1,23 @@
 from django.core.exceptions import ValidationError
 from django.test import TestCase
-from psycopg2 import Date
 
 from .models import Residency, Resident
 from homes.models import Home
+
 
 class ResidencyTestCase(TestCase):
     def setUp(self):
         self.resident = Resident.objects.create(
             first_name="Test",
-            last_initial="U"
+            last_initial="U",
         )
         self.home = Home.objects.create(
-            name="Test Home"
+            name="Test Home",
         )
 
     def test_residency_dates_are_valid(self):
-        """
-        Creating a residency where the move out date is before move in
-        should raise a validation error
-        """
+        """Creating a residency where the move out date is before move in
+        should raise a validation error."""
         with self.assertRaises(ValidationError):
             residency = Residency.objects.create(
                 resident=self.resident,
@@ -37,10 +35,8 @@ class ResidencyTestCase(TestCase):
             residency.clean()
 
     def test_overlapping_residency_not_allowed(self):
-        """
-        Residents should only live in one home at a time
-        so overlapping residencies should not be allowed
-        """
+        """Residents should only live in one home at a time so overlapping
+        residencies should not be allowed."""
 
         with self.assertRaises(ValidationError):
             # Create a residency that will overlap with the new residency

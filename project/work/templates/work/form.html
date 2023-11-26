@@ -1,11 +1,11 @@
 {% extends "base.html" %}
 
 {% block content %}
-<form action="{% url 'work-form-view' %}" method="post">
-    {% csrf_token %}
+    <form action="{% url 'work-form-view' %}" method="post">
+        {% csrf_token %}
 
-    {{ work_form|crispy }}
+        {{ work_form|crispy }}
 
-    <button type="submit" class="btn btn-primary">Add work</button>
-</form>
+        <button type="submit" class="btn btn-primary">Add work</button>
+    </form>
 {% endblock content %}

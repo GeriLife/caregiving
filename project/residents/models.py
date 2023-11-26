@@ -1,4 +1,3 @@
-from datetime import datetime
 import uuid
 
 from django.core.exceptions import ValidationError
@@ -58,8 +57,8 @@ class Residency(models.Model):
         return f"{ self.resident.full_name } - { self.home.name }"
 
     def clean(self) -> None:
-        """
-        Ensure residency is valid.
+        """Ensure residency is valid.
+
         - move in date preceeds move out date, if present
         - resident should reside in only one home at a time (no residency overlap)
         """
@@ -69,7 +68,7 @@ class Residency(models.Model):
             # Move in date is before move out (or on same date)
             residency_timespan_is_valid = self.move_in <= self.move_out
 
-            # No residencies should exist for this resident 
+            # No residencies should exist for this resident
             # with overlapping move in/out dates (same date is fine)
             residency_has_overlap = Residency.objects.filter(
                 resident=self.resident,
@@ -77,13 +76,12 @@ class Residency(models.Model):
                 move_out__gt=self.move_in,
             ).exists()
         else:
-            # No residencies should exist for this resident 
+            # No residencies should exist for this resident
             # with overlapping move out date (same date is fine)
             residency_has_overlap = Residency.objects.filter(
                 resident=self.resident,
                 move_out__gt=self.move_in,
             ).exists()
-
 
         if not residency_timespan_is_valid:
             error_message = _("Move-in date should preceed move-out date.")

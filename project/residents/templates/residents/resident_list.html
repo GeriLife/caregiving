@@ -2,52 +2,52 @@
 {% load i18n %}
 
 {% block content %}
-<h1>
-    {% translate "Residents" %}
-    <a 
-        class="btn btn-sm btn-outline-primary"
-        href="{% url 'resident-create-view' %}"    
-    >
-        {% translate "Create" %}
-    </a>
-</h1>
+    <h1>
+        {% translate "Residents" %}
+        <a
+            class="btn btn-sm btn-outline-primary"
+            href="{% url 'resident-create-view' %}"
+        >
+            {% translate "Create" %}
+        </a>
+    </h1>
 
-{% if residents %}
-<table class="table table-hover">
-    <thead>
-        <tr>
-            <th scope="col">
-                {% translate "View" %}
-            </th>
-            <th scope="col">
-                {% translate "First name" %}
-            </th>
-            <th scope="col">
-                {% translate "Last initial" %}
-            </th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for resident in residents %}
-        <tr>
-            <td>
-                <a 
-                    href="{% url 'resident-detail-view' resident.id %}"
-                    class="btn btn-sm btn-outline-primary"
-                    data-toggle="tooltip"
-                    data-placement="right"
-                    title="{% translate 'View resident' %}"
-                >
-                    <i class="bi bi-eye-fill"></i>
-                </a>
-            </td>
-            <td>{{ resident.first_name }}</td>
-            <td>{{ resident.last_initial }}</td>
-        </tr>
-        {% endfor %}
-    </tbody>
-</table>
-{% else %}
-<p>{% translate "No residents found." %}</p>
-{% endif %}
+    {% if residents %}
+        <table class="table table-hover">
+            <thead>
+                <tr>
+                    <th scope="col">
+                        {% translate "View" %}
+                    </th>
+                    <th scope="col">
+                        {% translate "First name" %}
+                    </th>
+                    <th scope="col">
+                        {% translate "Last initial" %}
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for resident in residents %}
+                    <tr>
+                        <td>
+                            <a
+                                href="{% url 'resident-detail-view' resident.id %}"
+                                class="btn btn-sm btn-outline-primary"
+                                data-toggle="tooltip"
+                                data-placement="right"
+                                title="{% translate 'View resident' %}"
+                            >
+                                <i class="bi bi-eye-fill"></i>
+                            </a>
+                        </td>
+                        <td>{{ resident.first_name }}</td>
+                        <td>{{ resident.last_initial }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p>{% translate "No residents found." %}</p>
+    {% endif %}
 {% endblock content %}

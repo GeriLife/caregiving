@@ -1,5 +1,4 @@
 from django.urls import path
-from django.utils.translation import gettext_lazy as _
 
 from .views import (
     ResidentCreateView,
@@ -10,7 +9,7 @@ from .views import (
 
 urlpatterns = [
     path(
-        _("create"),
+        "create/",
         ResidentCreateView.as_view(),
         name="resident-create-view",
     ),
@@ -25,8 +24,7 @@ urlpatterns = [
         name="resident-list-view",
     ),
     path(
-        # . Translators: Make sure to leave the "<slug:pk>/"
-        _("<slug:pk>/update"),
+        "<slug:pk>/update/",
         ResidentUpdateView.as_view(),
         name="resident-update-view",
     ),

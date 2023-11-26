@@ -1,6 +1,6 @@
 # GeriLife Caregiving
-A toolkit for caregivers working to promote wellness in elder-care communities.
 
+A toolkit for caregivers working to promote wellness in elder-care communities.
 
 ## License
 
