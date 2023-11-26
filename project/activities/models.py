@@ -13,6 +13,16 @@ class Activity(models.Model):
         DISCUSSION = "discussion", _("Discussion")
         SELF_GUIDED = "self_guided", _("Self-guided")
 
+    class CaregiverRoleChoices(models.TextChoices):
+        """Choices for the caregiver role."""
+
+        FAMILY = "family", _("Family")
+        FRIEND = "friend", _("Friend")
+        VOLUNTEER = "volunteer", _("Volunteer")
+        STAFF = "staff", _("Staff")
+        PRACTICAL_NURSE = "practical_nurse", _("Practical nurse")
+        NURSE = "nurse", _("Nurse")
+
     activity_type = models.CharField(
         _("Activity type"),
         max_length=20,
@@ -31,6 +41,12 @@ class Activity(models.Model):
     duration_minutes = models.PositiveIntegerField(
         _("Duration in minutes"),
         default=30,
+    )
+    caregiver_role = models.CharField(
+        _("Caregiver role"),
+        max_length=20,
+        choices=CaregiverRoleChoices.choices,
+        default=CaregiverRoleChoices.STAFF,
     )
 
     class Meta:
