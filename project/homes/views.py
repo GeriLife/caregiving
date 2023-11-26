@@ -1,4 +1,5 @@
 from typing import Any
+from django.shortcuts import get_object_or_404
 
 from django.views.generic.detail import DetailView
 from django.views.generic.list import ListView
@@ -21,6 +22,23 @@ class HomeListView(ListView):
 class HomeDetailView(DetailView):
     model = Home
     context_object_name = "home"
+
+    def get_object(self, queryset=None):
+        if queryset is None:
+            queryset = self.get_queryset()
+
+        url_uuid = self.kwargs.get("url_uuid")  # Get the url_uuid from the URL
+
+        if url_uuid is not None:
+            queryset = queryset.filter(
+                url_uuid=url_uuid,
+            )  # Filter the queryset based on url_uuid
+
+        obj = get_object_or_404(
+            queryset,
+        )  # Get the object or return a 404 error if not found
+
+        return obj
 
     def prepare_charts(self, context):
         """Prepare charts and add them to the template context."""

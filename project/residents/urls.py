@@ -14,7 +14,7 @@ urlpatterns = [
         name="resident-create-view",
     ),
     path(
-        "<slug:pk>/",
+        "<str:url_uuid>/",
         ResidentDetailView.as_view(),
         name="resident-detail-view",
     ),
@@ -24,7 +24,7 @@ urlpatterns = [
         name="resident-list-view",
     ),
     path(
-        "<slug:pk>/update/",
+        "<str:url_uuid>/update/",
         ResidentUpdateView.as_view(),
         name="resident-update-view",
     ),

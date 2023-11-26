@@ -1,19 +1,21 @@
-import uuid
-
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.urls import reverse
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
-
+from shortuuid.django_fields import ShortUUIDField
 from homes.models import Home
 
 
 class Resident(models.Model):
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     first_name = models.CharField(max_length=255)
     last_initial = models.CharField(max_length=1)
     on_hiatus = models.BooleanField(default=False)
+
+    url_uuid = ShortUUIDField(
+        _("UUID used in URLs"),
+        editable=False,  # type: ignore
+    )
 
     @property
     def full_name(self):
@@ -28,7 +30,7 @@ class Resident(models.Model):
         return self.full_name
 
     def get_absolute_url(self):
-        return reverse("resident-detail-view", kwargs={"pk": self.pk})
+        return reverse("resident-detail-view", kwargs={"url_uuid": self.url_uuid})
 
 
 class Residency(models.Model):
