@@ -5,6 +5,11 @@ from django.views.generic.edit import CreateView
 from django.views.generic.edit import UpdateView
 from django.views.generic.list import ListView
 
+from residents.charts import (
+    prepare_activity_hours_by_caregiver_role_chart,
+    prepare_activity_hours_by_type_chart,
+    prepare_daily_activity_minutes_scatter_chart,
+)
 from .models import Resident
 
 
@@ -34,6 +39,25 @@ class ResidentDetailView(LoginRequiredMixin, DetailView):
         )  # Get the object or return a 404 error if not found
 
         return obj
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        activities = self.object.activities.all()
+
+        context[
+            "resident_activities_by_date_chart"
+        ] = prepare_daily_activity_minutes_scatter_chart(activities)
+
+        context["activity_hours_by_type_chart"] = prepare_activity_hours_by_type_chart(
+            activities,
+        )
+
+        context[
+            "activity_hours_by_caregiver_role_chart"
+        ] = prepare_activity_hours_by_caregiver_role_chart(
+            activities,
+        )
+        return context
 
 
 class ResidentUpdateView(LoginRequiredMixin, UpdateView):

@@ -32,6 +32,28 @@ class Resident(models.Model):
     def get_absolute_url(self):
         return reverse("resident-detail-view", kwargs={"url_uuid": self.url_uuid})
 
+    @property
+    def activity_level(self):
+        """Return a string indicating whether the resident is inactive, low,
+        medium, or high activity.
+
+        Based on the count of activities in the past seven days:
+        - danger: 0-1
+        - warning: 2-4
+        - success: 5+
+        """
+
+        activity_count = self.activities.filter(
+            date__gte=timezone.now() - timezone.timedelta(days=7),
+        ).count()
+
+        if activity_count <= 1:
+            return "danger"
+        elif activity_count <= 4:
+            return "warning"
+        else:
+            return "success"
+
 
 class Residency(models.Model):
     resident = models.ForeignKey(
