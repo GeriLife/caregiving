@@ -30,7 +30,7 @@ class Activity(models.Model):
         auto_now=False,
         auto_now_add=False,
     )
-    duration_m = models.PositiveIntegerField(
+    duration_minutes = models.PositiveIntegerField(
         _("Duration in minutes"),
         default=30,
     )
