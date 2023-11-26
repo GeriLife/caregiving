@@ -3,7 +3,7 @@ from django.db import models
 from django.urls import reverse
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
-
+from shortuuid.django_fields import ShortUUIDField
 from homes.models import Home
 
 
@@ -11,6 +11,11 @@ class Resident(models.Model):
     first_name = models.CharField(max_length=255)
     last_initial = models.CharField(max_length=1)
     on_hiatus = models.BooleanField(default=False)
+
+    url_uuid = ShortUUIDField(
+        _("UUID used in URLs"),
+        editable=False,  # type: ignore
+    )
 
     @property
     def full_name(self):
