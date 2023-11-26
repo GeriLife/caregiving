@@ -40,3 +40,6 @@ class Activity(models.Model):
         verbose_name = _("activity")
         verbose_name_plural = _("activities")
         ordering = ["-date"]
+
+    def __str__(self):
+        return f"{self.activity_type} activity on {self.date}"
