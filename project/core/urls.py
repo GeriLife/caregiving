@@ -19,18 +19,34 @@ from django.utils.translation import gettext_lazy as _
 from django.views.generic.base import TemplateView
 
 urlpatterns = [
-    # . Translators: Make sure to leave the trailing slash "/"
-    path(_("admin/"), admin.site.urls),
-    path("i18n/", include("django.conf.urls.i18n")),
-    # . Translators: Make sure to leave the trailing slash "/"
-    path(_("accounts/"), include("accounts.urls")),
-    # . Translators: Make sure to leave the trailing slash "/"
-    path(_("accounts/"), include("django.contrib.auth.urls")),
-    # . Translators: Make sure to leave the trailing slash "/"
-    path(_("homes/"), include("homes.urls")),
-    # . Translators: Make sure to leave the trailing slash "/"
-    path(_("residents/"), include("residents.urls")),
-    # . Translators: Make sure to leave the trailing slash "/"
-    path(_("work/"), include("work.urls")),
+    path("admin/", admin.site.urls),
+    path(
+        "i18n/",
+        include("django.conf.urls.i18n"),
+    ),
+    path(
+        "activities/",
+        include("activities.urls"),
+    ),
+    path(
+        "accounts/",
+        include("accounts.urls"),
+    ),
+    path(
+        "accounts/",
+        include("django.contrib.auth.urls"),
+    ),
+    path(
+        "homes/",
+        include("homes.urls"),
+    ),
+    path(
+        "residents/",
+        include("residents.urls"),
+    ),
+    path(
+        "work/",
+        include("work.urls"),
+    ),
     path("", TemplateView.as_view(template_name="home.html"), name="home"),
 ]

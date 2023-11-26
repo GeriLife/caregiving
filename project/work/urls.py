@@ -4,8 +4,6 @@ from django.utils.translation import gettext_lazy as _
 from .views import WorkFormView, WorkReportView
 
 urlpatterns = [
-    # . Translators: Make sure to leave the trailing slash "/"
-    path(_("submit/"), WorkFormView.as_view(), name="work-form-view"),
-    # . Translators: Make sure to leave the trailing slash "/"
-    path(_("report/"), WorkReportView.as_view(), name="work-report-view"),
+    path("submit/", WorkFormView.as_view(), name="work-form-view"),
+    path("report/", WorkReportView.as_view(), name="work-report-view"),
 ]
