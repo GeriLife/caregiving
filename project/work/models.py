@@ -40,12 +40,12 @@ class Work(models.Model):
     )
     date = models.DateField(help_text=_("The date this work was performed"))
     duration_minutes = models.PositiveIntegerField(
-        help_text=_("The number of minutes used performing this work")
+        help_text=_("The number of minutes used performing this work"),
     )
     duration_hours = models.FloatField(
         validators=[
             MinValueValidator(0.0),
-        ]
+        ],
     )
 
     class Meta:
@@ -54,7 +54,8 @@ class Work(models.Model):
         verbose_name_plural = _("work")
         constraints = (
             CheckConstraint(
-                check=Q(duration_hours__gte=0.0), name="work_duration_hours_gte_zero"
+                check=Q(duration_hours__gte=0.0),
+                name="work_duration_hours_gte_zero",
             ),
         )
 
@@ -65,7 +66,7 @@ class Work(models.Model):
 
     def save(self, *args, **kwargs):
         self.duration_hours = self.get_duration_hours()
-        super(Work, self).save(*args, **kwargs)
+        super().save(*args, **kwargs)
 
     def __str__(self):
         return f"{ self.home } - { self.caregiver_role } - { self.type } - { self.date } - { self.duration }"

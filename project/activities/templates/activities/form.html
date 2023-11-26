@@ -5,11 +5,11 @@
 {% block title %}Add activity{% endblock title %}
 
 {% block content %}
-<form action="{% url 'activity-form-view' %}" method="post">
-    {% csrf_token %}
+    <form action="{% url 'activity-form-view' %}" method="post">
+        {% csrf_token %}
 
-    {{ form|crispy }}
+        {{ form|crispy }}
 
-    <button type="submit" class="btn btn-primary">Add activity</button>
-</form>
+        <button type="submit" class="btn btn-primary">Add activity</button>
+    </form>
 {% endblock content %}

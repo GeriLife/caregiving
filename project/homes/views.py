@@ -1,4 +1,4 @@
-from typing import Any, Dict
+from typing import Any
 
 from django.views.generic.detail import DetailView
 from django.views.generic.list import ListView
@@ -7,10 +7,11 @@ from .charts import (
     prepare_daily_work_percent_by_caregiver_role_and_type_chart,
     prepare_work_by_caregiver_role_and_type_charts,
     prepare_work_by_caregiver_role_chart,
-    prepare_work_by_type_chart
+    prepare_work_by_type_chart,
 )
 
 from .models import Home
+
 
 class HomeListView(ListView):
     model = Home
@@ -22,20 +23,24 @@ class HomeDetailView(DetailView):
     context_object_name = "home"
 
     def prepare_charts(self, context):
-        """Prepare charts and add them to the template context"""
+        """Prepare charts and add them to the template context."""
         home = context["home"]
 
         context["work_by_type_chart"] = prepare_work_by_type_chart(home)
 
-        context["work_by_caregiver_role_chart"] = prepare_work_by_caregiver_role_chart(home)
+        context["work_by_caregiver_role_chart"] = prepare_work_by_caregiver_role_chart(
+            home,
+        )
 
-        context["daily_work_percent_by_caregiver_role_and_type_chart"] = prepare_daily_work_percent_by_caregiver_role_and_type_chart(home)
+        context[
+            "daily_work_percent_by_caregiver_role_and_type_chart"
+        ] = prepare_daily_work_percent_by_caregiver_role_and_type_chart(home)
 
         context = prepare_work_by_caregiver_role_and_type_charts(context)
 
         return context
 
-    def get_context_data(self, **kwargs: Any) -> Dict[str, Any]:
+    def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
         context = super().get_context_data(**kwargs)
 
         home = context["home"]

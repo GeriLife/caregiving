@@ -4,14 +4,14 @@
 
 
 {% block content %}
-<h1>
-    {{ resident.full_name }}
+    <h1>
+        {{ resident.full_name }}
 
-    <a 
-        class="btn btn-sm btn-outline-primary"
-        href="{% url 'resident-update-view' resident.id %}"    
-    >
-    {% translate "Edit" %}
-    </a>
-</h1>
+        <a
+            class="btn btn-sm btn-outline-primary"
+            href="{% url 'resident-update-view' resident.id %}"
+        >
+            {% translate "Edit" %}
+        </a>
+    </h1>
 {% endblock content %}

@@ -43,7 +43,7 @@
             </ul>
             <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
                 {% include "i18n.html" %}
-                
+
                 {% if user.is_authenticated %}
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'logout' %}">{% translate "Log out" %}</a>
@@ -59,7 +59,7 @@
             </ul>
         </div>
     </div>
-  </nav>
+</nav>
 
 <!-- Modal -->
 <div class="modal fade" id="addWorkModal" tabindex="-1" aria-labelledby="addWorkModalLabel" aria-hidden="true">
@@ -74,7 +74,7 @@
             <form action="{% url 'work-form-view' %}" method="post">
                 {% csrf_token %}
                 <div class="modal-body">
-                        {{ work_form|crispy }}
+                    {{ work_form|crispy }}
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">

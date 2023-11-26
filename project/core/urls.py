@@ -1,4 +1,4 @@
-"""core URL Configuration
+"""Core URL Configuration.
 
 The `urlpatterns` list routes URLs to views. For more information please see:
     https://docs.djangoproject.com/en/4.0/topics/http/urls/
@@ -15,7 +15,6 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import include, path
-from django.utils.translation import gettext_lazy as _
 from django.views.generic.base import TemplateView
 
 urlpatterns = [

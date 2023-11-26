@@ -3,13 +3,11 @@ from django.utils.translation import gettext_lazy as _
 
 
 class Activity(models.Model):
-    """
-    Model representing an activity.
-    """
+    """Model representing an activity."""
+
     class ActivityTypeChoices(models.TextChoices):
-        """
-        Choices for the type of activity.
-        """
+        """Choices for the type of activity."""
+
         OUTDOOR = "outdoor", _("Outdoor")
         CULTURE = "culture", _("Culture")
         DISCUSSION = "discussion", _("Discussion")
@@ -34,7 +32,7 @@ class Activity(models.Model):
         _("Duration in minutes"),
         default=30,
     )
-    
+
     class Meta:
         db_table = "activity"
         verbose_name = _("activity")

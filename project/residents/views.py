@@ -9,10 +9,10 @@ from .models import Resident
 
 class ResidentCreateView(CreateView):
     model = Resident
-    fields = ["first_name", "last_initial", "on_hiatus",]
+    fields = ["first_name", "last_initial", "on_hiatus"]
 
 
-class ResidentDetailView(LoginRequiredMixin,DetailView):
+class ResidentDetailView(LoginRequiredMixin, DetailView):
     model = Resident
     context_object_name = "resident"
     template_name = "residents/resident_detail.html"
@@ -20,7 +20,7 @@ class ResidentDetailView(LoginRequiredMixin,DetailView):
 
 class ResidentUpdateView(LoginRequiredMixin, UpdateView):
     model = Resident
-    fields = ["first_name", "last_initial", "on_hiatus",]
+    fields = ["first_name", "last_initial", "on_hiatus"]
 
 
 class ResidentListView(ListView):

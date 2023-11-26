@@ -293,4 +293,3 @@ msgstr "Tämän työn suorittamiseen käytetty minuuttimäärä"
 #: work/templates/work/report.html:7
 msgid "Work report"
 msgstr "Työraportti"
-

@@ -3,17 +3,17 @@
 {% load crispy_forms_tags %}
 
 {% block content %}
-<h1>
-    {% translate "Resident" %}
-</h1>
+    <h1>
+        {% translate "Resident" %}
+    </h1>
 
-<form action="" method="post">
-    {% csrf_token %}
-    
-    {{ form | crispy }}
+    <form action="" method="post">
+        {% csrf_token %}
 
-    <button type="submit" class="btn btn-success">
-        {% translate "Save" %}
-    </button>
-</form>
+        {{ form | crispy }}
+
+        <button type="submit" class="btn btn-success">
+            {% translate "Save" %}
+        </button>
+    </form>
 {% endblock content %}
