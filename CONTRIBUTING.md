@@ -68,7 +68,7 @@ When starting out the project or when there are unapplied migrations, apply the 
 python manage.py migrate
 ```
 
-### Create superuse
+### Create superuser
 
 When starting out with an empty database, after applying migrations, create a superuser as follows.
 
