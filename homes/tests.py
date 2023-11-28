@@ -33,12 +33,20 @@ class HomeModelTests(TestCase):
                 resident=self.home_1_current_resident,
             ).exists(),
         )
-
-    def test_home_current_residencies_exclude_past_residencies(self):
-        # Testing Home 1
-        current_residencies_home1 = self.home1.current_residencies
         self.assertFalse(
             current_residencies_home1.filter(
                 resident=self.home_1_past_resident,
             ).exists(),
+        )
+
+    def test_home_current_residents(self):
+        current_residents_home1 = self.home1.current_residents
+        self.assertEqual(current_residents_home1.count(), 1)
+        self.assertIn(
+            self.home_1_current_resident,
+            current_residents_home1,
+        )
+        self.assertNotIn(
+            self.home_1_past_resident,
+            current_residents_home1,
         )
