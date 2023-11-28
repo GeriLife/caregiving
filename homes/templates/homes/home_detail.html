@@ -4,7 +4,27 @@
 {% block content %}
     <h1>{{ home.name }}</h1>
 
-<!-- only load analytics charts if work has been recorded -->
+    <div class="container">
+        <div class="row">
+            <div class="col-md-4">
+                {% if home.current_residents %}
+                    <h2>{% translate "Current Residents" %}</h2>
+                    <ul class="list-group">
+                        {% for resident in home.current_residents %}
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                <a href="{{ resident.get_absolute_url }}">{{ resident.full_name }}</a>
+                                <span class="badge text-bg-{{ resident.activity_level.color }}">
+                                    {{ resident.activity_level.text }}
+                                </span>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- only load analytics charts if work has been recorded -->
     {% if work_has_been_recorded %}
         {% include "homes/home_detail_charts.html" %}
     {% else %}
