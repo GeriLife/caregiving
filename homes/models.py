@@ -5,7 +5,7 @@ from django.utils.translation import gettext_lazy as _
 from shortuuid.django_fields import ShortUUIDField
 
 if TYPE_CHECKING:
-    from residents.models import Residency, Resident
+    from residents.models import Resident
 
 
 class Home(models.Model):
@@ -28,13 +28,6 @@ class Home(models.Model):
         return reverse("home-detail-view", kwargs={"url_uuid": self.url_uuid})
 
     @property
-    def current_residencies(self) -> models.QuerySet["Residency"]:
-        """Returns a QuerySet of all current residencies for this home."""
-        return self.residency_set.filter(move_out__isnull=True).select_related(
-            "resident",
-        )
-
-    @property
     def current_residents(self) -> models.QuerySet["Resident"]:
         """Returns a QuerySet of all current residents for this home."""
         # avoid circular import
@@ -43,4 +36,4 @@ class Home(models.Model):
         return Resident.objects.filter(
             residency__home=self,
             residency__move_out__isnull=True,
-        )
+        ).order_by("first_name")
