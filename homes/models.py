@@ -1,7 +1,11 @@
+from typing import TYPE_CHECKING
 from django.db import models
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 from shortuuid.django_fields import ShortUUIDField
+
+if TYPE_CHECKING:
+    from residents.models import Residency
 
 
 class Home(models.Model):
@@ -22,3 +26,8 @@ class Home(models.Model):
 
     def get_absolute_url(self):
         return reverse("home-detail-view", kwargs={"url_uuid": self.url_uuid})
+
+    @property
+    def current_residencies(self) -> models.QuerySet["Residency"]:
+        """Returns a QuerySet of all current residencies for this home."""
+        return self.residency_set.filter(move_out__isnull=True)
