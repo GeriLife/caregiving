@@ -7,6 +7,24 @@ from shortuuid.django_fields import ShortUUIDField
 from homes.models import Home
 
 
+# Activity ranges
+#
+# Based on the count of activities in the past seven days:
+# - inactive: almost no activities
+# - low: a few activities
+# - good: an appropriate amount of activities
+# - high: a lot of activities (maybe too many)
+#
+# Note: range ends are exclusive, so the max value is the same as the next
+# range's min value.
+WEEKLY_ACTIVITY_RANGES = {
+    "inactive": range(0, 1),  # Includes only 0.
+    "low": range(1, 5),  # Includes 1, 2, 3, 4.
+    "good": range(5, 10),  # Includes 5, 6, 7, 8, 9.
+    "high": range(10, 1000),  # Includes 10 onwards ... (1000 is arbitrary).
+}
+
+
 class Resident(models.Model):
     first_name = models.CharField(max_length=255)
     last_initial = models.CharField(max_length=1)
@@ -42,9 +60,9 @@ class Resident(models.Model):
         - warning: 2-4
         - success: 5+
         """
-
-        activity_count = self.activities.filter(
-            date__gte=timezone.now() - timezone.timedelta(days=7),
+        one_week_ago = timezone.now() - timezone.timedelta(days=7)
+        activity_count: int = self.activities.filter(  # type: ignore
+            date__gte=one_week_ago,
         ).count()
 
         if self.on_hiatus:
@@ -52,20 +70,25 @@ class Resident(models.Model):
                 "color": "info",
                 "text": _("On hiatus"),
             }
-        elif activity_count <= 1:
+        elif activity_count in WEEKLY_ACTIVITY_RANGES["inactive"]:
             return {
                 "color": "danger",
                 "text": _("Inactive"),
             }
-        elif activity_count <= 4:
+        elif activity_count in WEEKLY_ACTIVITY_RANGES["low"]:
             return {
                 "color": "warning",
                 "text": _("Low"),
             }
-        else:
+        elif activity_count in WEEKLY_ACTIVITY_RANGES["good"]:
             return {
                 "color": "success",
-                "text": _("Good"),
+                "text": _("Moderate"),
+            }
+        else:
+            return {
+                "color": "warning",
+                "text": _("High"),
             }
 
 
