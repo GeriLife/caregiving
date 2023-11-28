@@ -5,7 +5,7 @@
     <h1>{{ home.name }}</h1>
 
     <div class="container">
-        <div class="row">
+        <div class="row mb-3">
             <div class="col-md-4">
                 {% if home.current_residents %}
                     <h2>{% translate "Current Residents" %}</h2>
@@ -22,12 +22,17 @@
                 {% endif %}
             </div>
         </div>
-    </div>
 
-    <!-- only load analytics charts if work has been recorded -->
-    {% if work_has_been_recorded %}
-        {% include "homes/home_detail_charts.html" %}
-    {% else %}
-        <p>{% translate "No work has been recorded yet." %}</p>
-    {% endif %}
+        <div class="row">
+            <!-- only load analytics charts if work has been recorded -->
+            <h2>
+                {% translate "Work" %}
+            </h2>
+            {% if work_has_been_recorded %}
+                {% include "homes/home_detail_charts.html" %}
+            {% else %}
+                <p>{% translate "No work has been recorded yet." %}</p>
+            {% endif %}
+        </div>
+    </div>
 {% endblock content %}
