@@ -47,12 +47,26 @@ class Resident(models.Model):
             date__gte=timezone.now() - timezone.timedelta(days=7),
         ).count()
 
-        if activity_count <= 1:
-            return "danger"
+        if self.on_hiatus:
+            return {
+                "color": "info",
+                "text": _("On hiatus"),
+            }
+        elif activity_count <= 1:
+            return {
+                "color": "danger",
+                "text": _("Inactive"),
+            }
         elif activity_count <= 4:
-            return "warning"
+            return {
+                "color": "warning",
+                "text": _("Low"),
+            }
         else:
-            return "success"
+            return {
+                "color": "success",
+                "text": _("Good"),
+            }
 
 
 class Residency(models.Model):
