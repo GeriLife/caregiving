@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+
+{% load i18n %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+    <div class="card-body py-5 px-md-5">
+        <div class="row d-flex justify-content-center ">
+        <div class="col-lg-8">
+            <h2 class="fw-bold " id = "set-preference-message">Set Preferences</h2>
+            <div class="container">
+            <div class="col-sm-20 " style="text-align: left">
+                <form action = "{% url 'preferences-view' %}" id = "preferences_form" method="post">
+                <table>
+                    {{form|crispy}}
+                </table>
+                {% csrf_token %}
+                <button class="btn btn-primary " id = "submit_preferences_button" type="submit">Submit</button>
+                </form>
+            </div>
+            </div>
+        </div>
+        </div>
+    </div>
+
+    <div class="card-body py-5 px-md-5">
+        <div class="row d-flex justify-content-center ">
+        <div class="col-lg-8">
+            <h2 class="fw-bold" id = "current-preferences">Your Current Preferences</h2>
+            <div class="col-lg-15">
+                {% if not request.user.preferences %}
+                <h3 class="fw" id = "no-preferences">No current preferences. Set some!</h3>
+                {% else %}
+                    {% for name, value in fields %}
+                        {% if name != "id" %}
+                            <h3 class="fw">{{ name }} : {{ value }}</h3>
+                        {% endif %}
+                    {% endfor %}
+                {% endif %}
+            </div>
+        </div>
+        </div>
+    </div>
+
+{% endblock content %}
