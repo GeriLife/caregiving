@@ -12,6 +12,43 @@ def dictfetchall(cursor):
     return [dict(zip(columns, row)) for row in cursor.fetchall()]
 
 
+def get_activity_counts_by_resident_and_activity_type(home_id):
+    query = """
+        SELECT COUNT(ra.resident) AS activity_count, ra.activity_type AS activity_type, CONCAT(r.first_name,' ',r.last_name) AS resident_name
+        FROM resident_activity AS ra
+        JOIN resident AS r ON ra.resident = r.id
+        WHERE ra.home = %s
+        GROUP BY ra.resident, ra.activity_type
+    """
+    with connection.cursor() as cursor:
+        cursor.execute(query, [home_id])
+
+        result = dictfetchall(cursor)
+
+    return result
+
+
+def prepare_activity_counts_by_resident_and_activity_type(home):
+    activity_counts_by_resident_and_activity_type = (
+        get_activity_counts_by_resident_and_activity_type(home.id)
+    )
+
+    activity_counts_by_resident_and_activity_type_chart = px.bar(
+        activity_counts_by_resident_and_activity_type,
+        x="activity_count",
+        y="resident_name",
+        color="activity_type",
+        orientation="h",
+        title=_("Resident Activity Count By Type"),
+        labels={
+            "activity_count": _("Activity Count"),
+            "resident_name": _("Resident Name"),
+        },
+    ).to_html()
+
+    return activity_counts_by_resident_and_activity_type_chart
+
+
 def get_daily_total_hours_by_role_and_work_type_with_percent(home_id):
     query = """
     with daily_work_totals_by_type as (
