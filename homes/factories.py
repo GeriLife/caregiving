@@ -1,10 +1,10 @@
 import factory
-from .models import Home
+from factory import Sequence
 
 
 class HomeFactory(factory.django.DjangoModelFactory):
     class Meta:
-        model = Home
+        model = "homes.Home"
         django_get_or_create = ("name",)
 
-    name: str = factory.Sequence(lambda n: f"Home {n}")
+    name: str = Sequence(lambda n: f"Home {n}")

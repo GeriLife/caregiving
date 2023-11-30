@@ -12,6 +12,59 @@ def dictfetchall(cursor):
     return [dict(zip(columns, row)) for row in cursor.fetchall()]
 
 
+def get_activity_counts_by_resident_and_activity_type(home_id):
+    query = """
+    with current_residents as (
+        select
+            first_name,
+            last_name
+            caregiver_role.name as role_name,
+            work_type.name as work_type,
+            sum(duration_hours) as daily_total_hours
+        from residency
+        where
+        join work_type on type_id = work_type.id
+        left join caregiver_role on caregiver_role_id = caregiver_role.id
+        where home_id = %s
+        group by date, role_name, work_type
+    ),
+    """
+    with connection.cursor() as cursor:
+        cursor.execute(query, [home_id])
+
+        result = dictfetchall(cursor)
+
+    return result
+    # residents = current_residents(home_id)
+    # Resident Identification: For each resident, compile all their activity records.
+    # Activity Type Grouping: Within each resident's data, group the activities by type.
+    # Count Aggregation: For each group (resident-activity type combination), count the total number of activities.
+    # Bar Segment Representation: Represent each activity type count as a segment in the resident's bar, with the segment's length corresponding to the activity count.
+    # Color Coding: Assign a unique color to each activity type and use this color consistently across all residents' bars.
+    # Data Structuring for Visualization: Organize the aggregated data to fit the stacked bar chart format, ensuring clarity in representing each resident's activity engagement.
+
+
+def prepare_activity_counts_by_resident_and_activity_type(home):
+    activity_counts_by_resident_and_activity_type = (
+        get_activity_counts_by_resident_and_activity_type(home.id)
+    )
+    activity_counts_by_resident_chart = px.bar(
+        activity_counts_by_resident_and_activity_type,
+        x="activity_count",
+        y="resident_name",
+        color="activity_type",
+        title=_("Work hours by type"),
+        labels={
+            "activity_count": _("Activity Count"),
+            "activity_type": _("Activity Type"),
+            "resident_name": _("Resident Name"),
+        },
+        orientation="h",
+    ).to_html()
+
+    return activity_counts_by_resident_chart
+
+
 def get_daily_total_hours_by_role_and_work_type_with_percent(home_id):
     query = """
     with daily_work_totals_by_type as (
@@ -126,7 +179,6 @@ def prepare_work_by_type_chart(home):
             "total_hours": _("Total hours"),
         },
     ).to_html()
-
     return work_by_type_chart
 
 
