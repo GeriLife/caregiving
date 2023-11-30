@@ -57,3 +57,7 @@ class Activity(models.Model):
 
     def __str__(self):
         return f"{self.activity_type} activity on {self.date}"
+
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+        return self.id
