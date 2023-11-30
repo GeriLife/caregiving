@@ -5,6 +5,7 @@ from django.views.generic.detail import DetailView
 from django.views.generic.list import ListView
 
 from .charts import (
+    prepare_activity_counts_by_resident_and_activity_type_chart,
     prepare_daily_work_percent_by_caregiver_role_and_type_chart,
     prepare_work_by_caregiver_role_and_type_charts,
     prepare_work_by_caregiver_role_chart,
@@ -53,6 +54,10 @@ class HomeDetailView(DetailView):
         context[
             "daily_work_percent_by_caregiver_role_and_type_chart"
         ] = prepare_daily_work_percent_by_caregiver_role_and_type_chart(home)
+
+        context[
+            "activity_counts_by_resident_and_activity_type_chart"
+        ] = prepare_activity_counts_by_resident_and_activity_type_chart(home)
 
         context = prepare_work_by_caregiver_role_and_type_charts(context)
 

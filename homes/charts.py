@@ -28,7 +28,7 @@ def get_activity_counts_by_resident_and_activity_type(home_id):
     return result
 
 
-def prepare_activity_counts_by_resident_and_activity_type(home):
+def prepare_activity_counts_by_resident_and_activity_type_chart(home):
     activity_counts_by_resident_and_activity_type = (
         get_activity_counts_by_resident_and_activity_type(home.id)
     )
