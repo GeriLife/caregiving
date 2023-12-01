@@ -7,4 +7,4 @@ class HomeFactory(factory.django.DjangoModelFactory):
         model = Home
         django_get_or_create = ("name",)
 
-    name: str = factory.Sequence(lambda n: f"Home {n}")
+    name: str = factory.Faker("company")
