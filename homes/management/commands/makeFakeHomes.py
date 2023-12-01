@@ -1,4 +1,5 @@
 from django.core.management.base import BaseCommand
+from homes.factories import HomeFactory
 
 
 class Command(BaseCommand):
@@ -8,12 +9,11 @@ class Command(BaseCommand):
         parser.add_argument("num", type=int, help="Number of homes to create")
 
     def handle(self, *args, **options):
-        # Parse Arguments
-        n = options["num"]
-
-        # Home Number Verification
-        if n < 0:
-            self.stdout.write("Invalid n. Please try again.")
+        # Resident Number Verification
+        if options["num"] >= 0:
+            for _ in range(options["num"]):
+                HomeFactory.create()
+            self.stdout.write(f"Created {options['num']} fake homes.")
             return
 
-        self.stdout.write(f"Created {n} fake homes.")
+        self.stdout.write("Invalid n. Please try again.")
