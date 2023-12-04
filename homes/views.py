@@ -71,6 +71,7 @@ class HomeDetailView(DetailView):
         # Check if work has been recorded
         # by selecting one record
         context["work_has_been_recorded"] = home.work_performed.exists()
+        context["activity_has_been_recorded"] = home.activity_performed.exists()
 
         # Only prepare charts if work has been recorded
         if context["work_has_been_recorded"]:

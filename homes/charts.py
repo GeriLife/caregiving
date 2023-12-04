@@ -14,11 +14,11 @@ def dictfetchall(cursor):
 
 def get_activity_counts_by_resident_and_activity_type(home_id):
     query = """
-        SELECT COUNT(ra.resident) AS activity_count, ra.activity_type AS activity_type, CONCAT(r.first_name,' ',r.last_name) AS resident_name
+        SELECT COUNT(ra.resident_id) AS activity_count, ra.activity_type AS activity_type, r.first_name || ' ' || r.last_initial AS resident_name
         FROM resident_activity AS ra
-        JOIN resident AS r ON ra.resident = r.id
-        WHERE ra.home = %s
-        GROUP BY ra.resident, ra.activity_type
+        JOIN resident AS r ON ra.resident_id = r.id
+        WHERE ra.home_id = %s
+        GROUP BY ra.resident_id, ra.activity_type
     """
     with connection.cursor() as cursor:
         cursor.execute(query, [home_id])
@@ -43,6 +43,7 @@ def prepare_activity_counts_by_resident_and_activity_type_chart(home):
         labels={
             "activity_count": _("Activity Count"),
             "resident_name": _("Resident Name"),
+            "activity_type": _("Activity Type"),
         },
     ).to_html()
 

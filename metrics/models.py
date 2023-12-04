@@ -20,8 +20,10 @@ class ResidentActivity(models.Model):
         on_delete=models.PROTECT,
     )
     home = models.ForeignKey(
-        to=Home,
-        on_delete=models.PROTECT,
+        Home,
+        related_name="activity_performed",
+        on_delete=models.CASCADE,
+        help_text=_("The home in which this activity was performed"),
     )
     activity_type = models.CharField(
         _("Activity type"),
