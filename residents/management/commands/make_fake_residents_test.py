@@ -5,7 +5,7 @@ from residents.factories import Resident
 from django.core.management.base import CommandError
 
 
-class MakeresidentTest(TestCase):
+class MakeResidentTest(TestCase):
     def test_resident_count(self):
         out = StringIO()
         call_command("make_fake_residents", 3, stdout=out)

@@ -1,5 +1,5 @@
 from django.core.management.base import BaseCommand
-from residents.factories import ResidentFactory
+from residents.factories import ResidencyFactory
 
 
 class Command(BaseCommand):
@@ -12,7 +12,7 @@ class Command(BaseCommand):
         # Resident Number Verification
         if options["num"] >= 0:
             for _ in range(options["num"]):
-                ResidentFactory.create()
+                ResidencyFactory.create()
             self.stdout.write(f"Created {options['num']} fake residencies.")
             return
 
