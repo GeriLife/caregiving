@@ -1,8 +1,10 @@
 from django.urls import reverse_lazy
 from django.views.generic import ListView, FormView
-
+from django.db import transaction
 from .forms import ActivityForm
 from .models import Activity
+from residents.models import Residency
+from metrics.models import ResidentActivity
 
 
 class ActivityFormView(FormView):
@@ -11,12 +13,39 @@ class ActivityFormView(FormView):
     # get the url to the activity list view
     success_url = reverse_lazy("activity-list-view")
 
+    @transaction.atomic
     def form_valid(self, form):
         # save the form before redirecting to success URL
         # Note: this may be unnecessary,
         # but the form wasn't saving previously
-        form.save()
+        def add_resident_activity(data, activity):
+            for r in data["residents"]:
+                resident = r
+                activity = activity
+                try:
+                    residency = Residency.objects.get(resident=r, move_out__isnull=True)
+                except Residency.DoesNotExist:
+                    print("Residency doesn't exist")
+                    transaction.set_rollback(True)
+                    return
+                home = residency.home
+                activity_type = data["activity_type"]
+                activity_minutes = data["duration_minutes"]
+                caregiver_role = data["caregiver_role"]
 
+                resident_activity = ResidentActivity.objects.create(
+                    resident=resident,
+                    activity=activity,
+                    residency=residency,
+                    home=home,
+                    activity_type=activity_type,
+                    activity_minutes=activity_minutes,
+                    caregiver_role=caregiver_role,
+                )
+                resident_activity.save()
+
+        a = form.save()
+        add_resident_activity(form.cleaned_data, Activity.objects.get(id=a.id))
         return super().form_valid(form)
 
 

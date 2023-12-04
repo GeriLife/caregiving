@@ -163,7 +163,6 @@ def prepare_work_by_type_chart(home):
             "total_hours": _("Total hours"),
         },
     ).to_html()
-
     return work_by_type_chart
 
 
