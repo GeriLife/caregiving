@@ -9,19 +9,24 @@ class Activity(models.Model):
         """Choices for the type of activity."""
 
         OUTDOOR = "outdoor", _("Outdoor")
+        CASUAL_SOCIAL = "casual_social", _("Casual Social")
         CULTURE = "culture", _("Culture")
         DISCUSSION = "discussion", _("Discussion")
+        GUIDED = "guided", _("Guided")
+        MUSIC = "music", _("Music")
         SELF_GUIDED = "self_guided", _("Self-guided")
+        TRIP = "trip", _("Trip")
 
     class CaregiverRoleChoices(models.TextChoices):
         """Choices for the caregiver role."""
 
         FAMILY = "family", _("Family")
         FRIEND = "friend", _("Friend")
-        VOLUNTEER = "volunteer", _("Volunteer")
-        STAFF = "staff", _("Staff")
-        PRACTICAL_NURSE = "practical_nurse", _("Practical nurse")
+        HOBBY_INSTRUCTOR = "hobby_instructor", _("Hobby Instructor")
         NURSE = "nurse", _("Nurse")
+        PHYSIO_THERAPIST = "physio_therapist", _("Physio therapist")
+        PRACTICAL_NURSE = "practical_nurse", _("Practical nurse")
+        VOLUNTEER = "volunteer", _("Volunteer")
 
     activity_type = models.CharField(
         _("Activity type"),
