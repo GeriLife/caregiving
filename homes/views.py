@@ -41,8 +41,16 @@ class HomeDetailView(DetailView):
 
         return obj
 
-    def prepare_charts(self, context):
-        """Prepare charts and add them to the template context."""
+    def prepare_activity_charts(self, context):
+        """Prepare activity charts and add them to the template context."""
+        home = context["home"]
+
+        context[
+            "activity_counts_by_resident_and_activity_type_chart"
+        ] = prepare_activity_counts_by_resident_and_activity_type_chart(home)
+
+    def prepare_work_charts(self, context):
+        """Prepare work charts and add them to the template context."""
         home = context["home"]
 
         context["work_by_type_chart"] = prepare_work_by_type_chart(home)
@@ -54,10 +62,6 @@ class HomeDetailView(DetailView):
         context[
             "daily_work_percent_by_caregiver_role_and_type_chart"
         ] = prepare_daily_work_percent_by_caregiver_role_and_type_chart(home)
-
-        context[
-            "activity_counts_by_resident_and_activity_type_chart"
-        ] = prepare_activity_counts_by_resident_and_activity_type_chart(home)
 
         context = prepare_work_by_caregiver_role_and_type_charts(context)
 
@@ -75,6 +79,7 @@ class HomeDetailView(DetailView):
 
         # Only prepare charts if work has been recorded
         if context["work_has_been_recorded"]:
-            context = self.prepare_charts(context)
-
+            self.prepare_work_charts(context)
+        if context["activity_has_been_recorded"]:
+            self.prepare_activity_charts(context)
         return context

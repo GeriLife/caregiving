@@ -1,8 +1,6 @@
-{% if activity_has_been_recorded %}
-    <div class="hello row">
-        {{ activity_counts_by_resident_and_activity_type_chart|safe }}
-    </div>
-{% endif %}
+<div class="hello row">
+    {{ activity_counts_by_resident_and_activity_type_chart|safe }}
+</div>
 
 <div class="row">
     {{ daily_work_percent_by_caregiver_role_and_type_chart|safe }}
