@@ -65,28 +65,31 @@
                   
                 <li class="nav-item dropdown">
                     <!-- can refer to i18n.html for dropdown here-->
-                    <button class="btn btn-link nav-link py-2 px-0 px-lg-2 dropdown-toggle d-flex align-items-center" id="bd-theme" type="button" aria-expanded="false" data-bs-toggle="dropdown" data-bs-display="static" aria-label="Toggle theme (light)">
-                      Theme
-                      <span class="d-lg-none ms-2" id="bd-theme-text">Toggle theme</span>
+                    <button class="btn btn-link nav-link py-2 px-0 px-lg-2 dropdown-toggle d-flex align-items-center" id="bd-theme" type="button" aria-expanded="false" data-bs-toggle="dropdown" data-bs-display="static" aria-label="Toggle theme (dark)">
+                        <a id="theme-label">Dark</a>
+                        <span class="d-lg-none ms-2" id="bd-theme-text">Toggle Theme</span>
                     </button>
                     <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="bd-theme-text">
-                      <li>
-                        <button type="button" class="dropdown-item d-flex align-items-center active" data-bs-theme-value="light" aria-pressed="true">
-                          Light
-                        </button>
-                      </li>
-                      <li>
-                        <button type="button" class="dropdown-item d-flex align-items-center" data-bs-theme-value="dark" aria-pressed="false">
-                          Dark
-                        </button>
-                      </li>
-                      <li>
-                        <button type="button" class="dropdown-item d-flex align-items-center" data-bs-theme-value="auto" aria-pressed="false">
-                          Auto
-                        </button>
-                      </li>
+                        <li>
+                            <button type="button" class="dropdown-item d-flex align-items-center" data-bs-theme-value="light" aria-pressed="true">
+                                Light
+                            </button>
+                        </li>
+
+                        <li>
+                            <button type="button" class="dropdown-item d-flex align-items-center active" data-bs-theme-value="dark" aria-pressed="false">
+                                Dark
+                            </button>
+                        </li>
+                    
+                        <li>
+                            <button type="button" class="dropdown-item d-flex align-items-center" data-bs-theme-value="auto" aria-pressed="false">
+                                Auto
+                            </button>
+                        </li>
                     </ul>
-                  </li>
+                </li>
+
             </ul>
         </div>
     </div>
@@ -121,8 +124,9 @@
 </div>
 
 <script>
+
 /*!
- * The following code was taken from Bootstrap documentation:
+ * The following code was modified from Bootstrap documentation:
  *
  * Color mode toggler for Bootstrap's docs (https://getbootstrap.com/)
  * Copyright 2011-2023 The Bootstrap Authors
@@ -162,10 +166,7 @@
     }
 
     const themeSwitcherText = document.querySelector('#bd-theme-text')
-    const activeThemeIcon = document.querySelector('.theme-icon-active use')
     const btnToActive = document.querySelector(`[data-bs-theme-value="${theme}"]`)
-    const svgOfActiveBtn = btnToActive.querySelector('svg use').getAttribute('href')
-
     document.querySelectorAll('[data-bs-theme-value]').forEach(element => {
       element.classList.remove('active')
       element.setAttribute('aria-pressed', 'false')
@@ -173,9 +174,14 @@
 
     btnToActive.classList.add('active')
     btnToActive.setAttribute('aria-pressed', 'true')
-    activeThemeIcon.setAttribute('href', svgOfActiveBtn)
     const themeSwitcherLabel = `${themeSwitcherText.textContent} (${btnToActive.dataset.bsThemeValue})`
     themeSwitcher.setAttribute('aria-label', themeSwitcherLabel)
+    
+    // changes active label on dropdown
+    const btn = document.getElementById('theme-label');
+    btn.innerHTML = theme.charAt(0).toUpperCase() + theme.slice(1);
+
+
 
     if (focus) {
       themeSwitcher.focus()
