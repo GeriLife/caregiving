@@ -109,3 +109,16 @@
         </div>
     </div>
 </div>
+
+<script>
+    function toggleTheme() {
+        const elem = document.documentElement;
+    
+        // Toggle between dark and light themes
+        if (elem.getAttribute('data-bs-theme') === 'dark') {
+            elem.setAttribute('data-bs-theme', 'light');
+        } else {
+            elem.setAttribute('data-bs-theme', 'dark');
+        }
+    };
+</script>
