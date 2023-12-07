@@ -19,8 +19,7 @@ class ActivityFormView(FormView):
         # Note: this may be unnecessary,
         # but the form wasn't saving previously
         def add_resident_activity(data, activity):
-            for r in data["residents"]:
-                resident = r
+            for resident in data["residents"]:
                 activity = activity
                 try:
                     residency = Residency.objects.get(resident=r, move_out__isnull=True)
