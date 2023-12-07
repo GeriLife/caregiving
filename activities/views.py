@@ -22,7 +22,7 @@ class ActivityFormView(FormView):
             for resident in data["residents"]:
                 activity = activity
                 try:
-                    residency = Residency.objects.get(resident=r, move_out__isnull=True)
+                    residency = Residency.objects.get(resident=resident, move_out__isnull=True)
                 except Residency.DoesNotExist:
                     print("Residency doesn't exist")
                     transaction.set_rollback(True)
