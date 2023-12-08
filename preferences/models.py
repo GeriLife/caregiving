@@ -1,15 +1,17 @@
 from django.db import models
 
-def generate_lists (L):
-    result = []
-    for elem in L:
-        result.append ((elem,elem))
-    return result
-
-languages = ['English (en)', 'Suomi (fi)']
-viewModes = ['dark', 'light']
+from django.utils.translation import gettext_lazy as _
+from django.conf import settings
 
 # for user preferences
 class Preferences (models.Model):
-    Language = models.CharField (max_length = 30, blank=True, choices = generate_lists (languages))
-    Mode = models.CharField (max_length = 30, blank=True, choices = generate_lists (viewModes))
+    class LanguageTextChoices(TextChoices):
+        ENGLISH = "english", _("English")
+        SUOMI = "suomi", _("Suomi")
+        
+    class ColorModeTextChoices(TextChoices):
+        DARK = "dark", _("Dark")
+        LIGHT = "light", _("Light")
+    
+    language = models.CharField (max_length = 30, blank=True, choices=LanguageTextChoices)
+    color_mode = models.CharField (max_length = 30, blank=True, choices=ColorModeTextChoices)
