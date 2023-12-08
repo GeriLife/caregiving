@@ -132,15 +132,23 @@ function toggleTheme(theme) {
     btn.innerHTML = theme.charAt(0).toUpperCase() + theme.slice(1);
 }
 
+// changes the first parameter's class to active, and the second to not active
+function changeActiveStatus(dropdown1, dropdown2) {
+    dropdown1.setAttribute('class', dropdown1.getAttribute('class') + ' active');
+    dropdown2.setAttribute('class', dropdown2.getAttribute('class').replace(' active', ''));
+}
+
 let lightMode = document.getElementById('light-dropdown');
 let darkMode = document.getElementById('dark-dropdown');
 
 lightMode.addEventListener('click', function() {
     toggleTheme('light');
+    changeActiveStatus(lightMode, darkMode);
 });
 
 darkMode.addEventListener('click', function() {
     toggleTheme('dark');
+    changeActiveStatus(darkMode, lightMode);
 });
 
 </script>
