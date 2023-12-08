@@ -49,6 +49,7 @@ INSTALLED_APPS = [
     "homes",
     "residents",
     "work",
+    "preferences"
 ]
 
 CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
