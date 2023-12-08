@@ -11,7 +11,7 @@
     <!-- extra CSS to load after primary CSS -->
         {% block extra_css %}{% endblock extra_css %}
     </head>
-    <body onload='setTheme("{{ request.user.preferences.Mode }}")'>
+    <body data-bs-theme="{{ request.user.preferences.Mode }}">
         {% include "navigation.html" %}
 
         <div class="container">
