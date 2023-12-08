@@ -81,12 +81,6 @@
                                 Dark
                             </button>
                         </li>
-                    
-                        <li>
-                            <button type="button" class="dropdown-item d-flex align-items-center" data-bs-theme-value="auto" aria-pressed="false">
-                                Auto
-                            </button>
-                        </li>
                     </ul>
                 </li>
 
@@ -124,6 +118,7 @@
 </div>
 
 <script>
+
 function toggleTheme(theme) {
     const currTheme = document.documentElement.getAttribute('data-bs-theme');
     console.log("current theme is", currTheme);
@@ -152,4 +147,5 @@ lightMode.addEventListener('click', function() {
 darkMode.addEventListener('click', function() {
     toggleTheme('dark');
 });
+
 </script>
