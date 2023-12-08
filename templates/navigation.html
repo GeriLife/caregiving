@@ -121,8 +121,6 @@
 
 function toggleTheme(theme) {
     const currTheme = document.documentElement.getAttribute('data-bs-theme');
-    console.log("current theme is", currTheme);
-    console.log("passing in", theme);
     if (currTheme === theme) return; 
 
     // changes the attribute of the root element and saves to local storage
@@ -138,7 +136,6 @@ let lightMode = document.getElementById('light-dropdown');
 let darkMode = document.getElementById('dark-dropdown');
 
 lightMode.addEventListener('click', function() {
-    console.log("changing to light mode");
     toggleTheme('light');
 });
 
