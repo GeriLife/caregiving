@@ -59,5 +59,6 @@ class Activity(models.Model):
         return f"{self.activity_type} activity on {self.date}"
 
     def save(self, *args, **kwargs):
+        # Need to override save method to return id and pass activity object into add_resident_activity
         super().save(*args, **kwargs)
         return self.id
