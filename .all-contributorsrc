@@ -1,0 +1,27 @@
+{
+  "files": [
+    "README.md"
+  ],
+  "imageSize": 100,
+  "commit": false,
+  "commitType": "docs",
+  "commitConvention": "angular",
+  "contributors": [
+    {
+      "login": "adrienneli104",
+      "name": "Adrienne Li",
+      "avatar_url": "https://avatars.githubusercontent.com/u/90366990?v=4",
+      "profile": "https://github.com/adrienneli104",
+      "contributions": [
+        "code",
+        "design"
+      ]
+    }
+  ],
+  "contributorsPerLine": 7,
+  "skipCi": true,
+  "repoType": "github",
+  "repoHost": "https://github.com",
+  "projectName": "caregiving",
+  "projectOwner": "GeriLife"
+}
