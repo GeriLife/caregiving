@@ -71,13 +71,13 @@
                     </button>
                     <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="bd-theme-text">
                         <li>
-                            <button type="button" class="dropdown-item d-flex align-items-center" data-bs-theme-value="light" aria-pressed="true">
+                            <button type="button" id="light-dropdown" class="dropdown-item d-flex align-items-center" data-bs-theme-value="light" aria-pressed="true">
                                 Light
                             </button>
                         </li>
 
                         <li>
-                            <button type="button" class="dropdown-item d-flex align-items-center active" data-bs-theme-value="dark" aria-pressed="false">
+                            <button type="button" id="dark-dropdown" class="dropdown-item d-flex align-items-center active" data-bs-theme-value="dark" aria-pressed="false">
                                 Dark
                             </button>
                         </li>
@@ -124,90 +124,32 @@
 </div>
 
 <script>
+function toggleTheme(theme) {
+    const currTheme = document.documentElement.getAttribute('data-bs-theme');
+    console.log("current theme is", currTheme);
+    console.log("passing in", theme);
+    if (currTheme === theme) return; 
 
-/*!
- * The following code was modified from Bootstrap documentation:
- *
- * Color mode toggler for Bootstrap's docs (https://getbootstrap.com/)
- * Copyright 2011-2023 The Bootstrap Authors
- * Licensed under the Creative Commons Attribution 3.0 Unported License.
- */
-
-(() => {
-  'use strict'
-
-  const getStoredTheme = () => localStorage.getItem('theme')
-  const setStoredTheme = theme => localStorage.setItem('theme', theme)
-
-  const getPreferredTheme = () => {
-    const storedTheme = getStoredTheme()
-    if (storedTheme) {
-      return storedTheme
+    // changes the attribute of the root element
+    if (theme === 'light') {
+        document.documentElement.setAttribute('data-bs-theme', 'light');
     }
+    else document.documentElement.setAttribute('data-bs-theme', 'dark');
 
-    return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
-  }
-
-  const setTheme = theme => {
-    if (theme === 'auto' && window.matchMedia('(prefers-color-scheme: dark)').matches) {
-      document.documentElement.setAttribute('data-bs-theme', 'dark')
-    } else {
-      document.documentElement.setAttribute('data-bs-theme', theme)
-    }
-  }
-
-  setTheme(getPreferredTheme())
-
-  const showActiveTheme = (theme, focus = false) => {
-    const themeSwitcher = document.querySelector('#bd-theme')
-
-    if (!themeSwitcher) {
-      return
-    }
-
-    const themeSwitcherText = document.querySelector('#bd-theme-text')
-    const btnToActive = document.querySelector(`[data-bs-theme-value="${theme}"]`)
-    document.querySelectorAll('[data-bs-theme-value]').forEach(element => {
-      element.classList.remove('active')
-      element.setAttribute('aria-pressed', 'false')
-    })
-
-    btnToActive.classList.add('active')
-    btnToActive.setAttribute('aria-pressed', 'true')
-    const themeSwitcherLabel = `${themeSwitcherText.textContent} (${btnToActive.dataset.bsThemeValue})`
-    themeSwitcher.setAttribute('aria-label', themeSwitcherLabel)
-    
-    // changes active label on dropdown
+      // changes active label on dropdown
     const btn = document.getElementById('theme-label');
     btn.innerHTML = theme.charAt(0).toUpperCase() + theme.slice(1);
+}
 
+let lightMode = document.getElementById('light-dropdown');
+let darkMode = document.getElementById('dark-dropdown');
 
+lightMode.addEventListener('click', function() {
+    console.log("changing to light mode");
+    toggleTheme('light');
+});
 
-    if (focus) {
-      themeSwitcher.focus()
-    }
-  }
-
-  window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
-    const storedTheme = getStoredTheme()
-    if (storedTheme !== 'light' && storedTheme !== 'dark') {
-      setTheme(getPreferredTheme())
-    }
-  })
-
-  window.addEventListener('DOMContentLoaded', () => {
-    showActiveTheme(getPreferredTheme())
-
-    document.querySelectorAll('[data-bs-theme-value]')
-      .forEach(toggle => {
-        toggle.addEventListener('click', () => {
-          const theme = toggle.getAttribute('data-bs-theme-value')
-          setStoredTheme(theme)
-          setTheme(theme)
-          showActiveTheme(theme, true)
-        })
-      })
-  })
-})()
-
+darkMode.addEventListener('click', function() {
+    toggleTheme('dark');
+});
 </script>
