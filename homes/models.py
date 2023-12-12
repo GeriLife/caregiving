@@ -16,6 +16,7 @@ class Home(models.Model):
         on_delete=models.PROTECT,
         related_name="homes",
         null=True,
+        blank=True,
     )
 
     url_uuid = ShortUUIDField(
@@ -44,7 +45,7 @@ class Home(models.Model):
             residency__home=self,
             residency__move_out__isnull=True,
         ).order_by("first_name")
-    
+
 
 class HomeGroup(models.Model):
     name = models.CharField(max_length=25)
