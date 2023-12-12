@@ -10,6 +10,14 @@ if TYPE_CHECKING:
 
 class Home(models.Model):
     name = models.CharField(max_length=25)
+    # add a foreign key relationship to HomeGroup
+    home_group = models.ForeignKey(
+        to="homes.HomeGroup",
+        on_delete=models.PROTECT,
+        related_name="homes",
+        null=True,
+        blank=True,
+    )
 
     url_uuid = ShortUUIDField(
         _("UUID used in URLs"),
@@ -37,3 +45,23 @@ class Home(models.Model):
             residency__home=self,
             residency__move_out__isnull=True,
         ).order_by("first_name")
+
+
+class HomeGroup(models.Model):
+    name = models.CharField(max_length=25)
+
+    url_uuid = ShortUUIDField(
+        _("UUID used in URLs"),
+        editable=False,  # type: ignore
+    )
+
+    class Meta:
+        db_table = "home_group"
+        verbose_name = _("home group")
+        verbose_name_plural = _("home groups")
+
+    def __str__(self) -> str:
+        return self.name
+
+    def get_absolute_url(self):
+        return reverse("home-group-detail-view", kwargs={"url_uuid": self.url_uuid})
