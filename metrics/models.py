@@ -39,7 +39,7 @@ class ResidentActivity(models.Model):
         _("Caregiver role"),
         max_length=20,
         choices=Activity.CaregiverRoleChoices.choices,
-        default=Activity.CaregiverRoleChoices.STAFF,
+        default=Activity.CaregiverRoleChoices.NURSE,
     )
 
     class Meta:
