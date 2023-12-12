@@ -51,7 +51,7 @@ class Activity(models.Model):
         _("Caregiver role"),
         max_length=20,
         choices=CaregiverRoleChoices.choices,
-        default=CaregiverRoleChoices.STAFF,
+        default=CaregiverRoleChoices.NURSE,
     )
 
     class Meta:
