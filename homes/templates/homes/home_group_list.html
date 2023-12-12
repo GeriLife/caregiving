@@ -3,24 +3,35 @@
 {% load i18n %}
 
 {% block content %}
-<h1>Homes</h1>
+    <h1>Homes</h1>
 
-{% for home_group in home_groups %}
-    <div class="card mb-2" style="width: 18rem;">
-        <div class="card-header">
-            <i class="bi bi-collection-fill"></i>
-            {{ home_group }}
+    {% for home_group in home_groups %}
+        <div class="card mb-2" style="width: 18rem;">
+            <div class="card-header">
+                <i class="bi bi-collection-fill"></i>
+                {{ home_group }}
+            </div>
+            <ul class="list-group list-group-flush">
+                {% for home in home_group.homes.all %}
+                    <li class="list-group-item d-flex align-items-center">
+                        <i class="bi bi-house-heart-fill fs-3 me-2"></i>
+                        <a href="{{ home.get_absolute_url }}">
+                            {{ home }}
+                        </a>
+                    </li>
+                {% endfor %}
+            </ul>
         </div>
-        <ul class="list-group list-group-flush">
-            {% for home in home_group.homes.all %}
-                <li class="list-group-item d-flex align-items-center">
-                    <i class="bi bi-house-heart-fill fs-3 me-2"></i>
-                    <a href="{{ home.get_absolute_url }}">
-                        {{ home }}
-                    </a>
-                </li>
-            {% endfor %}
-        </ul>
-    </div>
-{% endfor %}
+    {% endfor %}
+
+    {% for home in homes_without_group %}
+        <div class="card mb-2" style="width: 18rem;">
+            <div class="card-body d-flex align-items-center">
+                <i class="bi bi-house-heart-fill fs-3 me-2"></i>
+                <a href="{{ home.get_absolute_url }}">
+                    {{ home }}
+                </a>
+            </div>
+        </div>
+    {% endfor %}
 {% endblock content %}

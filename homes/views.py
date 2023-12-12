@@ -19,10 +19,18 @@ class HomeListView(ListView):
     model = Home
     context_object_name = "homes"
 
+
 class HomeGroupListView(ListView):
     model = HomeGroup
     context_object_name = "home_groups"
     template_name = "homes/home_group_list.html"
+
+    def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
+        context = super().get_context_data(**kwargs)
+
+        context["homes_without_group"] = Home.objects.filter(home_group__isnull=True)
+
+        return context
 
 
 class HomeDetailView(DetailView):
