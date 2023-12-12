@@ -12,12 +12,17 @@ from .charts import (
     prepare_work_by_type_chart,
 )
 
-from .models import Home
+from .models import Home, HomeGroup
 
 
 class HomeListView(ListView):
     model = Home
     context_object_name = "homes"
+
+class HomeGroupListView(ListView):
+    model = HomeGroup
+    context_object_name = "home_groups"
+    template_name = "homes/home_group_list.html"
 
 
 class HomeDetailView(DetailView):
