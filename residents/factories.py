@@ -2,6 +2,8 @@ import factory
 import random
 import string
 
+import shortuuid
+
 from .models import Resident, Residency
 
 
@@ -13,7 +15,7 @@ class ResidentFactory(factory.django.DjangoModelFactory):
     first_name: str = factory.Faker("first_name")
     # choose a random alphabetical character for the last initial
     last_initial = factory.LazyFunction(lambda: random.choice(string.ascii_uppercase))
-    url_uuid: str = factory.Sequence(lambda n: f"url-uuid-{n}")
+    url_uuid: str = factory.Sequence(lambda n: f"url-uuid-{shortuuid.uuid()}")
 
 
 class ResidencyFactory(factory.django.DjangoModelFactory):
