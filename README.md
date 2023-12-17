@@ -1,6 +1,9 @@
 [![Maintainability](https://api.codeclimate.com/v1/badges/76c12aa54357667b81b4/maintainability)](https://codeclimate.com/github/GeriLife/caregiving/maintainability)
+
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
+
 [![All Contributors](https://img.shields.io/badge/all_contributors-1-orange.svg?style=flat-square)](#contributors-)
+
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 
 # GeriLife Caregiving

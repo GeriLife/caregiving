@@ -8,19 +8,15 @@ To set up a development envoironment, first clone this project to your local dev
 
 ### Prerequisites
 
+We recommend using Python 3.11 or later.
+
+We also use the following tools for development.
+
 #### pipx
 
 We recommend using pipx to install the development tools.
 
 - https://pypa.github.io/pipx/installation/
-
-#### Poetry
-
-We currently use Poetry to manage project dependencies.
-
-```sh
-pipx install poetry
-```
 
 #### Pre-commit
 
@@ -38,20 +34,28 @@ Activate (in the project directory):
 pre-commit install
 ```
 
-### Install dependencies
-
-Once you have the above prerequesites installed, install the project dependencies as follows.
-
-```sh
-poetry install
-```
-
 ### Activate virtual environment
 
-Whenever you develop, make sure you are in the project virtual environment.
+Whenever you develop, make sure you are in the project's virtual environment.
+
+Linux / OSX:
 
 ```sh
-poetry shell
+source .venv/bin/activate
+```
+
+Windows:
+
+```sh
+.venv\Scripts\activate
+```
+
+### Install dependencies
+
+Once you have the above prerequesites installed, install the project development dependencies as follows.
+
+```sh
+pip install -r requirements.dev.txt
 ```
 
 ### Migrations
