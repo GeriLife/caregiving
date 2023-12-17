@@ -3,7 +3,6 @@
 A toolkit for caregivers working to promote wellness in elder-care communities.
 
 [![Maintainability](https://api.codeclimate.com/v1/badges/76c12aa54357667b81b4/maintainability)](https://codeclimate.com/github/GeriLife/caregiving/maintainability)
-
 [![Test Coverage](https://api.codeclimate.com/v1/badges/76c12aa54357667b81b4/test_coverage)](https://codeclimate.com/github/GeriLife/caregiving/test_coverage)
 
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
