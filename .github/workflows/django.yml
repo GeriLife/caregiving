@@ -30,7 +30,7 @@ jobs:
       - name: Run Tests
         run: coverage run --source='.' manage.py test myapp
       - name: Upload Coverage
-        uses: codecov/codecov-action@v5.0.0
+        uses: paambaati/codeclimate-action@v5.0.0
         env:
           CC_TEST_REPORTER_ID: ${{ secrets.CC_TEST_REPORTER_ID }}
         with:
