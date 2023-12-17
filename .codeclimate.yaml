@@ -1,0 +1,6 @@
+exclude_patterns:
+  - "**/admin.py"
+  - "**/apps.py"
+  - "**/factories.py"
+  - "**/migrations/*"
+  - "**/tests.py"
