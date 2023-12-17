@@ -6,6 +6,9 @@ from collections.abc import Callable
 
 @dataclass
 class Command:
+    """Represents a command with its alias, help text, list of shell commands,
+    and optional callable."""
+
     alias: str
     help_text: str
     commands_list: list[str]
@@ -13,7 +16,16 @@ class Command:
 
 
 def update_outdated_packages() -> None:
-    """Update all outdated packages."""
+    """Update outdated Python packages using pip and the pip constraint solver.
+
+    This function retrieves a list of outdated packages using the `pip
+    list --outdated --format=freeze` command, extracts the package
+    names, and then upgrades all outdated packages using the `pip
+    install --upgrade` command.
+
+    If there are no outdated packages, it prints a message indicating
+    that there are no packages to update.
+    """
     result = subprocess.run(
         "pip list --outdated --format=freeze",
         shell=True,
@@ -22,13 +34,21 @@ def update_outdated_packages() -> None:
     )
     outdated_packages = result.stdout.splitlines()
 
-    for package in outdated_packages:
-        package_name = package.split("==")[0]
-        subprocess.run(f"pip install --upgrade {package_name}", shell=True)
+    # Extract only the package names
+    package_names = [package.split("==")[0] for package in outdated_packages]
+
+    if package_names:
+        # Join the package names into a single string for the pip command
+        packages_to_upgrade = " ".join(package_names)
+
+        # Run pip install --upgrade for all outdated packages at once
+        subprocess.run(f"pip install --upgrade {packages_to_upgrade}", shell=True)
+    else:
+        print("No outdated packages to update.")
 
 
 def uninstall_all_packages() -> None:
-    """Uninstall all packages."""
+    """Uninstalls all Python packages installed in the current environment."""
     installed_packages = subprocess.run(
         "pip freeze",
         shell=True,
@@ -115,12 +135,14 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Development tasks.")
     subparsers = parser.add_subparsers(dest="command")
 
+    # Add subparser for each command
     for command in COMMANDS:
         subparser = subparsers.add_parser(command.alias, help=command.help_text)
         subparser.set_defaults(command_obj=command)
 
     args = parser.parse_args()
 
+    # Run the command if it exists
     if hasattr(args, "command_obj"):
         run_command(args.command_obj)
     else:
