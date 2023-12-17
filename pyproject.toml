@@ -1,31 +1,7 @@
-[tool.poetry]
+[project]
 name = "gerilife-caregiving"
 version = "0.1.0"
-description = "Caregiving visualization tool to promote wellness in elder-care communities. "
-authors = ["Brylie Christopher Oxley <brylie@amble.fi>"]
+description = "Caregiving visualization tool to promote wellness in elder-care communities."
+authors = ["Brylie Christopher Oxley <brylie@protonmail.com>"]
 license = "EUPL-1.2"
-
-[tool.poetry.dependencies]
-python = "^3.9"
-Django = "^4.0"
-crispy-bootstrap5 = "^0.6"
-django-crispy-forms = "^1.14.0"
-django-environ = "^0.8.1"
-whitenoise = "^6.0.0"
-psycopg2-binary = "^2.9.3"
-pandas = "^1.4.2"
-plotly = "^5.7.0"
-shortuuid = "^1.0.11"
-statsmodels = "^0.14.0"
-
-[tool.poetry.group.dev.dependencies]
-factory-boy = "^3.3.0"
-pip-tools  = "^1.8.0"
-pytest  = "^7.4.3"
-flake8 = "^4.0.1"
-isort = "^5.10.1"
-black = "^22.6.0"
-
-[build-system]
-requires = ["poetry-core>=1.0.0"]
-build-backend = "poetry.core.masonry.api"
+readme = "README.md"
