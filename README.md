@@ -1,9 +1,7 @@
 [![Maintainability](https://api.codeclimate.com/v1/badges/76c12aa54357667b81b4/maintainability)](https://codeclimate.com/github/GeriLife/caregiving/maintainability)
 
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-
-[![All Contributors](https://img.shields.io/badge/all_contributors-1-orange.svg?style=flat-square)](#contributors-)
-
+[![All Contributors](https://img.shields.io/badge/all_contributors-2-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 
 # GeriLife Caregiving
@@ -27,6 +25,7 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
   <tbody>
     <tr>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/adrienneli104"><img src="https://avatars.githubusercontent.com/u/90366990?v=4?s=100" width="100px;" alt="Adrienne Li"/><br /><sub><b>Adrienne Li</b></sub></a><br /><a href="https://github.com/GeriLife/caregiving/commits?author=adrienneli104" title="Code">💻</a> <a href="#design-adrienneli104" title="Design">🎨</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="http://linkedin.com/in/brylie-christopher-oxley/"><img src="https://avatars.githubusercontent.com/u/17307?v=4?s=100" width="100px;" alt="Brylie Christopher Oxley"/><br /><sub><b>Brylie Christopher Oxley</b></sub></a><br /><a href="https://github.com/GeriLife/caregiving/commits?author=brylie" title="Code">💻</a> <a href="https://github.com/GeriLife/caregiving/commits?author=brylie" title="Tests">⚠️</a></td>
     </tr>
   </tbody>
 </table>
