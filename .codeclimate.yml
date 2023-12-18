@@ -4,6 +4,7 @@ exclude_patterns:
   - "**/factories.py"
   - "**/migrations/*"
   - "**/tests.py"
+  - "dev.py"
 
 plugins:
   bandit:
