@@ -4,3 +4,30 @@ exclude_patterns:
   - "**/factories.py"
   - "**/migrations/*"
   - "**/tests.py"
+
+plugins:
+  bandit:
+    enabled: true
+  black:
+    enabled: true
+  flake8:
+    enabled: true
+  isort:
+    enabled: true
+  mccabe:
+    enabled: true
+  mypy:
+    enabled: true
+  pylint:
+    enabled: true
+  radon:
+    enabled: true
+  markdownlint:
+    enabled: true
+  sonar-python:
+    enabled: true
+    config:
+      tests_patterns:
+        - "**/tests.py"
+  stylelint:
+    enabled: true
