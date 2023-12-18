@@ -55,7 +55,7 @@ class ActivityFormView(FormView):
             try:
                 add_resident_activity(activity)
             except Residency.DoesNotExist:
-                transaction.rollback()
+                transaction.set_rollback(True)
                 is_form_valid = False
 
         return self.form_valid(form) if is_form_valid else self.form_invalid(form)
