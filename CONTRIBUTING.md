@@ -1,10 +1,12 @@
 # Contributing
 
-We welcome all types of contributions, such as bug reports, ideas, design, testing, and code.
+We welcome all types of contributions,
+such as bug reports, ideas, design, testing, and code.
 
 ## Development
 
-To set up a development envoironment, first clone this project to your local development directory and change into the source directory.
+To set up a development environment, first, clone this project to your local development
+directory and `cd` into the source directory.
 
 ### Prerequisites
 
@@ -14,9 +16,8 @@ We also use the following tools for development.
 
 #### pipx
 
-We recommend using pipx to install the development tools.
-
-- https://pypa.github.io/pipx/installation/
+We recommend using [pipx](https://pypa.github.io/pipx/installation/) to
+install the development tools.
 
 #### Pre-commit
 
@@ -52,7 +53,8 @@ Windows:
 
 ### Install dependencies
 
-Once you have the above prerequesites installed, install the project development dependencies as follows.
+Once you have the above prerequisites installed, install the project development
+dependencies as follows.
 
 ```sh
 pip install -r requirements.dev.txt
@@ -60,13 +62,15 @@ pip install -r requirements.dev.txt
 
 ### Migrations
 
-When starting with an empty database or making changes to database models, be sure to make the migrations.
+When starting with an empty database or making changes to database models,
+be sure to make the migrations.
 
 ```sh
 python manage.py makemigrations
 ```
 
-When starting out the project or when there are unapplied migrations, apply the database migrations as follows.
+When starting the project or when there are unapplied migrations, apply the
+database migrations as follows.
 
 ```sh
 python manage.py migrate
@@ -74,7 +78,8 @@ python manage.py migrate
 
 ### Create superuser
 
-When starting out with an empty database, after applying migrations, create a superuser as follows.
+When starting with an empty database, after applying migrations,
+create a superuser as follows.
 
 ```sh
 python manage.py createsuperuser
