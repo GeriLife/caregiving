@@ -18,8 +18,6 @@ plugins:
     enabled: true
   mypy:
     enabled: true
-  pylint:
-    enabled: true
   radon:
     enabled: true
   markdownlint:
