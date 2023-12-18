@@ -76,3 +76,39 @@ class ResidentActivityTestCase(TestCase):
 
         # ResidentActivity pre count should be less than post count
         self.assertLess(resident_activity_count_pre, resident_activity_count_post)
+
+    def test_activity_rollback_on_residency_exception(self):
+        """Activity and ResidentActivity are not added if
+        Residency.DoesNotExist exception is raised."""
+        # This person does not have a residency
+        non_resident = ResidentFactory(first_name="Charlie")
+
+        # Count of activities and resident activities before POST request
+        activity_count_pre = Activity.objects.all().count()
+        resident_activity_count_pre = ResidentActivity.objects.all().count()
+
+        # Prepare data for POST request with a resident that does not have a residency
+        self.data = {
+            "residents": [non_resident.id],
+            "activity_type": Activity.ActivityTypeChoices.OUTDOOR,
+            "date": date.today(),
+            "duration_minutes": 30,
+            "caregiver_role": Activity.CaregiverRoleChoices.NURSE,
+        }
+
+        # Make POST request
+        response = self.client.post(
+            reverse("activity-form-view"),
+            self.data,
+        )
+
+        # The response should indicate a failure to process the form
+        self.assertNotEqual(response.status_code, HTTPStatus.FOUND)
+
+        # Count of activities and resident activities after POST request
+        activity_count_post = Activity.objects.all().count()
+        resident_activity_count_post = ResidentActivity.objects.all().count()
+
+        # Ensure counts have not changed, indicating a rollback
+        self.assertEqual(activity_count_pre, activity_count_post)
+        self.assertEqual(resident_activity_count_pre, resident_activity_count_post)
