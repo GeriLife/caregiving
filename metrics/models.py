@@ -44,5 +44,5 @@ class ResidentActivity(models.Model):
 
     class Meta:
         db_table = "resident_activity"
-        verbose_name = _("resident_activity")
-        verbose_name_plural = _("resident_activities")
+        verbose_name = _("resident activity")
+        verbose_name_plural = _("resident activities")
