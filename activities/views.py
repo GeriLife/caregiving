@@ -1,40 +1,12 @@
 from django.urls import reverse_lazy
 from django.views.generic import ListView, FormView
 from django.db import transaction
+
+from activities.utils import add_resident_activity
 from .forms import ActivityForm
 from .models import Activity
 from residents.models import Residency
 from metrics.models import ResidentActivity
-
-
-def add_resident_activity(activity: Activity):
-    for resident in activity.residents.all():
-        activity = activity
-        try:
-            residency = Residency.objects.get(
-                resident=resident,
-                move_out__isnull=True,
-            )
-        except Residency.DoesNotExist:
-            print("Residency doesn't exist")
-
-            raise
-
-        home = residency.home
-        activity_type = activity.activity_type
-        activity_minutes = activity.duration_minutes
-        caregiver_role = activity.caregiver_role
-
-        resident_activity = ResidentActivity.objects.create(
-            resident=resident,
-            activity=activity,
-            residency=residency,
-            home=home,
-            activity_type=activity_type,
-            activity_minutes=activity_minutes,
-            caregiver_role=caregiver_role,
-        )
-        resident_activity.save()
 
 
 class ActivityFormView(FormView):
