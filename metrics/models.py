@@ -35,6 +35,7 @@ class ResidentActivity(models.Model):
         _("Duration in minutes"),
         default=30,
     )
+    activity_date = models.DateField(null=True, blank=True)
     caregiver_role = models.CharField(
         _("Caregiver role"),
         max_length=20,
