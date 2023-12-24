@@ -15,6 +15,12 @@ class ResidentActivity(models.Model):
         to=Activity,
         on_delete=models.PROTECT,
     )
+    activity_date = models.DateField(
+        _("Activity date"),
+        auto_now=False,
+        auto_now_add=False,
+        null=True,
+    )
     residency = models.ForeignKey(
         to=Residency,
         on_delete=models.PROTECT,
