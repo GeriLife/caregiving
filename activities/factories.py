@@ -33,8 +33,8 @@ class ActivityFactory(factory.django.DjangoModelFactory):
             for resident in extracted:
                 self.residents.add(resident)
         else:
-            # Try to get an existing resident
-            existing_residents = Resident.objects.all()
+            # Try to get an existing resident where residency is not none
+            existing_residents = Resident.objects.all().exclude(residency=None)
             if existing_residents:
                 random_resident = random.choice(existing_residents)
                 self.residents.add(random_resident)
