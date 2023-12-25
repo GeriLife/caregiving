@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     "accounts",
     "activities",
     "caregivers",
+    "common",
     "homes",
     "residents",
     "work",
