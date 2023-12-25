@@ -4,6 +4,10 @@
 {% block content %}
     <h1>{{ home.name }}</h1>
 
+    <p>{{ home.resident_percents_by_activity_level_chart|safe }}</p>
+
+
+
     <div class="container">
         <div class="row mb-3">
             <div class="col-md-4">
@@ -22,6 +26,8 @@
                 {% endif %}
             </div>
         </div>
+
+        {% include "homes/home_detail_charts.html" %}
 
         <div class="row">
             <!-- only load analytics charts if work has been recorded -->
