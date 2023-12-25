@@ -4,9 +4,7 @@
 {% block content %}
     <h1>{{ home.name }}</h1>
 
-    <p>{{ home.resident_percents_by_activity_level_chart|safe }}</p>
-
-
+    {% include "homes/home_residents_activity_percents.html" with data=home.resident_counts_by_activity_level_chart_data %}
 
     <div class="container">
         <div class="row mb-3">

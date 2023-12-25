@@ -1,0 +1,11 @@
+{% load i18n %}
+<p>{% translate "Percent of residents by activity level" %}</p>
+<div class="bar-container">
+    {% for item in data %}
+        <span
+            class="bar bg-{{ item.activity_level_class}}"
+            style="width: {{ item.value }}%; background-color: {{ item.color }}"
+            aria-label="{{ item.activity_level_label }}: {{ item.value }}%"
+            title="{{ item.activity_level_label }}: {{ item.value }}%"></span>
+    {% endfor %}
+</div>
