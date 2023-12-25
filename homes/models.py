@@ -1,11 +1,10 @@
 from typing import TYPE_CHECKING
-from django.db.models import Count
+from django.db.models import Count, Q, QuerySet
 from django.utils import timezone
 from datetime import timedelta
 from django.db import models
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
-from plotly import express as px
 from shortuuid.django_fields import ShortUUIDField
 
 from core.constants import WEEKLY_ACTIVITY_RANGES
@@ -43,23 +42,9 @@ class Home(models.Model):
 
     @property
     def resident_counts_by_activity_level(self) -> dict[str, int]:
-        from metrics.models import (
-            ResidentActivity,
-        )  # Assuming ResidentActivity is in metrics.models
+        """Returns a dictionary of counts of residents by activity level."""
 
-        # Define date range
-        today = timezone.now()
-        a_week_ago = today - timedelta(days=7)
-
-        # Query ResidentActivity and annotate each resident with their activity count
-        annotated_residents = (
-            ResidentActivity.objects.filter(
-                home=self,
-                activity_date__gte=a_week_ago,
-            )
-            .values("resident_id")
-            .annotate(activity_count=Count("id"))
-        )
+        annotated_residents = self.residents_with_recent_activity_counts
 
         # Initialize counts
         activity_counts = {
@@ -71,8 +56,10 @@ class Home(models.Model):
         }
 
         # Categorize each resident into an activity level
+        # and increment the appropriate count
         for resident in annotated_residents:
-            activity_count = resident["activity_count"]
+            activity_count = resident.recent_activity_count
+
             if activity_count in WEEKLY_ACTIVITY_RANGES["inactive"]["range"]:
                 activity_counts["inactive_count"] += 1
             elif activity_count in WEEKLY_ACTIVITY_RANGES["low"]["range"]:
@@ -103,12 +90,17 @@ class Home(models.Model):
         return activity_counts
 
     @property
-    def resident_counts_by_activity_level_chart_data(self):
+    def resident_counts_by_activity_level_chart_data(self) -> list[dict]:
+        """Returns a list of dictionaries of counts of residents by activity
+        level."""
+
         activity_level_counts = self.resident_counts_by_activity_level
+
+        if not self.resident_counts_by_activity_level["total_count"]:
+            return []
 
         chart_data = [
             {
-                "home_name": self.name,
                 "activity_level_label": str(
                     WEEKLY_ACTIVITY_RANGES["inactive"]["label"],
                 ),
@@ -118,19 +110,16 @@ class Home(models.Model):
                 "value": activity_level_counts["inactive_percent"],
             },
             {
-                "home_name": self.name,
                 "activity_level_label": str(WEEKLY_ACTIVITY_RANGES["low"]["label"]),
                 "activity_level_class": WEEKLY_ACTIVITY_RANGES["low"]["color_class"],
                 "value": activity_level_counts["low_active_percent"],
             },
             {
-                "home_name": self.name,
                 "activity_level_label": str(WEEKLY_ACTIVITY_RANGES["good"]["label"]),
                 "activity_level_class": WEEKLY_ACTIVITY_RANGES["good"]["color_class"],
                 "value": activity_level_counts["good_active_percent"],
             },
             {
-                "home_name": self.name,
                 "activity_level_label": str(WEEKLY_ACTIVITY_RANGES["high"]["label"]),
                 "activity_level_class": WEEKLY_ACTIVITY_RANGES["high"]["color_class"],
                 "value": activity_level_counts["high_active_percent"],
@@ -138,62 +127,6 @@ class Home(models.Model):
         ]
 
         return chart_data
-
-    @property
-    def resident_percents_by_activity_level_chart(self):
-        chart_data = self.resident_counts_by_activity_level_chart_data
-
-        fig = px.bar(
-            chart_data,
-            x="value",
-            y="home_name",
-            color="activity_level_label",
-            orientation="h",
-            labels={
-                "value": str(_("Percent of Residents")),
-                "home_name": "Home",
-                "activity_level_label": "Activity Level",
-            },
-            # dark theme
-            template="plotly_dark",
-            # bar height smaller
-            barmode="group",
-            # height=50,
-            # show values on bars
-            text="value",
-        )
-
-        fig.update_layout(
-            autosize=False,
-            legend=dict(
-                orientation="h",
-                # yanchor="top",
-                # xanchor="left",
-                title=None,
-                # remove legend background
-                bgcolor="rgba(0,0,0,0)",
-            ),
-            # hide legend
-            # showlegend=False,
-            margin=dict(l=0, r=0, t=0, b=0),
-            # remove empty space along top of chart
-            height=70,
-            yaxis=dict(
-                showticklabels=False,
-            ),
-            xaxis=dict(
-                showticklabels=False,
-                showgrid=False,
-                title=None,
-            ),
-            yaxis_title=None,
-        )
-
-        return fig.to_html(
-            include_plotlyjs=True,
-            full_html=False,
-            config={"displayModeBar": False},
-        )
 
     @property
     def current_residents(self) -> models.QuerySet["Resident"]:
@@ -205,6 +138,30 @@ class Home(models.Model):
             residency__home=self,
             residency__move_out__isnull=True,
         ).order_by("first_name")
+
+    @property
+    def residents_with_recent_activity_counts(self) -> QuerySet["Resident"]:
+        """Returns a QuerySet of all current residents for this home, annotated
+        with a count of recent activities."""
+        # Define date range
+        today = timezone.now()
+        a_week_ago = today - timedelta(days=7)
+
+        # Get current residents
+        current_residents = self.current_residents
+
+        # Annotate each resident with a count of recent activities
+        residents_with_activities = current_residents.annotate(
+            recent_activity_count=Count(
+                "resident_activities",
+                filter=Q(
+                    resident_activities__activity_date__gte=a_week_ago,
+                    resident_activities__activity_date__lte=today,
+                ),
+            ),
+        )
+
+        return residents_with_activities
 
 
 class HomeGroup(models.Model):
