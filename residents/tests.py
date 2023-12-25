@@ -73,21 +73,21 @@ class TestResidentActivityLevel(TestCase):
 
     def test_activity_levels(self):
         expected_results = {
-            0: {"color": "danger", "text": "Inactive"},
-            1: {"color": "warning", "text": "Low"},
-            2: {"color": "warning", "text": "Low"},
-            3: {"color": "warning", "text": "Low"},
-            4: {"color": "warning", "text": "Low"},
-            5: {"color": "success", "text": "Moderate"},
-            6: {"color": "success", "text": "Moderate"},
-            7: {"color": "success", "text": "Moderate"},
-            8: {"color": "success", "text": "Moderate"},
-            9: {"color": "success", "text": "Moderate"},
-            10: {"color": "warning", "text": "High"},
-            11: {"color": "warning", "text": "High"},
-            12: {"color": "warning", "text": "High"},
-            13: {"color": "warning", "text": "High"},
-            14: {"color": "warning", "text": "High"},
+            0: {"color_class": "danger", "text": "Inactive"},
+            1: {"color_class": "warning", "text": "Low"},
+            2: {"color_class": "warning", "text": "Low"},
+            3: {"color_class": "warning", "text": "Low"},
+            4: {"color_class": "warning", "text": "Low"},
+            5: {"color_class": "success", "text": "Moderate"},
+            6: {"color_class": "success", "text": "Moderate"},
+            7: {"color_class": "success", "text": "Moderate"},
+            8: {"color_class": "success", "text": "Moderate"},
+            9: {"color_class": "success", "text": "Moderate"},
+            10: {"color_class": "warning", "text": "High"},
+            11: {"color_class": "warning", "text": "High"},
+            12: {"color_class": "warning", "text": "High"},
+            13: {"color_class": "warning", "text": "High"},
+            14: {"color_class": "warning", "text": "High"},
         }
 
         for count in range(0, 15):
@@ -105,7 +105,7 @@ class TestResidentActivityLevel(TestCase):
 
     def test_on_hiatus(self):
         self.resident.on_hiatus = True
-        expected = {"color": "info", "text": "On hiatus"}
+        expected = {"color_class": "info", "text": "On hiatus"}
         self.assertEqual(self.resident.activity_level, expected)
 
 

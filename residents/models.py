@@ -48,31 +48,29 @@ class Resident(models.Model):
             date__gte=one_week_ago,
         ).count()
 
+        color_class = None
+        text = None
+
         if self.on_hiatus:
-            return {
-                "color": "info",
-                "text": _("On hiatus"),
-            }
+            color_class = "info"
+            text = _("On hiatus")
         elif activity_count in WEEKLY_ACTIVITY_RANGES["inactive"]["range"]:
-            return {
-                "color": WEEKLY_ACTIVITY_RANGES["inactive"]["color_class"],
-                "text": WEEKLY_ACTIVITY_RANGES["inactive"]["label"],
-            }
+            color_class = WEEKLY_ACTIVITY_RANGES["inactive"]["color_class"]
+            text = WEEKLY_ACTIVITY_RANGES["inactive"]["label"]
         elif activity_count in WEEKLY_ACTIVITY_RANGES["low"]["range"]:
-            return {
-                "color_class": WEEKLY_ACTIVITY_RANGES["low"]["color_class"],
-                "text": WEEKLY_ACTIVITY_RANGES["low"]["label"],
-            }
+            color_class = WEEKLY_ACTIVITY_RANGES["low"]["color_class"]
+            text = WEEKLY_ACTIVITY_RANGES["low"]["label"]
         elif activity_count in WEEKLY_ACTIVITY_RANGES["good"]["range"]:
-            return {
-                "color_class": WEEKLY_ACTIVITY_RANGES["good"]["color_class"],
-                "text": WEEKLY_ACTIVITY_RANGES["good"]["label"],
-            }
+            color_class = WEEKLY_ACTIVITY_RANGES["good"]["color_class"]
+            text = WEEKLY_ACTIVITY_RANGES["good"]["label"]
         else:
-            return {
-                "color_class": WEEKLY_ACTIVITY_RANGES["high"]["color_class"],
-                "text": WEEKLY_ACTIVITY_RANGES["high"]["label"],
-            }
+            color_class = WEEKLY_ACTIVITY_RANGES["high"]["color_class"]
+            text = WEEKLY_ACTIVITY_RANGES["high"]["label"]
+
+        return {
+            "color_class": color_class,
+            "text": text,
+        }
 
 
 class Residency(models.Model):
