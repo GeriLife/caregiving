@@ -10,6 +10,7 @@ class ResidentActivity(models.Model):
     resident = models.ForeignKey(
         to=Resident,
         on_delete=models.PROTECT,
+        related_name="resident_activities",
     )
     activity = models.ForeignKey(
         to=Activity,
