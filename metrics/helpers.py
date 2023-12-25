@@ -20,6 +20,7 @@ def add_resident_activity(activity: Activity):
         activity_type = activity.activity_type
         activity_minutes = activity.duration_minutes
         caregiver_role = activity.caregiver_role
+        activity_date = activity.date
 
         resident_activity = ResidentActivity.objects.create(
             resident=resident,
@@ -29,5 +30,6 @@ def add_resident_activity(activity: Activity):
             activity_type=activity_type,
             activity_minutes=activity_minutes,
             caregiver_role=caregiver_role,
+            activity_date=activity_date,
         )
         resident_activity.save()
