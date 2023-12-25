@@ -112,21 +112,27 @@ class Home(models.Model):
                 "activity_level_label": str(
                     WEEKLY_ACTIVITY_RANGES["inactive"]["label"],
                 ),
+                "activity_level_class": WEEKLY_ACTIVITY_RANGES["inactive"][
+                    "color_class"
+                ],
                 "value": activity_level_counts["inactive_percent"],
             },
             {
                 "home_name": self.name,
                 "activity_level_label": str(WEEKLY_ACTIVITY_RANGES["low"]["label"]),
+                "activity_level_class": WEEKLY_ACTIVITY_RANGES["low"]["color_class"],
                 "value": activity_level_counts["low_active_percent"],
             },
             {
                 "home_name": self.name,
                 "activity_level_label": str(WEEKLY_ACTIVITY_RANGES["good"]["label"]),
+                "activity_level_class": WEEKLY_ACTIVITY_RANGES["good"]["color_class"],
                 "value": activity_level_counts["good_active_percent"],
             },
             {
                 "home_name": self.name,
                 "activity_level_label": str(WEEKLY_ACTIVITY_RANGES["high"]["label"]),
+                "activity_level_class": WEEKLY_ACTIVITY_RANGES["high"]["color_class"],
                 "value": activity_level_counts["high_active_percent"],
             },
         ]
