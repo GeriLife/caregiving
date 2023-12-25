@@ -3,3 +3,8 @@
   height: 1em;
   margin-bottom: 1em;
 }
+
+.bar:hover {
+  opacity: 0.8;
+  cursor: pointer;
+}
