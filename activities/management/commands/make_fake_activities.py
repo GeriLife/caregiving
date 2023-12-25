@@ -1,6 +1,5 @@
 from django.core.management.base import BaseCommand
 from activities.factories import ActivityFactory
-from metrics.helpers import add_resident_activity
 
 
 class Command(BaseCommand):
@@ -13,9 +12,7 @@ class Command(BaseCommand):
         """Create a number of fake activities."""
         if options["num"] >= 0:
             for _ in range(options["num"]):
-                activity = ActivityFactory.create()
-
-                add_resident_activity(activity)
+                ActivityFactory.create()
             self.stdout.write(f"Created {options['num']} fake activities.")
             return
 
