@@ -5,7 +5,13 @@ from .models import ResidentActivity
 
 
 resident_choices = [
-    (resident.id, resident.full_name) for resident in Resident.objects.all()
+    (resident.id, resident.full_name)
+    for resident in Resident.objects.filter(
+        residency__isnull=False,
+        residency__move_out__isnull=True,
+    )
+    .distinct()
+    .order_by("first_name", "last_initial")
 ]
 activity_type_choices = [
     (choice[0], choice[1]) for choice in ResidentActivity.ActivityTypeChoices.choices
