@@ -1,17 +1,20 @@
 from django.urls import path
 
-from .views import ActivityFormView, ActivityListView
+from .views import ActivityFormView, ActivityListView, ResidentActivityFormView
 
 
 urlpatterns = [
     path(
-        # . Translators: Make sure to leave the trailing slash "/"
         "submit/",
         ActivityFormView.as_view(),
         name="activity-form-view",
     ),
     path(
-        # . Translators: Make sure to leave the trailing slash "/"
+        "resident-activity/",
+        ResidentActivityFormView.as_view(),
+        name="resident-activity-form-view",
+    ),
+    path(
         "list/",
         ActivityListView.as_view(),
         name="activity-list-view",
