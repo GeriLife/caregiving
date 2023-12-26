@@ -41,6 +41,41 @@ class Home(models.Model):
         return reverse("home-detail-view", kwargs={"url_uuid": self.url_uuid})
 
     @property
+    def current_residents(self) -> models.QuerySet["Resident"]:
+        """Returns a QuerySet of all current residents for this home."""
+        # avoid circular import
+        from residents.models import Resident
+
+        return Resident.objects.filter(
+            residency__home=self,
+            residency__move_out__isnull=True,
+        ).order_by("first_name")
+
+    @property
+    def residents_with_recent_activity_counts(self) -> QuerySet["Resident"]:
+        """Returns a QuerySet of all current residents for this home, annotated
+        with a count of recent activities."""
+        # Define date range
+        today = timezone.now()
+        a_week_ago = today - timedelta(days=7)
+
+        # Get current residents
+        current_residents = self.current_residents
+
+        # Annotate each resident with a count of recent activities
+        residents_with_activities = current_residents.annotate(
+            recent_activity_count=Count(
+                "resident_activities",
+                filter=Q(
+                    resident_activities__activity_date__gte=a_week_ago,
+                    resident_activities__activity_date__lte=today,
+                ),
+            ),
+        )
+
+        return residents_with_activities
+
+    @property
     def resident_counts_by_activity_level(self) -> dict[str, int]:
         """Returns a dictionary of counts of residents by activity level."""
 
@@ -127,41 +162,6 @@ class Home(models.Model):
         ]
 
         return chart_data
-
-    @property
-    def current_residents(self) -> models.QuerySet["Resident"]:
-        """Returns a QuerySet of all current residents for this home."""
-        # avoid circular import
-        from residents.models import Resident
-
-        return Resident.objects.filter(
-            residency__home=self,
-            residency__move_out__isnull=True,
-        ).order_by("first_name")
-
-    @property
-    def residents_with_recent_activity_counts(self) -> QuerySet["Resident"]:
-        """Returns a QuerySet of all current residents for this home, annotated
-        with a count of recent activities."""
-        # Define date range
-        today = timezone.now()
-        a_week_ago = today - timedelta(days=7)
-
-        # Get current residents
-        current_residents = self.current_residents
-
-        # Annotate each resident with a count of recent activities
-        residents_with_activities = current_residents.annotate(
-            recent_activity_count=Count(
-                "resident_activities",
-                filter=Q(
-                    resident_activities__activity_date__gte=a_week_ago,
-                    resident_activities__activity_date__lte=today,
-                ),
-            ),
-        )
-
-        return residents_with_activities
 
 
 class HomeGroup(models.Model):
