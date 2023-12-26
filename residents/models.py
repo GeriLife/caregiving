@@ -58,8 +58,8 @@ class Resident(models.Model):
         - success: 5+
         """
         one_week_ago = timezone.now() - timezone.timedelta(days=7)
-        activity_count: int = self.activities.filter(  # type: ignore
-            date__gte=one_week_ago,
+        activity_count: int = self.resident_activities.filter(  # type: ignore
+            activity_date__gte=one_week_ago,
         ).count()
 
         color_class = None

@@ -3,33 +3,36 @@ from django.utils.translation import gettext as _
 import pandas as pd
 import plotly.express as px
 
-from activities.models import Activity
+from metrics.models import ResidentActivity
 
 
 def prepare_daily_activity_minutes_scatter_chart(
-    activities: models.QuerySet[Activity],
+    activities: models.QuerySet[ResidentActivity],
 ) -> str:
     """Prepare a scatter chart of daily activity minutes for a resident."""
     activities_agg = (
-        activities.values("date")
-        .annotate(total_duration_minutes=models.Sum("duration_minutes"))
-        .order_by("date")
+        activities.values("activity_date")
+        .annotate(total_activity_minutes=models.Sum("activity_minutes"))
+        .order_by("activity_date")
     )
 
     df_activities = pd.DataFrame(activities_agg)
 
     # Ensure 'date' column is in datetime format
-    df_activities["date"] = pd.to_datetime(df_activities["date"])
+    df_activities["activity_date"] = pd.to_datetime(df_activities["activity_date"])
 
     fig = px.scatter(
         df_activities,
-        x="date",
-        y="total_duration_minutes",
+        x="activity_date",
+        y="total_activity_minutes",
         title=_("Daily activity minutes"),
-        labels={"date": _("Date"), "total_duration_minutes": _("Duration in minutes")},
+        labels={
+            "date": _("Date"),
+            "total_activity_minutes": _("Total activity minutes"),
+        },
         trendline="ols",
         trendline_color_override="burlywood",
-        hover_data=["total_duration_minutes"],
+        hover_data=["total_activity_minutes"],
     )
 
     fig.update_layout(
@@ -40,7 +43,7 @@ def prepare_daily_activity_minutes_scatter_chart(
             "yanchor": "top",
         },
         xaxis_title=_("Date"),
-        yaxis_title=_("Duration in minutes"),
+        yaxis_title=_("Total activity minutes"),
         legend_title="",
         template="plotly_dark",
     )
@@ -49,7 +52,7 @@ def prepare_daily_activity_minutes_scatter_chart(
 
 
 def prepare_activity_hours_by_type_chart(
-    activities: models.QuerySet[Activity],
+    activities: models.QuerySet[ResidentActivity],
 ) -> str:
     """Prepare a bar chart of activity counts by type for a resident."""
     # This must be a float so that the division below returns a float
@@ -57,7 +60,7 @@ def prepare_activity_hours_by_type_chart(
 
     activities_agg = (
         activities.values("activity_type")
-        .annotate(total_hours=models.Sum("duration_minutes") / minutes_in_hour)
+        .annotate(total_hours=models.Sum("activity_minutes") / minutes_in_hour)
         .order_by("activity_type")
     )
 
@@ -66,7 +69,7 @@ def prepare_activity_hours_by_type_chart(
         {
             "activity_type": activity["activity_type"],
             "activity_type_label": str(
-                Activity.ActivityTypeChoices(activity["activity_type"]).label,
+                ResidentActivity.ActivityTypeChoices(activity["activity_type"]).label,
             ),
             "total_hours": activity["total_hours"],
         }
@@ -103,7 +106,7 @@ def prepare_activity_hours_by_type_chart(
 
 
 def prepare_activity_hours_by_caregiver_role_chart(
-    activities: models.QuerySet[Activity],
+    activities: models.QuerySet[ResidentActivity],
 ) -> str:
     """Prepare a bar chart of activity counts by type for a resident."""
     # This must be a float so that the division below returns a float
@@ -111,7 +114,7 @@ def prepare_activity_hours_by_caregiver_role_chart(
 
     activities_agg = (
         activities.values("caregiver_role")
-        .annotate(total_hours=models.Sum("duration_minutes") / minutes_in_hour)
+        .annotate(total_hours=models.Sum("activity_minutes") / minutes_in_hour)
         .order_by("caregiver_role")
     )
 
@@ -120,7 +123,7 @@ def prepare_activity_hours_by_caregiver_role_chart(
         {
             "caregiver_role": activity["caregiver_role"],
             "caregiver_role_label": str(
-                Activity.CaregiverRoleChoices(activity["caregiver_role"]).label,
+                ResidentActivity.CaregiverRoleChoices(activity["caregiver_role"]).label,
             ),
             "total_hours": activity["total_hours"],
         }

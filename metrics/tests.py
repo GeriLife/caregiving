@@ -1,7 +1,6 @@
 from http import HTTPStatus
 from django.test import TestCase
 
-from activities.models import Activity
 from .models import ResidentActivity
 from homes.factories import HomeFactory
 from residents.factories import ResidentFactory, ResidencyFactory
@@ -9,7 +8,7 @@ from datetime import date
 from django.urls import reverse
 
 
-class ResidentActivityTestCase(TestCase):
+class ResidentActivityFormViewTestCase(TestCase):
     def setUp(self):
         # Create test data using factories
         self.home1 = HomeFactory(name="Home 1")
@@ -26,56 +25,53 @@ class ResidentActivityTestCase(TestCase):
             move_out=None,
         )
 
+    def test_resident_activity_form_view_create_multiple_resident_activity(self):
+        """Test that multiple resident activities can be created with one POST
+        request."""
+        # Count of activities and resident activities before POST request
+        resident_activity_count_pre = ResidentActivity.objects.all().count()
+
+        activity_residents = [self.resident1.id, self.resident2.id]
+        # Prepare data for POST request
+        self.data = {
+            "residents": activity_residents,
+            "activity_date": date.today(),
+            "activity_type": ResidentActivity.ActivityTypeChoices.OUTDOOR,
+            "activity_minutes": 30,
+            "caregiver_role": ResidentActivity.CaregiverRoleChoices.NURSE,
+        }
+
+        # Make POST request
+        response = self.client.post(
+            reverse("resident-activity-form-view"),
+            self.data,
+        )
+
+        # The response should indicate a successful form submission
+        self.assertEqual(response.status_code, HTTPStatus.FOUND)
+
+        # Count of activities and resident activities after POST request
+        resident_activity_count_post = ResidentActivity.objects.all().count()
+
+        self.assertLess(
+            resident_activity_count_pre,
+            resident_activity_count_post,
+        )
+
+        expected_resident_activity_count = len(activity_residents)
+
+        # Ensure counts have increased by 2
+        self.assertEqual(
+            resident_activity_count_post,
+            expected_resident_activity_count,
+        )
+
     def test_initial_resident_activity(self):
         """Initially no resident activity."""
         initial_resident_activity = ResidentActivity.objects.filter(
             home=self.home1,
         ).count()
         self.assertEqual(initial_resident_activity, 0)
-
-    def test_add_activity_adds_resident_activity(self):
-        """When activity is added, resident activity is added."""
-        # activity count pre
-        activity_count_pre = Activity.objects.all().count()
-        # pre count
-        resident_activity_count_pre = ResidentActivity.objects.all().count()
-
-        self.data = {
-            "residents": [self.resident1.id],
-            "activity_type": Activity.ActivityTypeChoices.OUTDOOR,
-            # get the current date
-            "date": date.today(),
-            "duration_minutes": 30,
-            "caregiver_role": Activity.CaregiverRoleChoices.NURSE,
-        }
-        response = self.client.post(
-            reverse("activity-form-view"),
-            self.data,
-        )
-        self.assertEqual(response.status_code, HTTPStatus.FOUND)
-
-        # activity count post
-        activity_count_post = Activity.objects.all().count()
-
-        expected_activity_count_post = 1
-
-        self.assertEqual(activity_count_post, expected_activity_count_post)
-
-        # ResidentActivity post count
-        resident_activity_count_post = ResidentActivity.objects.all().count()
-
-        expected_resident_activity_count_post = 1
-
-        self.assertEqual(
-            resident_activity_count_post,
-            expected_resident_activity_count_post,
-        )
-
-        # Activity pre count should be less than post count
-        self.assertLess(activity_count_pre, activity_count_post)
-
-        # ResidentActivity pre count should be less than post count
-        self.assertLess(resident_activity_count_pre, resident_activity_count_post)
 
     def test_activity_rollback_on_residency_exception(self):
         """Activity and ResidentActivity are not added if
@@ -84,31 +80,42 @@ class ResidentActivityTestCase(TestCase):
         non_resident = ResidentFactory(first_name="Charlie")
 
         # Count of activities and resident activities before POST request
-        activity_count_pre = Activity.objects.all().count()
         resident_activity_count_pre = ResidentActivity.objects.all().count()
 
         # Prepare data for POST request with a resident that does not have a residency
         self.data = {
             "residents": [non_resident.id],
-            "activity_type": Activity.ActivityTypeChoices.OUTDOOR,
-            "date": date.today(),
-            "duration_minutes": 30,
-            "caregiver_role": Activity.CaregiverRoleChoices.NURSE,
+            "activity_type": ResidentActivity.ActivityTypeChoices.OUTDOOR,
+            "activity_date": date.today(),
+            "activity_minutes": 30,
+            "caregiver_role": ResidentActivity.CaregiverRoleChoices.NURSE,
         }
 
         # Make POST request
         response = self.client.post(
-            reverse("activity-form-view"),
+            reverse("resident-activity-form-view"),
             self.data,
         )
 
         # The response should indicate a failure to process the form
         self.assertNotEqual(response.status_code, HTTPStatus.FOUND)
+        self.assertEqual(response.status_code, HTTPStatus.OK)
+
+        # Form should not be valid
+        self.assertFalse(response.context["form"].is_valid())
+
+        # form should have errors
+        self.assertTrue(response.context["form"].errors)
+
+        # form errors should include residency error
+        self.assertTrue(response.context["form"].errors["residents"])
+
+        # Since there is no residency for the resident, the form should not be valid
+        # i.e., the resident ID is not a valid choice
+        self.assertIn("Select a valid choice.", str(response.context["form"].errors))
 
         # Count of activities and resident activities after POST request
-        activity_count_post = Activity.objects.all().count()
         resident_activity_count_post = ResidentActivity.objects.all().count()
 
         # Ensure counts have not changed, indicating a rollback
-        self.assertEqual(activity_count_pre, activity_count_post)
         self.assertEqual(resident_activity_count_pre, resident_activity_count_post)
