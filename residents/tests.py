@@ -1,13 +1,108 @@
 from io import StringIO
+from django.utils import timezone
 from django.core.management import call_command
 from django.test import TestCase
 from django.core.management.base import CommandError
 
 from django.core.exceptions import ValidationError
 from unittest.mock import MagicMock, patch
+from metrics.factories import ResidentActivityFactory
 
 from .models import Residency, Resident
 from homes.models import Home
+
+
+class ResidentTestCase(TestCase):
+    def setUp(self):
+        self.resident = Resident.objects.create(
+            first_name="Test",
+            last_initial="U",
+        )
+
+        # create related resident activities
+        today = timezone.now()
+        one_week_ago = today - timezone.timedelta(days=7)
+
+        # Create one activity that is more than a week old
+        self.old_resident_activity = ResidentActivityFactory(
+            resident=self.resident,
+            activity_date=one_week_ago - timezone.timedelta(days=1),
+        )
+
+        # Create one activity that is less than a week old
+        self.recent_resident_activity = ResidentActivityFactory(
+            resident=self.resident,
+            activity_date=one_week_ago + timezone.timedelta(days=1),
+        )
+
+    def test_full_name(self):
+        self.assertEqual(self.resident.full_name, "Test U")
+
+    def test_get_absolute_url(self):
+        self.assertEqual(
+            self.resident.get_absolute_url(),
+            "/residents/" + self.resident.url_uuid + "/",
+        )
+
+    def test_get_resident_activity(self):
+        """Test that the resident.resident_activity method returns the correct
+        activities and the count is correct."""
+
+        resident_activities = self.resident.resident_activities.all()
+
+        # get the count of resident activities
+        resident_activity_count = resident_activities.count()
+
+        # assert that both activities are in the resident activities queryset
+        self.assertIn(
+            self.old_resident_activity,
+            resident_activities,
+        )
+        self.assertIn(
+            self.recent_resident_activity,
+            resident_activities,
+        )
+
+        # There should be two activities
+        expected_count = 2
+        self.assertEqual(
+            resident_activity_count,
+            expected_count,
+        )
+
+    def test_get_recent_activities(self):
+        """Test that the get_recent_activities method returns the correct
+        activities."""
+
+        # get the count of recent activities
+        recent_activities = self.resident.get_recent_activities()
+
+        # assert that the expected activity is in the recent activities queryset
+        self.assertIn(
+            self.recent_resident_activity,
+            recent_activities,
+        )
+
+        # There should only be one activity
+        expected_count = 1
+        self.assertEqual(
+            recent_activities.count(),
+            expected_count,
+        )
+
+    def test_get_recent_activity_count(self):
+        """Test that the get_recent_activity_count method returns the correct
+        count."""
+
+        # get the count of recent activities
+        recent_activity_count = self.resident.get_recent_activity_count()
+
+        # There should only be one activity
+        expected_count = 1
+        self.assertEqual(
+            recent_activity_count,
+            expected_count,
+        )
 
 
 class ResidencyTestCase(TestCase):

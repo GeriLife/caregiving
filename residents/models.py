@@ -1,3 +1,4 @@
+from typing import TYPE_CHECKING
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.urls import reverse
@@ -6,6 +7,9 @@ from django.utils.translation import gettext_lazy as _
 from shortuuid.django_fields import ShortUUIDField
 from core.constants import WEEKLY_ACTIVITY_RANGES
 from homes.models import Home
+
+if TYPE_CHECKING:
+    from metrics.models import ResidentActivity
 
 
 class Resident(models.Model):
@@ -32,6 +36,16 @@ class Resident(models.Model):
 
     def get_absolute_url(self):
         return reverse("resident-detail-view", kwargs={"url_uuid": self.url_uuid})
+
+    def get_recent_activities(self) -> models.QuerySet["ResidentActivity"]:
+        """Return a queryset of the resident's activities in the past seven
+        days."""
+        one_week_ago = timezone.now() - timezone.timedelta(days=7)
+        return self.resident_activities.filter(activity_date__gte=one_week_ago)
+
+    def get_recent_activity_count(self) -> int:
+        """Return the count of the resident's recent activities."""
+        return self.get_recent_activities().count()
 
     @property
     def activity_level(self):
