@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+
+{% load i18n %}
+{% load l10n %}
+
+{% block title %}
+    {% translate "Activities" %}
+{% endblock %}
+
+{% block content %}
+    <h1>{% translate "Activities" %}</h1>
+    <p>{% translate "Activities list page" %}</p>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>{% translate "Date" %}</th>
+                <th>{% translate "Resident" %}</th>
+                <th>{% translate "Type" %}</th>
+                <th>{% translate "Duration (minutes)" %}</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            {% for activity in activities %}
+                <tr>
+                    <td>{{ activity.activity_date|localize }}</td>
+                    <td>{{ activity.resident }}</td>
+                    <td>{{ activity.get_activity_type_display }}</td>
+                    <td>{{ activity.activity_minutes }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}

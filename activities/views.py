@@ -5,18 +5,16 @@ from django.views.generic import ListView, FormView
 from django.db import transaction
 
 from metrics.models import ResidentActivity
-from .models import Activity
 from residents.models import Residency, Resident
 from metrics.forms import ResidentActivityForm
 
 
-# TODO: replace ActivityListView with ResidentActivityListView
-class ActivityListView(ListView):
-    template_name = "activities/list.html"
-    queryset = Activity.objects.all()
+class ResidentActivityListView(ListView):
+    template_name = "activities/resident_activity_list.html"
+    queryset = ResidentActivity.objects.all()
     context_object_name = "activities"
-    paginate_by = 10
-    ordering = ["-date"]
+    paginate_by = 100
+    ordering = ["-activity_date"]
 
 
 class ResidentActivityFormView(FormView):

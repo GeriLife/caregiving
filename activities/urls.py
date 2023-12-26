@@ -1,18 +1,17 @@
 from django.urls import path
 
-# TODO: replace ActivityListView with ResidentActivityListView
-from .views import ActivityListView, ResidentActivityFormView
+from .views import ResidentActivityFormView, ResidentActivityListView
 
 
 urlpatterns = [
     path(
-        "resident-activity/",
+        "submit/",
         ResidentActivityFormView.as_view(),
         name="resident-activity-form-view",
     ),
     path(
         "list/",
-        ActivityListView.as_view(),
+        ResidentActivityListView.as_view(),
         name="activity-list-view",
     ),
 ]
