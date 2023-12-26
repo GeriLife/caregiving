@@ -3,6 +3,8 @@ from django.core.management import call_command
 from django.test import TestCase
 from django.core.management.base import CommandError
 
+from activities.factories import ActivityFactory
+
 from .factories import HomeFactory
 from .models import Home
 from residents.factories import ResidentFactory, ResidencyFactory
@@ -13,11 +15,19 @@ class HomeModelTests(TestCase):
         # Create test data using factories
         self.home1 = HomeFactory(name="Home 1")
 
-        self.home_1_current_resident = ResidentFactory(first_name="Alice")
+        self.home_1_current_resident_inactive = ResidentFactory(first_name="Alice")
+        self.home_1_current_resident_active = ResidentFactory(first_name="Paulene")
+
         self.home_1_past_resident = ResidentFactory(first_name="Bob")
 
         ResidencyFactory(
-            resident=self.home_1_current_resident,
+            resident=self.home_1_current_resident_inactive,
+            home=self.home1,
+            move_in="2020-01-01",
+            move_out=None,
+        )
+        ResidencyFactory(
+            resident=self.home_1_current_resident_active,
             home=self.home1,
             move_in="2020-01-01",
             move_out=None,
@@ -29,11 +39,24 @@ class HomeModelTests(TestCase):
             move_out="2020-02-01",
         )
 
+        self.home_1_current_resident_active_activity = ActivityFactory(
+            residents=[self.home_1_current_resident_active],
+        )
+
     def test_home_current_residents(self):
         current_residents_home1 = self.home1.current_residents
-        self.assertEqual(current_residents_home1.count(), 1)
+
+        expected_current_residents_count = 2
+        self.assertEqual(
+            current_residents_home1.count(),
+            expected_current_residents_count,
+        )
         self.assertIn(
-            self.home_1_current_resident,
+            self.home_1_current_resident_inactive,
+            current_residents_home1,
+        )
+        self.assertIn(
+            self.home_1_current_resident_active,
             current_residents_home1,
         )
         self.assertNotIn(
