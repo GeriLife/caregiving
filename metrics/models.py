@@ -10,10 +10,17 @@ class ResidentActivity(models.Model):
     resident = models.ForeignKey(
         to=Resident,
         on_delete=models.PROTECT,
+        related_name="resident_activities",
     )
     activity = models.ForeignKey(
         to=Activity,
         on_delete=models.PROTECT,
+    )
+    activity_date = models.DateField(
+        _("Activity date"),
+        auto_now=False,
+        auto_now_add=False,
+        null=True,
     )
     residency = models.ForeignKey(
         to=Residency,

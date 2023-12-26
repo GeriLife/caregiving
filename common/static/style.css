@@ -1,0 +1,9 @@
+.bar-container {
+  display: flex;
+  height: 1em;
+}
+
+.bar:hover {
+  opacity: 0.8;
+  cursor: pointer;
+}

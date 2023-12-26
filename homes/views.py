@@ -15,11 +15,6 @@ from .charts import (
 from .models import Home, HomeGroup
 
 
-class HomeListView(ListView):
-    model = Home
-    context_object_name = "homes"
-
-
 class HomeGroupListView(ListView):
     model = HomeGroup
     context_object_name = "home_groups"

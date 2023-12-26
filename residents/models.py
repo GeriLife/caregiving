@@ -1,28 +1,15 @@
+from typing import TYPE_CHECKING
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.urls import reverse
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 from shortuuid.django_fields import ShortUUIDField
+from core.constants import WEEKLY_ACTIVITY_RANGES
 from homes.models import Home
 
-
-# Activity ranges
-#
-# Based on the count of activities in the past seven days:
-# - inactive: almost no activities
-# - low: a few activities
-# - good: an appropriate amount of activities
-# - high: a lot of activities (maybe too many)
-#
-# Note: range ends are exclusive, so the max value is the same as the next
-# range's min value.
-WEEKLY_ACTIVITY_RANGES = {
-    "inactive": range(0, 1),  # Includes only 0.
-    "low": range(1, 5),  # Includes 1, 2, 3, 4.
-    "good": range(5, 10),  # Includes 5, 6, 7, 8, 9.
-    "high": range(10, 1000),  # Includes 10 onwards ... (1000 is arbitrary).
-}
+if TYPE_CHECKING:
+    from metrics.models import ResidentActivity
 
 
 class Resident(models.Model):
@@ -50,6 +37,16 @@ class Resident(models.Model):
     def get_absolute_url(self):
         return reverse("resident-detail-view", kwargs={"url_uuid": self.url_uuid})
 
+    def get_recent_activities(self) -> models.QuerySet["ResidentActivity"]:
+        """Return a queryset of the resident's activities in the past seven
+        days."""
+        one_week_ago = timezone.now() - timezone.timedelta(days=7)
+        return self.resident_activities.filter(activity_date__gte=one_week_ago)
+
+    def get_recent_activity_count(self) -> int:
+        """Return the count of the resident's recent activities."""
+        return self.get_recent_activities().count()
+
     @property
     def activity_level(self):
         """Return a string indicating whether the resident is inactive, low,
@@ -65,31 +62,29 @@ class Resident(models.Model):
             date__gte=one_week_ago,
         ).count()
 
+        color_class = None
+        text = None
+
         if self.on_hiatus:
-            return {
-                "color": "info",
-                "text": _("On hiatus"),
-            }
-        elif activity_count in WEEKLY_ACTIVITY_RANGES["inactive"]:
-            return {
-                "color": "danger",
-                "text": _("Inactive"),
-            }
-        elif activity_count in WEEKLY_ACTIVITY_RANGES["low"]:
-            return {
-                "color": "warning",
-                "text": _("Low"),
-            }
-        elif activity_count in WEEKLY_ACTIVITY_RANGES["good"]:
-            return {
-                "color": "success",
-                "text": _("Moderate"),
-            }
+            color_class = "info"
+            text = _("On hiatus")
+        elif activity_count in WEEKLY_ACTIVITY_RANGES["inactive"]["range"]:
+            color_class = WEEKLY_ACTIVITY_RANGES["inactive"]["color_class"]
+            text = WEEKLY_ACTIVITY_RANGES["inactive"]["label"]
+        elif activity_count in WEEKLY_ACTIVITY_RANGES["low"]["range"]:
+            color_class = WEEKLY_ACTIVITY_RANGES["low"]["color_class"]
+            text = WEEKLY_ACTIVITY_RANGES["low"]["label"]
+        elif activity_count in WEEKLY_ACTIVITY_RANGES["good"]["range"]:
+            color_class = WEEKLY_ACTIVITY_RANGES["good"]["color_class"]
+            text = WEEKLY_ACTIVITY_RANGES["good"]["label"]
         else:
-            return {
-                "color": "warning",
-                "text": _("High"),
-            }
+            color_class = WEEKLY_ACTIVITY_RANGES["high"]["color_class"]
+            text = WEEKLY_ACTIVITY_RANGES["high"]["label"]
+
+        return {
+            "color_class": color_class,
+            "text": text,
+        }
 
 
 class Residency(models.Model):

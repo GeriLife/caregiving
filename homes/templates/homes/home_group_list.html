@@ -5,8 +5,10 @@
 {% block content %}
     <h1>Homes</h1>
 
+    <p>{% translate "Homes showing the percent of residents by activity level" %}</p>
+
     {% for home_group in home_groups %}
-        <div class="card mb-2" style="width: 18rem;">
+        <div class="card mb-2">
             <div class="card-header">
                 <i class="bi bi-collection-fill"></i>
                 {{ home_group }}
@@ -14,10 +16,25 @@
             <ul class="list-group list-group-flush">
                 {% for home in home_group.homes.all %}
                     <li class="list-group-item d-flex align-items-center">
-                        <i class="bi bi-house-heart-fill fs-3 me-2"></i>
-                        <a href="{{ home.get_absolute_url }}">
-                            {{ home }}
-                        </a>
+                        <div class="container">
+                            <div class="row">
+                                <div class="col-md-3">
+                                    <i class="bi bi-house-heart-fill fs-3 me-2"></i>
+                                    <a href="{{ home.get_absolute_url }}">
+                                        {{ home }}
+                                    </a>
+                                </div>
+
+                                {% if home.resident_counts_by_activity_level_chart_data %}
+                                    <div class="col-md-9">
+                                        <div class="mt-3">
+                                            {% include "homes/home_residents_activity_percents.html" with data=home.resident_counts_by_activity_level_chart_data %}
+                                        </div>
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+
                     </li>
                 {% endfor %}
             </ul>
@@ -25,13 +42,23 @@
     {% endfor %}
 
     {% for home in homes_without_group %}
-        <div class="card mb-2" style="width: 18rem;">
-            <div class="card-body d-flex align-items-center">
-                <i class="bi bi-house-heart-fill fs-3 me-2"></i>
-                <a href="{{ home.get_absolute_url }}">
-                    {{ home }}
-                </a>
+        <div class="container">
+            <div class="row">
+                <div class="col-md-3">
+                    <i class="bi bi-house-heart-fill fs-3 me-2"></i>
+                    <a href="{{ home.get_absolute_url }}">
+                        {{ home }}
+                    </a>
+                </div>
+                {% if home.resident_counts_by_activity_level_chart_data %}
+                    <div class="col-md-9">
+                        <div class="mt-3">
+                            {% include "homes/home_residents_activity_percents.html" with data=home.resident_counts_by_activity_level_chart_data %}
+                        </div>
+                    </div>
+                {% endif %}
             </div>
         </div>
+        <hr>
     {% endfor %}
 {% endblock content %}
