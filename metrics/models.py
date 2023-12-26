@@ -2,11 +2,33 @@ from django.db import models
 from django.utils.translation import gettext_lazy as _
 from homes.models import Home
 from residents.models import Resident
-from activities.models import Activity
 from residents.models import Residency
 
 
 class ResidentActivity(models.Model):
+    class ActivityTypeChoices(models.TextChoices):
+        """Choices for the type of activity."""
+
+        OUTDOOR = "outdoor", _("Outdoor")
+        CASUAL_SOCIAL = "casual_social", _("Casual Social")
+        CULTURE = "culture", _("Culture")
+        DISCUSSION = "discussion", _("Discussion")
+        GUIDED = "guided", _("Guided")
+        MUSIC = "music", _("Music")
+        SELF_GUIDED = "self_guided", _("Self-guided")
+        TRIP = "trip", _("Trip")
+
+    class CaregiverRoleChoices(models.TextChoices):
+        """Choices for the caregiver role."""
+
+        FAMILY = "family", _("Family")
+        FRIEND = "friend", _("Friend")
+        HOBBY_INSTRUCTOR = "hobby_instructor", _("Hobby Instructor")
+        NURSE = "nurse", _("Nurse")
+        PHYSIO_THERAPIST = "physio_therapist", _("Physio therapist")
+        PRACTICAL_NURSE = "practical_nurse", _("Practical nurse")
+        VOLUNTEER = "volunteer", _("Volunteer")
+
     resident = models.ForeignKey(
         to=Resident,
         on_delete=models.PROTECT,
@@ -31,8 +53,8 @@ class ResidentActivity(models.Model):
     activity_type = models.CharField(
         _("Activity type"),
         max_length=20,
-        choices=Activity.ActivityTypeChoices.choices,
-        default=Activity.ActivityTypeChoices.SELF_GUIDED,
+        choices=ActivityTypeChoices.choices,
+        default=ActivityTypeChoices.SELF_GUIDED,
     )
     activity_minutes = models.PositiveIntegerField(
         _("Duration in minutes"),
@@ -41,8 +63,8 @@ class ResidentActivity(models.Model):
     caregiver_role = models.CharField(
         _("Caregiver role"),
         max_length=20,
-        choices=Activity.CaregiverRoleChoices.choices,
-        default=Activity.CaregiverRoleChoices.NURSE,
+        choices=CaregiverRoleChoices.choices,
+        default=CaregiverRoleChoices.NURSE,
     )
 
     class Meta:
