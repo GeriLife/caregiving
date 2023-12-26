@@ -12,10 +12,6 @@ class ResidentActivity(models.Model):
         on_delete=models.PROTECT,
         related_name="resident_activities",
     )
-    activity = models.ForeignKey(
-        to=Activity,
-        on_delete=models.PROTECT,
-    )
     activity_date = models.DateField(
         _("Activity date"),
         auto_now=False,
