@@ -13,7 +13,6 @@ class ResidentActivityFactory(factory.django.DjangoModelFactory):
         model = ResidentActivity
 
     resident = factory.SubFactory("residents.factories.ResidentFactory")
-    activity = factory.SubFactory("activities.factories.ActivityFactory")
     activity_date = factory.Faker("date")
     residency = factory.SubFactory("residents.factories.ResidencyFactory")
     home = factory.SubFactory("homes.factories.HomeFactory")
