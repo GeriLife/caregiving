@@ -42,7 +42,7 @@ class ResidentDetailView(LoginRequiredMixin, DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        activities = self.object.activities.all()
+        activities = self.object.resident_activities.all()
 
         if activities:
             context[

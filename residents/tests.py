@@ -188,7 +188,7 @@ class TestResidentActivityLevel(TestCase):
         for count in range(0, 15):
             with self.subTest(count=count):
                 with patch(
-                    "residents.models.Resident.activities",
+                    "residents.models.Resident.resident_activities",
                     new_callable=MagicMock,
                 ) as mock_activities:
                     # Set up the method chain to return the correct count

@@ -1,7 +1,6 @@
 from http import HTTPStatus
 from django.test import TestCase
 
-from activities.models import Activity
 from .models import ResidentActivity
 from homes.factories import HomeFactory
 from residents.factories import ResidentFactory, ResidencyFactory
@@ -37,9 +36,9 @@ class ResidentActivityFormViewTestCase(TestCase):
         self.data = {
             "residents": activity_residents,
             "activity_date": date.today(),
-            "activity_type": Activity.ActivityTypeChoices.OUTDOOR,
+            "activity_type": ResidentActivity.ActivityTypeChoices.OUTDOOR,
             "activity_minutes": 30,
-            "caregiver_role": Activity.CaregiverRoleChoices.NURSE,
+            "caregiver_role": ResidentActivity.CaregiverRoleChoices.NURSE,
         }
 
         # Make POST request
@@ -86,10 +85,10 @@ class ResidentActivityFormViewTestCase(TestCase):
         # Prepare data for POST request with a resident that does not have a residency
         self.data = {
             "residents": [non_resident.id],
-            "activity_type": Activity.ActivityTypeChoices.OUTDOOR,
+            "activity_type": ResidentActivity.ActivityTypeChoices.OUTDOOR,
             "activity_date": date.today(),
             "activity_minutes": 30,
-            "caregiver_role": Activity.CaregiverRoleChoices.NURSE,
+            "caregiver_role": ResidentActivity.CaregiverRoleChoices.NURSE,
         }
 
         # Make POST request

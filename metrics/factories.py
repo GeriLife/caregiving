@@ -1,11 +1,14 @@
 import factory
 
-from activities.models import Activity
 from .models import ResidentActivity
 
 
-activity_type_choices = [choice[0] for choice in Activity.ActivityTypeChoices.choices]
-caregiver_role_choices = [choice[0] for choice in Activity.CaregiverRoleChoices.choices]
+activity_type_choices = [
+    choice[0] for choice in ResidentActivity.ActivityTypeChoices.choices
+]
+caregiver_role_choices = [
+    choice[0] for choice in ResidentActivity.CaregiverRoleChoices.choices
+]
 
 
 class ResidentActivityFactory(factory.django.DjangoModelFactory):
