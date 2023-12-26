@@ -1,3 +1,5 @@
+import uuid
+
 from django.urls import reverse_lazy
 from django.views.generic import ListView, FormView
 from django.db import transaction
@@ -60,10 +62,13 @@ class ResidentActivityFormView(FormView):
 
             resident_ids = form.cleaned_data["residents"]
 
+            # generate group activity ID based on current epoch time
+            group_activity_id = uuid.uuid4()
+
             for resident_id in resident_ids:
                 try:
                     resident = Resident.objects.get(id=resident_id)
-                    _create_resident_activity(resident, form)
+                    _create_resident_activity(resident, group_activity_id, form)
                 except Resident.DoesNotExist:
                     transaction.set_rollback(True)
 
@@ -87,7 +92,11 @@ class ResidentActivityFormView(FormView):
         return self.form_valid(form) if is_form_valid else self.form_invalid(form)
 
 
-def _create_resident_activity(resident: Resident, form: ResidentActivityForm):
+def _create_resident_activity(
+    resident: Resident,
+    group_activity_id: uuid.UUID,
+    form: ResidentActivityForm,
+):
     """Create a resident activity for the given resident and form."""
 
     try:
@@ -112,6 +121,7 @@ def _create_resident_activity(resident: Resident, form: ResidentActivityForm):
         activity_minutes=activity_minutes,
         caregiver_role=caregiver_role,
         activity_date=activity_date,
+        group_activity_id=group_activity_id,
     )
 
     resident_activity.save()

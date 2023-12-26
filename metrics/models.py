@@ -66,6 +66,11 @@ class ResidentActivity(models.Model):
         choices=CaregiverRoleChoices.choices,
         default=CaregiverRoleChoices.NURSE,
     )
+    group_activity_id = models.UUIDField(
+        _("Group activity ID"),
+        default=None,
+        null=True,
+    )
 
     class Meta:
         db_table = "resident_activity"
