@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% load crispy_forms_tags %}
+
+
+{% block content %}
+    <h1>{% translate "Create Resident Activity" %}</h1>
+    <form method="POST" action="" class="form">
+        {% csrf_token %}
+
+        {{ form|crispy }}
+
+        <button type="submit" class="btn btn-primary">
+            {% translate "Save" %}
+        </button>
+    </form>
+{% endblock %}
