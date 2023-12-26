@@ -9,7 +9,7 @@ from datetime import date
 from django.urls import reverse
 
 
-class ResidentActivityTestCase(TestCase):
+class ResidentActivityFormViewTestCase(TestCase):
     def setUp(self):
         # Create test data using factories
         self.home1 = HomeFactory(name="Home 1")
@@ -24,6 +24,47 @@ class ResidentActivityTestCase(TestCase):
             home=self.home1,
             resident=self.resident2,
             move_out=None,
+        )
+
+    def test_resident_activity_form_view_create_multiple_resident_activity(self):
+        """Test that multiple resident activities can be created with one POST
+        request."""
+        # Count of activities and resident activities before POST request
+        resident_activity_count_pre = ResidentActivity.objects.all().count()
+
+        activity_residents = [self.resident1.id, self.resident2.id]
+        # Prepare data for POST request
+        self.data = {
+            "residents": activity_residents,
+            "activity_date": date.today(),
+            "activity_type": Activity.ActivityTypeChoices.OUTDOOR,
+            "activity_minutes": 30,
+            "caregiver_role": Activity.CaregiverRoleChoices.NURSE,
+        }
+
+        # Make POST request
+        response = self.client.post(
+            reverse("resident-activity-form-view"),
+            self.data,
+        )
+
+        # The response should indicate a successful form submission
+        self.assertEqual(response.status_code, HTTPStatus.FOUND)
+
+        # Count of activities and resident activities after POST request
+        resident_activity_count_post = ResidentActivity.objects.all().count()
+
+        self.assertLess(
+            resident_activity_count_pre,
+            resident_activity_count_post,
+        )
+
+        expected_resident_activity_count = len(activity_residents)
+
+        # Ensure counts have increased by 2
+        self.assertEqual(
+            resident_activity_count_post,
+            expected_resident_activity_count,
         )
 
     def test_initial_resident_activity(self):
@@ -46,8 +87,8 @@ class ResidentActivityTestCase(TestCase):
         self.data = {
             "residents": [non_resident.id],
             "activity_type": Activity.ActivityTypeChoices.OUTDOOR,
-            "date": date.today(),
-            "duration_minutes": 30,
+            "activity_date": date.today(),
+            "activity_minutes": 30,
             "caregiver_role": Activity.CaregiverRoleChoices.NURSE,
         }
 
@@ -69,6 +110,10 @@ class ResidentActivityTestCase(TestCase):
 
         # form errors should include residency error
         self.assertTrue(response.context["form"].errors["residents"])
+
+        # Since there is no residency for the resident, the form should not be valid
+        # i.e., the resident ID is not a valid choice
+        self.assertIn("Select a valid choice.", str(response.context["form"].errors))
 
         # Count of activities and resident activities after POST request
         resident_activity_count_post = ResidentActivity.objects.all().count()
