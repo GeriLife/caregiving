@@ -153,6 +153,12 @@ def _structure_resident_data(
 
     Returns:
     dict: Dictionary containing structured data about residents' recent activities.
+        - start_date: The start date of the date range.
+        - end_date: The end date of the date range.
+        - residents: A list of dictionaries containing data about each resident.
+            - resident: The resident object.
+            - total_activity_count: The total number of activities for the resident.
+            - recent_activity_days: A list of dictionaries containing data about each day.
     """
     residents_data = []
     for index, row in pivot_result.iterrows():
