@@ -15,6 +15,97 @@ if TYPE_CHECKING:
     from residents.models import Resident
 
 
+def _generate_date_range(days_ago):
+    today = date.today()
+    return [today - timedelta(days=x) for x in range(days_ago)]
+
+
+def _create_resident_date_combinations(current_residents, date_range):
+    resident_date_combinations = [
+        {
+            "resident_id": resident.id,
+            "resident_full_name": resident.full_name,
+            "activity_date": activity_date,
+        }
+        for resident in current_residents
+        for activity_date in date_range
+    ]
+    return pd.DataFrame(resident_date_combinations)
+
+
+def _get_resident_activities(current_residents, date_range):
+    from metrics.models import ResidentActivity
+
+    activities = (
+        ResidentActivity.objects.filter(
+            resident__in=current_residents,
+            activity_date__gte=date_range[-1],
+        )
+        .values("resident_id", "activity_date")
+        .annotate(activity_count=Count("id"))
+    )
+    return pd.DataFrame(list(activities))
+
+
+def _merge_and_annotate(df_combinations, df_activities):
+    result = pd.merge(
+        df_combinations,
+        df_activities,
+        how="left",
+        on=["resident_id", "activity_date"],
+    )
+    result["had_activity"] = result["activity_count"] > 0
+    return result
+
+
+def _pivot_resident_data(result):
+    pivot_had_activity = result.pivot_table(
+        index=["resident_id", "resident_full_name"],
+        columns="activity_date",
+        values="had_activity",
+        fill_value=False,
+    )
+    total_activity_count = (
+        result.groupby(["resident_id", "resident_full_name"])["activity_count"]
+        .sum()
+        .reset_index()
+    )
+    total_activity_count.rename(
+        columns={"activity_count": "total_activity_count"},
+        inplace=True,
+    )
+    return pd.merge(
+        pivot_had_activity.reset_index(),
+        total_activity_count,
+        on=["resident_id", "resident_full_name"],
+        how="left",
+    )
+
+
+def _structure_resident_data(pivot_result, current_residents, date_range):
+    residents_data = []
+    for index, row in pivot_result.iterrows():
+        resident_data = {
+            "resident": current_residents.get(id=row["resident_id"]),
+            "total_activity_count": row["total_activity_count"],
+            "recent_activity_days": [
+                {"date": date, "was_active": row[date]}
+                for date in pivot_result.columns
+                if isinstance(date, datetime.date)
+            ],
+        }
+        resident_data["total_active_days"] = sum(
+            1 for day in resident_data["recent_activity_days"] if day["was_active"]
+        )
+        residents_data.append(resident_data)
+
+    return {
+        "start_date": date_range[-1],
+        "end_date": date_range[0],
+        "residents": residents_data,
+    }
+
+
 class Home(models.Model):
     name = models.CharField(max_length=25)
     # add a foreign key relationship to HomeGroup
@@ -55,122 +146,22 @@ class Home(models.Model):
 
     @property
     def current_residents_with_recent_activity_metadata(self):
-        from metrics.models import ResidentActivity
-
         current_residents = self.current_residents.all()
 
-        # Generate date range for the last 7 days
-        today = date.today()
-        days_ago = 7
-        date_range = [today - timedelta(days=x) for x in range(days_ago)]
-
-        # Create all combinations of residents and dates
-        resident_date_combinations = [
-            {
-                "resident_id": resident.id,
-                "resident_full_name": resident.full_name,
-                "activity_date": activity_date,
-            }
-            for resident in current_residents
-            for activity_date in date_range
-        ]
-
-        # Convert to DataFrame for easier processing
-        df_combinations = pd.DataFrame(resident_date_combinations)
-
-        # Get ResidentActivity data
-        activities = (
-            ResidentActivity.objects.filter(
-                resident__in=current_residents,
-                activity_date__gte=date_range[-1],
-            )
-            .values(
-                "resident_id",
-                "activity_date",
-            )
-            .annotate(activity_count=Count("id"))
+        date_range = _generate_date_range(7)
+        df_combinations = _create_resident_date_combinations(
+            current_residents,
+            date_range,
         )
+        df_activities = _get_resident_activities(current_residents, date_range)
 
-        df_activities = pd.DataFrame(list(activities))
-
-        # Merge and annotate
-        # Left join the combinations with activities
-        result = pd.merge(
-            df_combinations,
-            df_activities,
-            how="left",
-            on=["resident_id", "activity_date"],
+        result = _merge_and_annotate(df_combinations, df_activities)
+        pivot_result = _pivot_resident_data(result)
+        structured_data = _structure_resident_data(
+            pivot_result,
+            current_residents,
+            date_range,
         )
-
-        # Fill NaN in activity_count with 0 and add had_activity column
-        # result["activity_count"] = result["activity_count"].fillna(0)
-        result["had_activity"] = result["activity_count"] > 0
-
-        # Pivot the DataFrame
-        pivot_had_activity = result.pivot_table(
-            index=["resident_id", "resident_full_name"],
-            columns="activity_date",
-            values="had_activity",
-            fill_value=False,  # Fill missing values with False
-        )
-
-        # Calculate total activity count for each resident
-        total_activity_count = (
-            result.groupby(
-                [
-                    "resident_id",
-                    "resident_full_name",
-                ],
-            )["activity_count"]
-            .sum()
-            .reset_index()
-        )
-        total_activity_count.rename(
-            columns={"activity_count": "total_activity_count"},
-            inplace=True,
-        )
-
-        # Merge the had_activity pivot with the total activity count
-        pivot_result = pd.merge(
-            pivot_had_activity.reset_index(),
-            total_activity_count,
-            on=["resident_id", "resident_full_name"],
-            how="left",
-        )
-
-        # Sort the final DataFrame by resident_full_name
-        pivot_result = pivot_result.sort_values(by="resident_full_name")
-
-        # Convert the DataFrame to a more structured format
-        residents_data = []
-        for index, row in pivot_result.iterrows():
-            resident_data = {
-                "resident": current_residents.get(id=row["resident_id"]),
-                "total_activity_count": row["total_activity_count"],
-                "recent_activity_days": [
-                    {"date": date, "was_active": row[date]}
-                    for date in pivot_result.columns
-                    if isinstance(date, datetime.date)
-                ],
-            }
-
-            # count the total days where is_active is true
-            resident_data["total_active_days"] = sum(
-                [
-                    1
-                    for day in resident_data["recent_activity_days"]
-                    if day["was_active"]
-                ],
-            )
-
-            residents_data.append(resident_data)
-
-        # add the start_date and end_date to the structured data along with residents data
-        structured_data = {
-            "start_date": date_range[-1],
-            "end_date": date_range[0],
-            "residents": residents_data,
-        }
 
         return structured_data
 
