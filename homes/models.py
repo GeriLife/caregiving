@@ -153,6 +153,16 @@ class Home(models.Model):
                     if isinstance(date, datetime.date)
                 ],
             }
+
+            # count the total days where is_active is true
+            resident_data["total_active_days"] = sum(
+                [
+                    1
+                    for day in resident_data["recent_activity_days"]
+                    if day["was_active"]
+                ],
+            )
+
             residents_data.append(resident_data)
 
         # add the start_date and end_date to the structured data along with residents data

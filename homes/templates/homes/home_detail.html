@@ -16,8 +16,9 @@
                 <caption>{% translate "Table of residents showing current activity status, total activity count, and daily activity indicators for past seven days." %}</caption>
                 <tr>
                     <th>{% translate "Name" %}</th>
-                    <th>{% translate "Status" %}</th>
+                    <th>{% translate "Activity Level" %}</th>
                     <th class="text-center">{% translate "Total Activities" %}</th>
+                    <th>{% translate "Active Days" %}</th>
                     {% for day in home.current_residents_with_recent_activity_metadata.residents.0.recent_activity_days %}
                         <th class="text-center">{{ day.date|date:"l" }}</th> <!-- Show day names -->
                     {% endfor %}
@@ -31,6 +32,7 @@
                             </span>
                         </td>
                         <td class="text-center">{{ resident.total_activity_count|floatformat:"0" }}</td>
+                        <td class="text-center">{{ resident.total_active_days }}</td>
                         {% for day in resident.recent_activity_days %}
                             <td class="text-center">
                                 {% if day.was_active %}

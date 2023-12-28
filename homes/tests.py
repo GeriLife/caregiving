@@ -251,6 +251,11 @@ class CurrentResidentsWithRecentActivityMetadataTest(TestCase):
             7,
         )  # Assuming one activity per day
 
+        self.assertEqual(
+            data["residents"][0]["total_active_days"],
+            7,
+        )  # Assuming activity every day
+
         # Check the start and end dates
         self.assertEqual(
             data["start_date"],
