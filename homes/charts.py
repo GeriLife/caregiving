@@ -45,9 +45,16 @@ def prepare_activity_counts_by_resident_and_activity_type_chart(home):
             "resident_name": _("Resident Name"),
             "activity_type": _("Activity Type"),
         },
-    ).to_html()
+        template="plotly_dark",
+    )
 
-    return activity_counts_by_resident_and_activity_type_chart
+    # Set plot background/paper color to transparent
+    activity_counts_by_resident_and_activity_type_chart.update_layout(
+        plot_bgcolor="rgba(0, 0, 0, 0)",
+        paper_bgcolor="rgba(0, 0, 0, 0)",
+    )
+
+    return activity_counts_by_resident_and_activity_type_chart.to_html()
 
 
 def get_daily_total_hours_by_role_and_work_type_with_percent(home_id):
