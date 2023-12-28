@@ -1,3 +1,4 @@
+from datetime import date, timedelta
 from io import StringIO
 from django.core.management import call_command
 from django.test import TestCase
@@ -216,3 +217,54 @@ class MakeHomeTest(TestCase):
         except CommandError:
             home_count = Home.objects.count()
             self.assertEqual(home_count, 0)
+
+
+class CurrentResidentsWithRecentActivityMetadataTest(TestCase):
+    def setUp(self):
+        # Create a Home instance
+        self.home = HomeFactory.create()
+
+        # Create a Resident instance
+        self.resident = ResidentFactory.create()
+
+        # Create a Residency instance linking Home and Resident
+        ResidencyFactory.create(home=self.home, resident=self.resident)
+
+        # Create ResidentActivity instances
+        today = date.today()
+        for i in range(7):
+            activity_date = today - timedelta(days=i)
+            ResidentActivityFactory.create(
+                resident=self.resident,
+                activity_date=activity_date,
+            )
+
+    def test_current_residents_with_recent_activity_metadata(self):
+        # Get the data from the property
+        data = self.home.current_residents_with_recent_activity_metadata
+
+        # Assertions
+        self.assertEqual(len(data["residents"]), 1)  # Should have one resident
+        self.assertEqual(data["residents"][0]["resident"], self.resident)
+        self.assertEqual(
+            data["residents"][0]["total_activity_count"],
+            7,
+        )  # Assuming one activity per day
+
+        # Check the start and end dates
+        self.assertEqual(
+            data["start_date"],
+            date.today() - timedelta(days=6),
+        )
+        self.assertEqual(
+            data["end_date"],
+            date.today(),
+        )
+
+        # Check for recent activity days data
+        for day_data in data["residents"][0]["recent_activity_days"]:
+            self.assertIn(
+                day_data["date"],
+                [date.today() - timedelta(days=i) for i in range(7)],
+            )
+            self.assertTrue(day_data["was_active"])  # Assuming activity every day
