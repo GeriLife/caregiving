@@ -1,8 +1,9 @@
+{% load l10n %}
 <div class="bar-container">
     {% for item in data %}
         <span
             class="bar bg-{{ item.activity_level_class}}"
-            style="width: {{ item.value }}%; background-color: {{ item.color }}"
+            style="width: {{ item.value|unlocalize }}%;"
             aria-label="{{ item.activity_level_label }}: {{ item.value }}%"
             title="{{ item.activity_level_label }}: {{ item.value }}%"></span>
     {% endfor %}

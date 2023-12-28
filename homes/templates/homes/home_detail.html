@@ -6,26 +6,43 @@
         <h1>{{ home.name }}</h1>
 
         <p>{% translate "Percent of residents by activity level" %}</p>
-        {% include "homes/home_residents_activity_percents.html" with data=home.resident_counts_by_activity_level_chart_data %}
 
+        {% include "homes/home_residents_activity_percents.html" with data=home.resident_counts_by_activity_level_chart_data %}
 
         {% if home.current_residents %}
             <h2 class="mt-3">{% translate "Current Residents" %}</h2>
 
-            <div class="row mb-3">
-                <div class="col-md-5">
-                    <ul class="list-group">
-                        {% for resident in home.current_residents %}
-                            <li class="list-group-item d-flex justify-content-between align-items-center">
-                                <a href="{{ resident.get_absolute_url }}" class="stretched-link">{{ resident.full_name }}</a>
-                                <span class="badge text-bg-{{ resident.activity_level.color_class }}">
-                                    {{ resident.activity_level.text }}
-                                </span>
-                            </li>
+            <table class="table">
+                <caption>{% translate "Table of residents showing current activity status, total activity count, and daily activity indicators for past seven days." %}</caption>
+                <tr>
+                    <th>{% translate "Name" %}</th>
+                    <th>{% translate "Activity Level" %}</th>
+                    <th class="text-center">{% translate "Total Activities" %}</th>
+                    <th>{% translate "Active Days" %}</th>
+                    {% for day in home.current_residents_with_recent_activity_metadata.residents.0.recent_activity_days %}
+                        <th class="text-center">{{ day.date|date:"l" }}</th> <!-- Show day names -->
+                    {% endfor %}
+                </tr>
+                {% for resident in home.current_residents_with_recent_activity_metadata.residents %}
+                    <tr>
+                        <td>{{ resident.resident.full_name }}</td>
+                        <td>
+                            <span class="badge text-bg-{{ resident.resident.activity_level.color_class }}">
+                                {{ resident.resident.activity_level.text }}
+                            </span>
+                        </td>
+                        <td class="text-center">{{ resident.total_activity_count|floatformat:"0" }}</td>
+                        <td class="text-center">{{ resident.total_active_days }}</td>
+                        {% for day in resident.recent_activity_days %}
+                            <td class="text-center">
+                                {% if day.was_active %}
+                                    <i class="bi bi-check-lg text-success"></i>
+                                {% endif %}
+                            </td>
                         {% endfor %}
-                    </ul>
-                </div>
-            </div>
+                    </tr>
+                {% endfor %}
+            </table>
         {% endif %}
 
         {% include "homes/home_detail_charts.html" %}
