@@ -42,6 +42,9 @@ def _create_resident_date_combinations(
 
     Returns:
     pd.DataFrame: DataFrame with resident ID, full name, and activity date for each combination.
+        - resident_id: The resident's ID.
+        - resident_full_name: The resident's full name.
+        - activity_date: The date of the activity.
     """
     resident_date_combinations = [
         {
@@ -68,6 +71,9 @@ def _get_resident_activities(
 
     Returns:
     pd.DataFrame: DataFrame with resident activities including count.
+        - resident_id: The resident's ID.
+        - activity_date: The date of the activity.
+        - activity_count: The number of activities for the resident on the date.
     """
     from metrics.models import ResidentActivity
 
@@ -95,6 +101,11 @@ def _merge_and_annotate(
 
     Returns:
     pd.DataFrame: Merged DataFrame annotated with activity presence.
+        - resident_id: The resident's ID.
+        - resident_full_name: The resident's full name.
+        - activity_date: The date of the activity.
+        - activity_count: The number of activities for the resident on the date.
+        - had_activity: Boolean indicating whether the resident had activity on the date.
     """
     result = pd.merge(
         df_combinations,
@@ -115,6 +126,10 @@ def _pivot_resident_data(result: pd.DataFrame) -> pd.DataFrame:
 
     Returns:
     pd.DataFrame: Pivoted DataFrame with residents and their activities across dates.
+        - resident_id: The resident's ID.
+        - resident_full_name: The resident's full name.
+        - total_activity_count: The total number of activities for the resident.
+        - one column for each date in the date range, with a boolean indicating whether the resident had activity on the date.
     """
     pivot_had_activity = result.pivot_table(
         index=["resident_id", "resident_full_name"],
