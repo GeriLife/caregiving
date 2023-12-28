@@ -2,7 +2,7 @@ import datetime
 from typing import TYPE_CHECKING
 from django.db.models import Count, Q, QuerySet
 from django.utils import timezone
-from datetime import date, timedelta
+from datetime import timedelta
 from django.db import models
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
@@ -15,12 +15,34 @@ if TYPE_CHECKING:
     from residents.models import Resident
 
 
-def _generate_date_range(days_ago):
-    today = date.today()
-    return [today - timedelta(days=x) for x in range(days_ago)]
+def _generate_date_range(days_ago: int) -> list[datetime.date]:
+    """Generates a list of dates starting from today and going back a specified
+    number of days.
+
+    Args:
+    days_ago (int): Number of days to go back from today.
+
+    Returns:
+    List[datetime.date]: A list of dates.
+    """
+    today = datetime.date.today()
+    return [today - datetime.timedelta(days=x) for x in range(days_ago)]
 
 
-def _create_resident_date_combinations(current_residents, date_range):
+def _create_resident_date_combinations(
+    current_residents: QuerySet,
+    date_range: list[datetime.date],
+) -> pd.DataFrame:
+    """Creates a DataFrame containing combinations of resident IDs, full names,
+    and dates.
+
+    Args:
+    current_residents (QuerySet): QuerySet of current residents.
+    date_range (List[datetime.date]): List of dates for the range.
+
+    Returns:
+    pd.DataFrame: DataFrame with resident ID, full name, and activity date for each combination.
+    """
     resident_date_combinations = [
         {
             "resident_id": resident.id,
@@ -33,7 +55,20 @@ def _create_resident_date_combinations(current_residents, date_range):
     return pd.DataFrame(resident_date_combinations)
 
 
-def _get_resident_activities(current_residents, date_range):
+def _get_resident_activities(
+    current_residents: QuerySet,
+    date_range: list[datetime.date],
+) -> pd.DataFrame:
+    """Fetches the count of activities for each resident within the specified
+    date range.
+
+    Args:
+    current_residents (QuerySet): QuerySet of current residents.
+    date_range (List[datetime.date]): List of dates for the range.
+
+    Returns:
+    pd.DataFrame: DataFrame with resident activities including count.
+    """
     from metrics.models import ResidentActivity
 
     activities = (
@@ -47,7 +82,20 @@ def _get_resident_activities(current_residents, date_range):
     return pd.DataFrame(list(activities))
 
 
-def _merge_and_annotate(df_combinations, df_activities):
+def _merge_and_annotate(
+    df_combinations: pd.DataFrame,
+    df_activities: pd.DataFrame,
+) -> pd.DataFrame:
+    """Merges two DataFrames and annotates the result with a boolean indicating
+    activity presence.
+
+    Args:
+    df_combinations (pd.DataFrame): DataFrame of resident-date combinations.
+    df_activities (pd.DataFrame): DataFrame of resident activities.
+
+    Returns:
+    pd.DataFrame: Merged DataFrame annotated with activity presence.
+    """
     result = pd.merge(
         df_combinations,
         df_activities,
@@ -58,7 +106,16 @@ def _merge_and_annotate(df_combinations, df_activities):
     return result
 
 
-def _pivot_resident_data(result):
+def _pivot_resident_data(result: pd.DataFrame) -> pd.DataFrame:
+    """Pivots a DataFrame to have residents as rows, dates as columns, and
+    activity presence as values.
+
+    Args:
+    result (pd.DataFrame): The DataFrame to pivot.
+
+    Returns:
+    pd.DataFrame: Pivoted DataFrame with residents and their activities across dates.
+    """
     pivot_had_activity = result.pivot_table(
         index=["resident_id", "resident_full_name"],
         columns="activity_date",
@@ -82,7 +139,21 @@ def _pivot_resident_data(result):
     )
 
 
-def _structure_resident_data(pivot_result, current_residents, date_range):
+def _structure_resident_data(
+    pivot_result: pd.DataFrame,
+    current_residents: QuerySet,
+    date_range: list[datetime.date],
+) -> dict:
+    """Structures the resident data into a dictionary format for easy access.
+
+    Args:
+    pivot_result (pd.DataFrame): Pivoted DataFrame of residents' activities.
+    current_residents (QuerySet): QuerySet of current residents.
+    date_range (List[datetime.date]): Date range for the activities.
+
+    Returns:
+    dict: Dictionary containing structured data about residents' recent activities.
+    """
     residents_data = []
     for index, row in pivot_result.iterrows():
         resident_data = {
