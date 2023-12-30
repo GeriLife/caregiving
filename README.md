@@ -184,5 +184,5 @@ This project follows the [All Contributors](https://github.com/all-contributors/
 
 ## Citations
 
-- ChatGPT. (2023). Contributions to GeriLife README (Dec 30 version) [Large language model]. OpenAI. https://openai.com
-- Grammarly. (2023). Contributsions to GeriLife README (Dec 30 version) [Large language model]. https://grammarly.com/
+- ChatGPT. (2023). Contributions to GeriLife README (Dec 30, 2023 version) [Large language model]. OpenAI. https://openai.com
+- Grammarly. (2023). Contributsions to GeriLife README (Dec 30, 2023 version) [Large language model]. https://grammarly.com
