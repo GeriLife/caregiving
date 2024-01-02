@@ -20,7 +20,7 @@ class HomeModelTests(TestCase):
         self.home1 = HomeFactory(name="Home 1")
 
         self.home_1_current_resident_inactive = ResidentFactory(first_name="Alice")
-        self.home_1_current_resident_active = ResidentFactory(first_name="Paulene")
+        self.home_1_current_resident_low_active = ResidentFactory(first_name="Paulene")
 
         self.home_1_past_resident = ResidentFactory(first_name="Bob")
 
@@ -31,7 +31,7 @@ class HomeModelTests(TestCase):
             move_out=None,
         )
         self.home_1_current_resident_active_residency = ResidencyFactory(
-            resident=self.home_1_current_resident_active,
+            resident=self.home_1_current_resident_low_active,
             home=self.home1,
             move_in="2020-01-01",
             move_out=None,
@@ -46,7 +46,7 @@ class HomeModelTests(TestCase):
         today = timezone.now()
 
         self.home_1_current_resident_active_resident_activity = ResidentActivityFactory(
-            resident=self.home_1_current_resident_active,
+            resident=self.home_1_current_resident_low_active,
             activity_date=today,
             home=self.home1,
             residency=self.home_1_current_resident_active_residency,
@@ -58,15 +58,15 @@ class HomeModelTests(TestCase):
         self.assertEqual(Resident.objects.count(), 3)
         self.assertEqual(ResidentActivity.objects.count(), 1)
 
-        # assert home_1_current_resident_active in self.home_1_current_resident_active_activity.residents
+        # assert home_1_current_resident_low_active in self.home_1_current_resident_active_activity.residents
         self.assertEqual(
-            self.home_1_current_resident_active,
+            self.home_1_current_resident_low_active,
             self.home_1_current_resident_active_resident_activity.resident,
         )
-        # assert self.home_1_current_resident_active.recent_activity_count == 1
+        # assert self.home_1_current_resident_low_active.recent_activity_count == 1
         expected_recent_activity_count = 1
         self.assertEqual(
-            self.home_1_current_resident_active.get_recent_activity_count(),
+            self.home_1_current_resident_low_active.get_recent_activity_count(),
             expected_recent_activity_count,
         )
 
@@ -83,7 +83,7 @@ class HomeModelTests(TestCase):
             current_residents_home1,
         )
         self.assertIn(
-            self.home_1_current_resident_active,
+            self.home_1_current_resident_low_active,
             current_residents_home1,
         )
         self.assertNotIn(
@@ -102,7 +102,7 @@ class HomeModelTests(TestCase):
                 "recent_activity_count": 0,
             },
             {
-                "resident": self.home_1_current_resident_active,
+                "resident": self.home_1_current_resident_low_active,
                 "recent_activity_count": 1,
             },
         ]
