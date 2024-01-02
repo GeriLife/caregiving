@@ -137,6 +137,27 @@ class HomeModelTests(TestCase):
             expected_resident_counts_by_activity_level,
         )
 
+    def test_get_resident_percents_by_activity_level_normalized(self):
+        home1_resident_percents_by_activity_level_normalized = (
+            self.home1.get_resident_percents_by_activity_level_normalized()
+        )
+
+        expected_resident_percents_by_activity_level_normalized = {
+            "total_count": 2,
+            "inactive_count": 1,
+            "low_active_count": 1,
+            "good_active_count": 0,
+            "high_active_count": 0,
+            "inactive_percent": 50.0,
+            "low_active_percent": 50.0,
+            "good_active_percent": 0.0,
+            "high_active_percent": 0.0,
+        }
+        self.assertEqual(
+            home1_resident_percents_by_activity_level_normalized,
+            expected_resident_percents_by_activity_level_normalized,
+        )
+
     def test_home_resident_counts_by_activity_level_chart_data(self):
         home1_resident_counts_by_activity_level_chart_data = (
             self.home1.resident_counts_by_activity_level_chart_data
