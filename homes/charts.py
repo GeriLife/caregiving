@@ -7,7 +7,7 @@ from core.constants import DAY_MILLISECONDS
 from homes.models import Home
 
 from homes.queries import (
-    get_activity_counts_by_resident_and_activity_type,
+    home_activity_hours_by_resident_and_type,
     get_daily_total_hours_by_role_and_work_type_with_percent,
     get_home_total_hours_by_role_with_percent,
     get_total_hours_by_role_and_work_type_with_percent,
@@ -42,21 +42,21 @@ def _apply_caregiver_role_locale(df: pd.DataFrame) -> pd.DataFrame:
 def prepare_activity_counts_by_resident_and_activity_type_chart(home: Home) -> str:
     """Prepare the activity counts by resident and activity type chart."""
     activity_counts_by_resident_and_activity_type = (
-        get_activity_counts_by_resident_and_activity_type(home.id)
+        home_activity_hours_by_resident_and_type(home)
     )
 
     _apply_activity_type_locale(activity_counts_by_resident_and_activity_type)
 
     activity_counts_by_resident_and_activity_type_chart = px.bar(
         activity_counts_by_resident_and_activity_type,
-        x="activity_count",
-        y="resident_name",
+        x="activity_hours",
+        y="full_name",
         color="activity_type",
         orientation="h",
         title=_("Resident activity count by type"),
         labels={
-            "activity_count": _("Activity Count"),
-            "resident_name": _("Resident Name"),
+            "activity_hours": _("Activity Hours"),
+            "full_name": _("Resident Name"),
             "activity_type": _("Activity Type"),
         },
         template="plotly_dark",

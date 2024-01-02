@@ -1,7 +1,7 @@
 from datetime import timedelta
 from django.db import connection
-from django.db.models import Sum
-from django.db.models.functions import TruncMonth
+from django.db.models import Sum, Value
+from django.db.models.functions import Concat, TruncMonth
 from django.utils import timezone
 import pandas as pd
 
@@ -13,22 +13,6 @@ def dictfetchall(cursor):
     cursor."""
     columns = [col[0] for col in cursor.description]
     return [dict(zip(columns, row)) for row in cursor.fetchall()]
-
-
-def get_activity_counts_by_resident_and_activity_type(home_id):
-    query = """
-        SELECT COUNT(ra.resident_id) AS activity_count, ra.activity_type AS activity_type, r.first_name || ' ' || r.last_initial AS resident_name
-        FROM resident_activity AS ra
-        JOIN resident AS r ON ra.resident_id = r.id
-        WHERE ra.home_id = %s
-        GROUP BY ra.resident_id, ra.activity_type
-    """
-    with connection.cursor() as cursor:
-        cursor.execute(query, [home_id])
-
-        result = dictfetchall(cursor)
-
-    return pd.DataFrame(result)
 
 
 def get_daily_total_hours_by_role_and_work_type_with_percent(home_id):
@@ -172,6 +156,35 @@ def home_monthly_activity_hours_by_caregiver_role(home) -> pd.DataFrame:
         )
         .values("month", "caregiver_role")
         .order_by("month")
+        .annotate(activity_hours=Sum("activity_minutes") / HOUR_MINUTES)
+    )
+
+    return pd.DataFrame(list(activities))
+
+
+def home_activity_hours_by_resident_and_type(home) -> pd.DataFrame:
+    """Returns a DataFrame of hours of activities grouped by resident and
+    activity type."""
+
+    from metrics.models import ResidentActivity
+
+    today = timezone.now()
+    one_year_ago = today - timedelta(days=YEAR_DAYS)
+
+    activities = (
+        ResidentActivity.objects.filter(
+            activity_date__gte=one_year_ago,
+            home=home,
+        )
+        .values("resident", "activity_type")
+        .order_by("resident")
+        .annotate(
+            full_name=Concat(
+                "resident__first_name",
+                Value(" "),
+                "resident__last_initial",
+            ),
+        )
         .annotate(activity_hours=Sum("activity_minutes") / HOUR_MINUTES)
     )
 
