@@ -4,6 +4,7 @@ from django.db import models
 from django.utils.translation import gettext_lazy as _
 
 from caregivers.models import CaregiverRole
+from core.constants import HOUR_MINUTES
 from homes.models import Home
 
 
@@ -60,9 +61,7 @@ class Work(models.Model):
         )
 
     def get_duration_hours(self):
-        minutes_in_hour = 60
-
-        return self.duration_minutes / minutes_in_hour
+        return self.duration_minutes / HOUR_MINUTES
 
     def save(self, *args, **kwargs):
         self.duration_hours = self.get_duration_hours()

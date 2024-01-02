@@ -1,63 +1,62 @@
-from django.db import connection
 from django.db.models import Sum
 from django.utils.translation import gettext as _
 
 import pandas as pd
 import plotly.express as px
+from core.constants import DAY_MILLISECONDS
+from homes.models import Home
+
+from homes.queries import (
+    home_activity_hours_by_resident_and_type,
+    get_daily_total_hours_by_role_and_work_type_with_percent,
+    get_home_total_hours_by_role_with_percent,
+    get_total_hours_by_role_and_work_type_with_percent,
+    home_monthly_activity_hours_by_caregiver_role,
+    home_monthly_activity_hours_by_type,
+)
 
 from metrics.models import ResidentActivity
 
 
-def dictfetchall(cursor):
-    """Return a list of dictionaries containing all rows from a database
-    cursor."""
-    columns = [col[0] for col in cursor.description]
-    return [dict(zip(columns, row)) for row in cursor.fetchall()]
-
-
-def get_activity_counts_by_resident_and_activity_type(home_id):
-    query = """
-        SELECT COUNT(ra.resident_id) AS activity_count, ra.activity_type AS activity_type, r.first_name || ' ' || r.last_initial AS resident_name
-        FROM resident_activity AS ra
-        JOIN resident AS r ON ra.resident_id = r.id
-        WHERE ra.home_id = %s
-        GROUP BY ra.resident_id, ra.activity_type
-    """
-    with connection.cursor() as cursor:
-        cursor.execute(query, [home_id])
-
-        result = dictfetchall(cursor)
-
-    return pd.DataFrame(result)
-
-
-def prepare_activity_counts_by_resident_and_activity_type_chart(home):
-    activity_counts_by_resident_and_activity_type = (
-        get_activity_counts_by_resident_and_activity_type(home.id)
-    )
-
-    # Create a mapping from the enum to localized labels
+def _apply_activity_type_locale(df: pd.DataFrame) -> pd.DataFrame:
+    """Apply the localized labels to the activity_type column."""
     activity_type_mapping = {
         choice.value: _(choice.label) for choice in ResidentActivity.ActivityTypeChoices
     }
 
     # Apply the mapping to localize the activity_type values
-    activity_counts_by_resident_and_activity_type[
-        "activity_type"
-    ] = activity_counts_by_resident_and_activity_type["activity_type"].map(
-        activity_type_mapping,
+    df["activity_type"] = df["activity_type"].map(activity_type_mapping)
+
+
+def _apply_caregiver_role_locale(df: pd.DataFrame) -> pd.DataFrame:
+    """Apply the localized labels to the caregiver_role column."""
+    caregiver_role_mapping = {
+        choice.value: _(choice.label)
+        for choice in ResidentActivity.CaregiverRoleChoices
+    }
+
+    # Apply the mapping to localize the caregiver_role values
+    df["caregiver_role"] = df["caregiver_role"].map(caregiver_role_mapping)
+
+
+def prepare_activity_counts_by_resident_and_activity_type_chart(home: Home) -> str:
+    """Prepare the activity counts by resident and activity type chart."""
+    activity_counts_by_resident_and_activity_type = (
+        home_activity_hours_by_resident_and_type(home)
     )
+
+    _apply_activity_type_locale(activity_counts_by_resident_and_activity_type)
 
     activity_counts_by_resident_and_activity_type_chart = px.bar(
         activity_counts_by_resident_and_activity_type,
-        x="activity_count",
-        y="resident_name",
+        x="activity_hours",
+        y="full_name",
         color="activity_type",
         orientation="h",
         title=_("Resident activity count by type"),
         labels={
-            "activity_count": _("Activity Count"),
-            "resident_name": _("Resident Name"),
+            "activity_hours": _("Activity hours"),
+            "full_name": _("Resident Name"),
             "activity_type": _("Activity Type"),
         },
         template="plotly_dark",
@@ -72,104 +71,8 @@ def prepare_activity_counts_by_resident_and_activity_type_chart(home):
     return activity_counts_by_resident_and_activity_type_chart.to_html()
 
 
-def get_daily_total_hours_by_role_and_work_type_with_percent(home_id):
-    query = """
-    with daily_work_totals_by_type as (
-        select
-            date,
-            caregiver_role.name as role_name,
-            work_type.name as work_type,
-            sum(duration_hours) as daily_total_hours
-        from work
-        left join work_type on type_id = work_type.id
-        left join caregiver_role on caregiver_role_id = caregiver_role.id
-        where home_id = %s
-        group by date, role_name, work_type
-    ),
-    daily_work_totals_by_type_with_role_total_hours as (
-        select
-            *,
-            sum(daily_total_hours) over (partition by date, role_name) as daily_role_total_hours
-        from daily_work_totals_by_type
-    )
-
-    select
-        *,
-        CAST(daily_total_hours as float) / CAST(daily_role_total_hours as float) as percent_of_daily_role_total_hours
-    from daily_work_totals_by_type_with_role_total_hours;
-    """
-
-    with connection.cursor() as cursor:
-        cursor.execute(query, [home_id])
-
-        result = dictfetchall(cursor)
-
-    return result
-
-
-def get_total_hours_by_role_and_work_type_with_percent(home_id):
-    query = """
-    with work_totals_by_type as (
-        select
-            caregiver_role.name as role_name,
-            work_type.name as work_type,
-            sum(duration_hours) as total_hours
-        from work
-        left join work_type on type_id = work_type.id
-        left join caregiver_role on caregiver_role_id = caregiver_role.id
-        where home_id = %s
-        group by role_name, work_type
-    ),
-    work_totals_by_type_with_role_total_hours as (
-        select
-            *,
-            sum(total_hours) over (partition by role_name) as role_total_hours
-        from work_totals_by_type
-    )
-
-    select
-        *,
-        CAST(total_hours as float) / CAST(role_total_hours as float) as percent_of_role_total_hours
-    from work_totals_by_type_with_role_total_hours;
-    """
-
-    with connection.cursor() as cursor:
-        cursor.execute(query, [home_id])
-
-        result = dictfetchall(cursor)
-
-    return result
-
-
-def get_home_total_hours_by_role_with_percent(home_id):
-    query = """
-    with work_totals_by_caregiver_role as (
-        select
-            home.name as home_name,
-            caregiver_role.name as role_name,
-            CAST(sum(duration_hours) as FLOAT) as total_hours
-        from work
-        left join home on home_id = home.id
-        left join caregiver_role on caregiver_role_id = caregiver_role.id
-        where home_id = %s
-        group by home_name, role_name
-    )
-
-    select
-        *,
-        (total_hours / SUM(total_hours) over ()) as percent_of_role_total_hours
-    from work_totals_by_caregiver_role;
-    """
-
-    with connection.cursor() as cursor:
-        cursor.execute(query, [home_id])
-
-        result = dictfetchall(cursor)
-
-    return result
-
-
-def prepare_work_by_type_chart(home):
+def prepare_work_by_type_chart(home: Home) -> str:
+    """Prepare the work hours by type chart."""
     work_by_type = list(
         home.work_performed.values("type__name")
         .order_by("type__name")
@@ -189,7 +92,8 @@ def prepare_work_by_type_chart(home):
     return work_by_type_chart
 
 
-def prepare_work_by_caregiver_role_chart(home):
+def prepare_work_by_caregiver_role_chart(home: Home) -> str:
+    """Prepare the work hours by caregiver role chart."""
     work_by_caregiver_role = list(
         home.work_performed.values("caregiver_role__name")
         .order_by("caregiver_role__name")
@@ -210,7 +114,8 @@ def prepare_work_by_caregiver_role_chart(home):
     return work_by_caregiver_role_chart
 
 
-def prepare_daily_work_percent_by_caregiver_role_and_type_chart(home):
+def prepare_daily_work_percent_by_caregiver_role_and_type_chart(home: Home) -> str:
+    """Prepare the daily work percent by caregiver role and work type chart."""
     daily_total_hours_by_role_and_work_type_with_percent = (
         get_daily_total_hours_by_role_and_work_type_with_percent(home.id)
     )
@@ -240,13 +145,15 @@ def prepare_daily_work_percent_by_caregiver_role_and_type_chart(home):
     )
 
     # Ensure that all bar widths are one day (where units are in milliseconds)
-    one_day = 24 * 60 * 60 * 1000
-    daily_work_percent_by_caregiver_role_and_type_chart.update_traces(width=one_day)
+    daily_work_percent_by_caregiver_role_and_type_chart.update_traces(
+        width=DAY_MILLISECONDS,
+    )
 
     return daily_work_percent_by_caregiver_role_and_type_chart.to_html()
 
 
-def prepare_home_work_percent_by_caregiver_role_chart(home):
+def prepare_home_work_percent_by_caregiver_role_chart(home: Home) -> str:
+    """Prepare the home work percent by caregiver role chart."""
     home_work_percent_by_caregiver_role = get_home_total_hours_by_role_with_percent(
         home.id,
     )
@@ -291,8 +198,9 @@ def prepare_home_work_percent_by_caregiver_role_chart(home):
 
 
 def prepare_work_percent_by_caregiver_role_and_type_chart(
-    work_by_caregiver_role_and_type_with_percent,
-):
+    work_by_caregiver_role_and_type_with_percent: list[dict],
+) -> str:
+    """Prepare the work percent by caregiver role and work type chart."""
     work_percent_by_caregiver_role_and_type_chart = px.bar(
         work_by_caregiver_role_and_type_with_percent,
         x="role_name",
@@ -312,8 +220,9 @@ def prepare_work_percent_by_caregiver_role_and_type_chart(
 
 
 def prepare_work_by_caregiver_role_and_type_chart(
-    work_by_caregiver_role_and_type_with_percent,
-):
+    work_by_caregiver_role_and_type_with_percent: list[dict],
+) -> str:
+    """Prepare the work hours by caregiver role and work type chart."""
     work_by_caregiver_role_and_type_chart = px.bar(
         work_by_caregiver_role_and_type_with_percent,
         x="role_name",
@@ -330,7 +239,7 @@ def prepare_work_by_caregiver_role_and_type_chart(
     return work_by_caregiver_role_and_type_chart.to_html()
 
 
-def prepare_work_by_caregiver_role_and_type_charts(context):
+def prepare_work_by_caregiver_role_and_type_charts(context: dict) -> dict:
     home = context["home"]
 
     work_by_caregiver_role_and_type_with_percent = (
@@ -352,33 +261,27 @@ def prepare_work_by_caregiver_role_and_type_charts(context):
     return context
 
 
-def prepare_monthly_activity_counts_by_type_chart(home):
-    monthly_activity_counts_by_type = home.monthly_activity_counts_by_type
+def prepare_monthly_activity_hours_by_type_chart(home: Home) -> str:
+    """Prepare the monthly activity hours by type chart."""
+    monthly_activity_hours_by_type = home_monthly_activity_hours_by_type(home)
 
-    # Create a mapping from the enum to localized labels
-    activity_type_mapping = {
-        choice.value: _(choice.label) for choice in ResidentActivity.ActivityTypeChoices
-    }
+    _apply_activity_type_locale(monthly_activity_hours_by_type)
 
-    # Apply the mapping to localize the activity_type values
-    monthly_activity_counts_by_type["activity_type"] = monthly_activity_counts_by_type[
-        "activity_type"
-    ].map(activity_type_mapping)
-
-    monthly_activity_counts_by_type_chart = px.bar(
-        monthly_activity_counts_by_type,
+    monthly_activity_hours_by_type_chart = px.bar(
+        monthly_activity_hours_by_type,
         x="month",
-        y="count",
+        y="activity_hours",
         color="activity_type",
-        title=_("Monthly activity counts by type"),
+        title=_("Monthly activity hours by type"),
         labels={
+            "month": _("Month"),
+            "activity_hours": _("Activity hours"),
             "activity_type": _("Activity type"),
-            "activity_count": _("Activity count"),
         },
     )
 
     # Set plot background/paper color to transparent
-    monthly_activity_counts_by_type_chart.update_layout(
+    monthly_activity_hours_by_type_chart.update_layout(
         plot_bgcolor="rgba(0, 0, 0, 0)",
         paper_bgcolor="rgba(0, 0, 0, 0)",
         # ensure text is visible on dark background
@@ -390,4 +293,41 @@ def prepare_monthly_activity_counts_by_type_chart(home):
         },
     )
 
-    return monthly_activity_counts_by_type_chart.to_html()
+    return monthly_activity_hours_by_type_chart.to_html()
+
+
+def prepare_monthly_activity_hours_by_caregiver_role_chart(home: Home) -> str:
+    """Prepare the monthly activity hours by caregiver role chart."""
+    monthly_activity_hours_by_caregiver_role = (
+        home_monthly_activity_hours_by_caregiver_role(home)
+    )
+
+    _apply_caregiver_role_locale(monthly_activity_hours_by_caregiver_role)
+
+    monthly_activity_hours_by_caregiver_role_chart = px.bar(
+        monthly_activity_hours_by_caregiver_role,
+        x="month",
+        y="activity_hours",
+        color="caregiver_role",
+        title=_("Monthly activity hours by caregiver role"),
+        labels={
+            "month": _("Month"),
+            "caregiver_role": _("Caregiver role"),
+            "activity_hours": _("Activity hours"),
+        },
+    )
+
+    # Set plot background/paper color to transparent
+    monthly_activity_hours_by_caregiver_role_chart.update_layout(
+        plot_bgcolor="rgba(0, 0, 0, 0)",
+        paper_bgcolor="rgba(0, 0, 0, 0)",
+        # ensure text is visible on dark background
+        font_color="#FFFFFF",
+        # only display month on x-axis
+        xaxis={
+            "dtick": "M1",
+            "tickformat": "%b\n%Y",
+        },
+    )
+
+    return monthly_activity_hours_by_caregiver_role_chart.to_html()
