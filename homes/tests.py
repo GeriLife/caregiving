@@ -131,10 +131,6 @@ class HomeModelTests(TestCase):
             "low_active_count": 1,
             "good_active_count": 0,
             "high_active_count": 0,
-            "inactive_percent": 50.0,
-            "low_active_percent": 50.0,
-            "good_active_percent": 0,
-            "high_active_percent": 0,
         }
         self.assertEqual(
             home1_resident_counts_by_activity_level,

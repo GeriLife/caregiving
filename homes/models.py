@@ -10,7 +10,7 @@ import numpy as np
 import pandas as pd
 from shortuuid.django_fields import ShortUUIDField
 
-from core.constants import WEEKLY_ACTIVITY_RANGES
+from core.constants import WEEK_DAYS, WEEKLY_ACTIVITY_RANGES
 
 if TYPE_CHECKING:
     from residents.models import Resident
@@ -241,7 +241,7 @@ class Home(models.Model):
     def current_residents_with_recent_activity_metadata(self):
         current_residents = self.current_residents.all()
 
-        date_range = _generate_date_range(7)
+        date_range = _generate_date_range(WEEK_DAYS)
         df_combinations = _create_resident_date_combinations(
             current_residents,
             date_range,
