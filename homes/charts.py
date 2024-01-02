@@ -2,7 +2,10 @@ from django.db import connection
 from django.db.models import Sum
 from django.utils.translation import gettext as _
 
+import pandas as pd
 import plotly.express as px
+
+from metrics.models import ResidentActivity
 
 
 def dictfetchall(cursor):
@@ -25,12 +28,24 @@ def get_activity_counts_by_resident_and_activity_type(home_id):
 
         result = dictfetchall(cursor)
 
-    return result
+    return pd.DataFrame(result)
 
 
 def prepare_activity_counts_by_resident_and_activity_type_chart(home):
     activity_counts_by_resident_and_activity_type = (
         get_activity_counts_by_resident_and_activity_type(home.id)
+    )
+
+    # Create a mapping from the enum to localized labels
+    activity_type_mapping = {
+        choice.value: _(choice.label) for choice in ResidentActivity.ActivityTypeChoices
+    }
+
+    # Apply the mapping to localize the activity_type values
+    activity_counts_by_resident_and_activity_type[
+        "activity_type"
+    ] = activity_counts_by_resident_and_activity_type["activity_type"].map(
+        activity_type_mapping,
     )
 
     activity_counts_by_resident_and_activity_type_chart = px.bar(
@@ -39,7 +54,7 @@ def prepare_activity_counts_by_resident_and_activity_type_chart(home):
         y="resident_name",
         color="activity_type",
         orientation="h",
-        title=_("Resident Activity Count By Type"),
+        title=_("Resident activity count by type"),
         labels={
             "activity_count": _("Activity Count"),
             "resident_name": _("Resident Name"),
@@ -335,3 +350,44 @@ def prepare_work_by_caregiver_role_and_type_charts(context):
     )
 
     return context
+
+
+def prepare_monthly_activity_counts_by_type_chart(home):
+    monthly_activity_counts_by_type = home.monthly_activity_counts_by_type
+
+    # Create a mapping from the enum to localized labels
+    activity_type_mapping = {
+        choice.value: _(choice.label) for choice in ResidentActivity.ActivityTypeChoices
+    }
+
+    # Apply the mapping to localize the activity_type values
+    monthly_activity_counts_by_type["activity_type"] = monthly_activity_counts_by_type[
+        "activity_type"
+    ].map(activity_type_mapping)
+
+    monthly_activity_counts_by_type_chart = px.bar(
+        monthly_activity_counts_by_type,
+        x="month",
+        y="count",
+        color="activity_type",
+        title=_("Monthly activity counts by type"),
+        labels={
+            "activity_type": _("Activity type"),
+            "activity_count": _("Activity count"),
+        },
+    )
+
+    # Set plot background/paper color to transparent
+    monthly_activity_counts_by_type_chart.update_layout(
+        plot_bgcolor="rgba(0, 0, 0, 0)",
+        paper_bgcolor="rgba(0, 0, 0, 0)",
+        # ensure text is visible on dark background
+        font_color="#FFFFFF",
+        # only display month on x-axis
+        xaxis={
+            "dtick": "M1",
+            "tickformat": "%b\n%Y",
+        },
+    )
+
+    return monthly_activity_counts_by_type_chart.to_html()

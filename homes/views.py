@@ -7,6 +7,7 @@ from django.views.generic.list import ListView
 from .charts import (
     prepare_activity_counts_by_resident_and_activity_type_chart,
     prepare_daily_work_percent_by_caregiver_role_and_type_chart,
+    prepare_monthly_activity_counts_by_type_chart,
     prepare_work_by_caregiver_role_and_type_charts,
     prepare_work_by_caregiver_role_chart,
     prepare_work_by_type_chart,
@@ -57,6 +58,12 @@ class HomeDetailView(DetailView):
             "activity_counts_by_resident_and_activity_type_chart"
         ] = prepare_activity_counts_by_resident_and_activity_type_chart(home)
 
+        context[
+            "monthly_activity_counts_by_type_chart"
+        ] = prepare_monthly_activity_counts_by_type_chart(home)
+
+        return context
+
     def prepare_work_charts(self, context):
         """Prepare work charts and add them to the template context."""
         home = context["home"]
@@ -87,7 +94,7 @@ class HomeDetailView(DetailView):
 
         # Only prepare charts if work has been recorded
         if context["work_has_been_recorded"]:
-            self.prepare_work_charts(context)
+            context = self.prepare_work_charts(context)
         if context["activity_has_been_recorded"]:
-            self.prepare_activity_charts(context)
+            context = self.prepare_activity_charts(context)
         return context

@@ -1,10 +1,13 @@
 {% load l10n %}
+{% load custom_filters %}
+
 <div class="bar-container">
+    {% comment %} round item value to nearest integer {% endcomment %}
     {% for item in data %}
         <span
             class="bar bg-{{ item.activity_level_class}}"
             style="width: {{ item.value|unlocalize }}%;"
-            aria-label="{{ item.activity_level_label }}: {{ item.value }}%"
-            title="{{ item.activity_level_label }}: {{ item.value }}%"></span>
+            aria-label="{{ item.activity_level_label }}: {{ item.value|floatformat:'0'}}%"
+            title="{{ item.activity_level_label }}: {{ item.value|floatformat:'0' }}%"></span>
     {% endfor %}
 </div>

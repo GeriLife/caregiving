@@ -1,34 +1,72 @@
 msgid ""
 msgstr ""
+"Project-Id-Version: GeriLife Caregivers\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2024-01-02 00:50+0000\n"
+"Language: fi\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: POEditor.com\n"
-"Project-Id-Version: GeriLife Caregivers\n"
-"Language: fi\n"
 
-#: accounts/models.py:10
+#: accounts/models.py:8
 msgid "user"
 msgstr "käyttäjä"
 
-#: accounts/models.py:11
+#: accounts/models.py:9
 msgid "users"
 msgstr "käyttäjiä"
 
 #: accounts/templates/registration/login.html:9
-#: accounts/templates/registration/login.html:14 templates/navigation.html:48
+#: accounts/templates/registration/login.html:14 templates/navigation.html:53
 msgid "Log in"
 msgstr "Kirjaudu sisään"
 
 #: accounts/templates/registration/signup.html:6
 #: accounts/templates/registration/signup.html:9
-#: accounts/templates/registration/signup.html:14 templates/navigation.html:51
+#: accounts/templates/registration/signup.html:14 templates/navigation.html:56
 msgid "Sign up"
 msgstr "Kirjaudu"
 
 #: accounts/urls.py:6
 msgid "signup/"
 msgstr "kirjaudu/"
+
+#: activities/templates/activities/resident_activity_form.html:7
+msgid "Create Resident Activity"
+msgstr "Luo asukastoiminta"
+
+#: activities/templates/activities/resident_activity_form.html:14
+#: residents/templates/residents/resident_form.html:16
+msgid "Save"
+msgstr "Tallentaa"
+
+#: activities/templates/activities/resident_activity_list.html:7
+#: activities/templates/activities/resident_activity_list.html:11
+msgid "Activities"
+msgstr "Aktiviteetit"
+
+#: activities/templates/activities/resident_activity_list.html:12
+msgid "Activities list page"
+msgstr "Aktiviteettiluettelosivu"
+
+#: activities/templates/activities/resident_activity_list.html:17
+#: residents/charts.py:30 residents/charts.py:45
+msgid "Date"
+msgstr "Päivämäärä"
+
+#: activities/templates/activities/resident_activity_list.html:18
+#: residents/templates/residents/resident_form.html:7
+msgid "Resident"
+msgstr "Asukas"
+
+#: activities/templates/activities/resident_activity_list.html:19
+msgid "Type"
+msgstr "Tyyppi"
+
+#: activities/templates/activities/resident_activity_list.html:20
+msgid "Duration (minutes)"
+msgstr "Kesto (minuuttia)"
 
 #: caregivers/models.py:10
 msgid "caregiver role"
@@ -38,129 +76,314 @@ msgstr "hoitajan rooli"
 msgid "caregiver roles"
 msgstr "hoitajan roolit"
 
-#: core/settings.py:142
+#: core/constants.py:16
+msgid "Inactive"
+msgstr "Epäaktiivinen"
+
+#: core/constants.py:23
+msgid "Low"
+msgstr "Matala"
+
+#: core/constants.py:30
+msgid "Moderate"
+msgstr "Kohtalainen"
+
+#: core/constants.py:37
+msgid "High"
+msgstr "Korkea"
+
+#: core/settings.py:144
 msgid "English"
 msgstr "Englanti"
 
-#: core/settings.py:143
+#: core/settings.py:145
 msgid "Suomi"
 msgstr "Suomi"
 
-#. Translators: Make sure to leave the trailing slash "/"
-#: core/urls.py:23
-msgid "admin/"
-msgstr "hallinto/"
+#: homes/charts.py:57
+msgid "Resident activity count by type"
+msgstr "Asukastoiminnan määrä tyypeittäin"
 
-#. Translators: Make sure to leave the trailing slash "/"
-#: core/urls.py:26 core/urls.py:28
-msgid "accounts/"
-msgstr "tilit/"
+#: homes/charts.py:59
+msgid "Activity Count"
+msgstr "Aktiviteettien määrä"
 
-#. Translators: Make sure to leave the trailing slash "/"
-#: core/urls.py:30
-msgid "homes/"
-msgstr "koteja/"
+#: homes/charts.py:60
+#, fuzzy
+#| msgid "Resident"
+msgid "Resident Name"
+msgstr "Asukas"
 
-#. Translators: Make sure to leave the trailing slash "/"
-#: core/urls.py:32
-msgid "residents/"
-msgstr "asukkaille/"
+#: homes/charts.py:61
+msgid "Activity Type"
+msgstr "Toiminnan tyyppi"
 
-#. Translators: Make sure to leave the trailing slash "/"
-#: core/urls.py:34
-msgid "work/"
-msgstr "työ/"
-
-#: homes/charts.py:121
+#: homes/charts.py:183
 msgid "Work hours by type"
 msgstr "Työajat tyypeittäin"
 
-#: homes/charts.py:123 homes/charts.py:163 homes/charts.py:233
-#: homes/charts.py:251 work/views.py:106 work/views.py:150 work/views.py:178
-#: work/views.py:196
+#: homes/charts.py:185 homes/charts.py:228 homes/charts.py:305
+#: homes/charts.py:326 work/views.py:108 work/views.py:152 work/views.py:183
+#: work/views.py:202
 msgid "Type of work"
 msgstr "Työn tyyppi"
 
-#: homes/charts.py:124 homes/charts.py:144 homes/charts.py:250
-#: work/views.py:107 work/views.py:132 work/views.py:195
+#: homes/charts.py:186 homes/charts.py:206 homes/charts.py:325
+#: work/views.py:109 work/views.py:134 work/views.py:201
 msgid "Total hours"
 msgstr "Tunteja yhteensä"
 
-#: homes/charts.py:141 work/views.py:129
+#: homes/charts.py:203 work/views.py:131
 msgid "Work hours by caregiver role"
 msgstr "Työajat hoitajan roolin mukaan"
 
-#: homes/charts.py:143 homes/charts.py:161 homes/charts.py:190
-#: homes/charts.py:231 homes/charts.py:249 work/views.py:131 work/views.py:148
-#: work/views.py:176 work/views.py:194
+#: homes/charts.py:205 homes/charts.py:226 homes/charts.py:260
+#: homes/charts.py:303 homes/charts.py:324 metrics/models.py:64
+#: residents/charts.py:141 residents/charts.py:153 work/views.py:133
+#: work/views.py:150 work/views.py:181 work/views.py:200
 msgid "Caregiver role"
 msgstr "Omaishoitajan rooli"
 
-#: homes/charts.py:159 work/views.py:146
+#: homes/charts.py:224 work/views.py:148
 msgid "Daily work percent by caregiver role and work type"
 msgstr "Päivittäinen työprosentti hoitajan roolin ja työtyypin mukaan"
 
-#: homes/charts.py:162 homes/charts.py:232 work/views.py:149 work/views.py:177
+#: homes/charts.py:227 homes/charts.py:304 work/views.py:151 work/views.py:182
 msgid "Work percent"
 msgstr "Työprosentti"
 
-#: homes/charts.py:229 work/views.py:174
+#: homes/charts.py:301 work/views.py:179
 msgid "Work percent by caregiver role and work type"
 msgstr "Työprosentti hoitajan roolin ja työtyypin mukaan"
 
-#: homes/charts.py:247 work/views.py:192
+#: homes/charts.py:322 work/views.py:198
 msgid "Work hours by caregiver role and work type"
 msgstr "Työajat hoitajan roolin ja työtyypin mukaan"
 
-#: homes/models.py:11
+#: homes/charts.py:368
+msgid "Monthly activity counts by type"
+msgstr "Kuukausittaiset aktiviteetit lasketaan tyypin mukaan"
+
+#: homes/charts.py:370 metrics/models.py:54
+msgid "Activity type"
+msgstr "Aktiviteetin tyyppi"
+
+#: homes/charts.py:371
+msgid "Activity count"
+msgstr "Aktiviteettien määrä"
+
+#: homes/models.py:214 homes/models.py:404 residents/models.py:21
+msgid "UUID used in URLs"
+msgstr "URL-osoitteissa käytetty UUID"
+
+#: homes/models.py:220
 msgid "home"
 msgstr "koti"
 
-#: homes/models.py:12
+#: homes/models.py:221
 msgid "homes"
 msgstr "koteja"
 
-#: homes/templates/homes/home_detail.html:11 work/templates/work/report.html:13
+#: homes/models.py:410
+msgid "home group"
+msgstr "kotiryhmä"
+
+#: homes/models.py:411
+#, fuzzy
+#| msgid "homes"
+msgid "home groups"
+msgstr "koteja"
+
+#: homes/templates/homes/home_detail.html:8
+msgid "Percent of residents by activity level"
+msgstr "Asukkaiden prosenttiosuus aktiivisuustason mukaan"
+
+#: homes/templates/homes/home_detail.html:13
+#, fuzzy
+#| msgid "Residents"
+msgid "Current Residents"
+msgstr "Asukkaat"
+
+#: homes/templates/homes/home_detail.html:16
+msgid ""
+"Table of residents showing current activity status, total activity count, "
+"and daily activity indicators for past seven days."
+msgstr ""
+"Taulukko asukkaista, joka näyttää tämänhetkisen aktiivisuuden tilan, aktiivisuuden kokonaismäärän,"
+"ja päivittäisen aktiivisuuden indikaattorit viimeisen seitsemän päivän ajalta"
+
+#: homes/templates/homes/home_detail.html:18
+msgid "Name"
+msgstr "Nimi"
+
+#: homes/templates/homes/home_detail.html:19
+msgid "Activity Level"
+msgstr "Aktiivisuustaso"
+
+#: homes/templates/homes/home_detail.html:20
+msgid "Total Activities"
+msgstr "Aktiviteetit yhteensä"
+
+#: homes/templates/homes/home_detail.html:21
+msgid "Active Days"
+msgstr "Aktiiviset päivät"
+
+#: homes/templates/homes/home_detail.html:53
+msgid "Work"
+msgstr "Tehdä työtä"
+
+#: homes/templates/homes/home_detail.html:58 work/templates/work/report.html:13
 msgid "No work has been recorded yet."
 msgstr "Työtä ei ole vielä tallennettu."
 
-#: homes/templates/homes/home_list.html:8 templates/navigation.html:29
-msgid "Homes"
-msgstr "Kodit"
+#: homes/templates/homes/home_group_list.html:8
+msgid "Homes showing the percent of residents by activity level"
+msgstr "Kodit, joissa näkyy asukkaiden prosenttiosuus aktiivisuustason mukaan"
 
-#: homes/templates/homes/home_list.html:12
-msgid "Home name"
-msgstr "Kodin nimi"
+#: metrics/models.py:12
+msgid "Outdoor"
+msgstr "Ulkona"
 
-#: homes/templates/homes/home_list.html:16
-msgid "Work percent by role"
-msgstr "Työskentele prosentteina roolin mukaan"
+#: metrics/models.py:13
+msgid "Casual Social"
+msgstr "Rento sosiaalinen"
 
-#: homes/templates/homes/home_list.html:36
-msgid "No work recorded."
-msgstr "Ei tallennettua työtä."
+#: metrics/models.py:14
+msgid "Culture"
+msgstr "Kulttuuri"
 
-#: residents/models.py:25
+#: metrics/models.py:15
+msgid "Discussion"
+msgstr "Keskustelu"
+
+#: metrics/models.py:16
+msgid "Guided"
+msgstr "Ohjattu"
+
+#: metrics/models.py:17
+msgid "Music"
+msgstr "Musiikki"
+
+#: metrics/models.py:18
+msgid "Self-guided"
+msgstr "Itseohjautuva"
+
+#: metrics/models.py:19
+msgid "Trip"
+msgstr "Matka"
+
+#: metrics/models.py:24
+msgid "Family"
+msgstr "Perhe"
+
+#: metrics/models.py:25
+msgid "Friend"
+msgstr "Ystävä"
+
+#: metrics/models.py:26
+msgid "Hobby Instructor"
+msgstr "Harrastuksen ohjaaja"
+
+#: metrics/models.py:27
+msgid "Nurse"
+msgstr "Sairaanhoitaja"
+
+#: metrics/models.py:28
+msgid "Physio therapist"
+msgstr "Fysioterapeutti"
+
+#: metrics/models.py:29
+msgid "Practical nurse"
+msgstr "Käytännön hoitaja"
+
+#: metrics/models.py:30
+msgid "Volunteer"
+msgstr "Vapaaehtoinen"
+
+#: metrics/models.py:38
+msgid "Activity date"
+msgstr "Toiminnan päivämäärä"
+
+#: metrics/models.py:51
+#, fuzzy
+#| msgid "The home in which this work was performed"
+msgid "The home in which this activity was performed"
+msgstr "Koti, jossa tämä työ tehtiin"
+
+#: metrics/models.py:60
+msgid "Duration in minutes"
+msgstr "Kesto minuutteina"
+
+#: metrics/models.py:70
+msgid "Group activity ID"
+msgstr "Ryhmätoiminnan tunnus"
+
+#: metrics/models.py:77
+#, fuzzy
+#| msgid "residency"
+msgid "resident_activity"
+msgstr "residenssi"
+
+#: metrics/models.py:78
+#, fuzzy
+#| msgid "residencies"
+msgid "resident_activities"
+msgstr "residenssit"
+
+#: residents/charts.py:28
+msgid "Daily activity minutes"
+msgstr "Päivittäiset aktiviteettiminuutit"
+
+#: residents/charts.py:31 residents/charts.py:46
+msgid "Total activity minutes"
+msgstr "Toimintaminuutit yhteensä"
+
+#: residents/charts.py:85
+#, fuzzy
+#| msgid "Work hours by type"
+msgid "Activity hours by type"
+msgstr "Työajat tyypeittäin"
+
+#: residents/charts.py:87 residents/charts.py:99
+msgid "Type of activity"
+msgstr "Toiminnan tyyppi"
+
+#: residents/charts.py:88 residents/charts.py:100 residents/charts.py:142
+#: residents/charts.py:154
+msgid "Duration in hours"
+msgstr "Kesto tunteina"
+
+#: residents/charts.py:139
+#, fuzzy
+#| msgid "Work hours by caregiver role"
+msgid "Activity hours by caregiver role"
+msgstr "Työajat hoitajan roolin mukaan"
+
+#: residents/models.py:31
 msgid "resident"
 msgstr "asukas"
 
-#: residents/models.py:26
+#: residents/models.py:32
 msgid "residents"
 msgstr "asukkaille"
 
-#: residents/models.py:54
+#: residents/models.py:70
+msgid "On hiatus"
+msgstr "Tauolla"
+
+#: residents/models.py:109
 msgid "residency"
 msgstr "residenssi"
 
-#: residents/models.py:55
+#: residents/models.py:110
 msgid "residencies"
 msgstr "residenssit"
 
-#: residents/models.py:89
+#: residents/models.py:143
 msgid "Move-in date should preceed move-out date."
 msgstr "Muuttopäivän tulee olla ennen muuttopäivää."
 
-#: residents/models.py:93
+#: residents/models.py:147
 msgid "Resident can not have overlapping residencies."
 msgstr "Asukkaalla ei voi olla päällekkäisiä asuntoja."
 
@@ -168,16 +391,12 @@ msgstr "Asukkaalla ei voi olla päällekkäisiä asuntoja."
 msgid "Edit"
 msgstr "Muokata"
 
-#: residents/templates/residents/resident_form.html:7
-msgid "Resident"
-msgstr "Asukas"
-
-#: residents/templates/residents/resident_form.html:16
-msgid "Save"
-msgstr "Tallentaa"
+#: residents/templates/residents/resident_detail.html:19
+msgid "Activity level"
+msgstr "Aktiivisuustaso"
 
 #: residents/templates/residents/resident_list.html:6
-#: templates/navigation.html:35
+#: templates/navigation.html:40
 msgid "Residents"
 msgstr "Asukkaat"
 
@@ -205,42 +424,41 @@ msgstr "Näytä asukas"
 msgid "No residents found."
 msgstr "Asukkaita ei löytynyt."
 
-#: residents/urls.py:13
-msgid "create"
-msgstr "luoda"
-
-#. Translators: Make sure to leave the "<slug:pk>/"
-#: residents/urls.py:29
-msgid "<slug:pk>/update"
-msgstr "<slug:pk>/päivittää"
-
-#: templates/home.html:5
+#: templates/home.html:8
 msgid "Home"
 msgstr "Koti"
 
-#: templates/home.html:8
+#: templates/home.html:11
 msgid "Welcome"
 msgstr "Tervetuloa"
 
 #. Translators: Leave the text "GeriLife Caregivers" as it is.
-#: templates/home.html:11
+#: templates/home.html:14
 msgid "Welcome to GeriLife Caregivers."
 msgstr "Tervetuloa GeriLife Caregivers -palveluun."
 
-#: templates/navigation.html:17 templates/navigation.html:65
-#: templates/navigation.html:79
+#: templates/navigation.html:17 templates/navigation.html:70
+#: templates/navigation.html:84
 msgid "Add work"
 msgstr "Lisää töitä"
 
-#: templates/navigation.html:23
+#: templates/navigation.html:22
+msgid "Add activity"
+msgstr "Lisää toimintaa"
+
+#: templates/navigation.html:28
 msgid "Work Report"
 msgstr "Työraportti"
 
-#: templates/navigation.html:44
+#: templates/navigation.html:34
+msgid "Homes"
+msgstr "Kodit"
+
+#: templates/navigation.html:49
 msgid "Log out"
 msgstr "Kirjautua ulos"
 
-#: templates/navigation.html:76
+#: templates/navigation.html:81
 msgid "Cancel"
 msgstr "Peruuttaa"
 
@@ -251,24 +469,6 @@ msgstr "työtyyppi"
 #: work/models.py:16
 msgid "work types"
 msgstr "työtyypit"
-
-#: work/models.py:53 work/models.py:54
-msgid "work"
-msgstr "työ"
-
-#. Translators: Make sure to leave the trailing slash "/"
-#: work/urls.py:8
-msgid "submit/"
-msgstr "lähetä/"
-
-#. Translators: Make sure to leave the trailing slash "/"
-#: work/urls.py:10
-msgid "report/"
-msgstr "raportti/"
-
-#: work/views.py:104
-msgid "Work hours by work type"
-msgstr "Työajat työtyypeittäin"
 
 #: work/models.py:27
 msgid "The home in which this work was performed"
@@ -290,6 +490,50 @@ msgstr "Päivämäärä, jolloin tämä työ tehtiin"
 msgid "The number of minutes used performing this work"
 msgstr "Tämän työn suorittamiseen käytetty minuuttimäärä"
 
+#: work/models.py:53 work/models.py:54
+msgid "work"
+msgstr "työ"
+
 #: work/templates/work/report.html:7
 msgid "Work report"
 msgstr "Työraportti"
+
+#: work/views.py:106
+msgid "Work hours by work type"
+msgstr "Työajat työtyypeittäin"
+
+#~ msgid "admin/"
+#~ msgstr "hallinto/"
+
+#~ msgid "accounts/"
+#~ msgstr "tilit/"
+
+#~ msgid "homes/"
+#~ msgstr "koteja/"
+
+#~ msgid "residents/"
+#~ msgstr "asukkaille/"
+
+#~ msgid "work/"
+#~ msgstr "työ/"
+
+#~ msgid "Home name"
+#~ msgstr "Kodin nimi"
+
+#~ msgid "Work percent by role"
+#~ msgstr "Työskentele prosentteina roolin mukaan"
+
+#~ msgid "No work recorded."
+#~ msgstr "Ei tallennettua työtä."
+
+#~ msgid "create"
+#~ msgstr "luoda"
+
+#~ msgid "<slug:pk>/update"
+#~ msgstr "<slug:pk>/päivittää"
+
+#~ msgid "submit/"
+#~ msgstr "lähetä/"
+
+#~ msgid "report/"
+#~ msgstr "raportti/"
