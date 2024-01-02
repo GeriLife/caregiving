@@ -7,11 +7,6 @@ import plotly.express as px
 
 from metrics.models import ResidentActivity
 
-# Create a mapping from the enum to localized labels
-ACTIVITY_TYPE_MAPPING = {
-    choice.value: _(choice.label) for choice in ResidentActivity.ActivityTypeChoices
-}
-
 
 def dictfetchall(cursor):
     """Return a list of dictionaries containing all rows from a database
@@ -41,11 +36,16 @@ def prepare_activity_counts_by_resident_and_activity_type_chart(home):
         get_activity_counts_by_resident_and_activity_type(home.id)
     )
 
+    # Create a mapping from the enum to localized labels
+    activity_type_mapping = {
+        choice.value: _(choice.label) for choice in ResidentActivity.ActivityTypeChoices
+    }
+
     # Apply the mapping to localize the activity_type values
     activity_counts_by_resident_and_activity_type[
         "activity_type"
     ] = activity_counts_by_resident_and_activity_type["activity_type"].map(
-        ACTIVITY_TYPE_MAPPING,
+        activity_type_mapping,
     )
 
     activity_counts_by_resident_and_activity_type_chart = px.bar(
@@ -355,10 +355,15 @@ def prepare_work_by_caregiver_role_and_type_charts(context):
 def prepare_monthly_activity_counts_by_type_chart(home):
     monthly_activity_counts_by_type = home.monthly_activity_counts_by_type
 
+    # Create a mapping from the enum to localized labels
+    activity_type_mapping = {
+        choice.value: _(choice.label) for choice in ResidentActivity.ActivityTypeChoices
+    }
+
     # Apply the mapping to localize the activity_type values
     monthly_activity_counts_by_type["activity_type"] = monthly_activity_counts_by_type[
         "activity_type"
-    ].map(ACTIVITY_TYPE_MAPPING)
+    ].map(activity_type_mapping)
 
     monthly_activity_counts_by_type_chart = px.bar(
         monthly_activity_counts_by_type,
