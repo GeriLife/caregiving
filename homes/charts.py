@@ -2,6 +2,7 @@ from django.db.models import Sum
 from django.utils.translation import gettext as _
 
 import plotly.express as px
+from core.constants import DAY_MILLISECONDS
 
 from homes.queries import (
     get_activity_counts_by_resident_and_activity_type,
@@ -126,8 +127,9 @@ def prepare_daily_work_percent_by_caregiver_role_and_type_chart(home):
     )
 
     # Ensure that all bar widths are one day (where units are in milliseconds)
-    one_day = 24 * 60 * 60 * 1000
-    daily_work_percent_by_caregiver_role_and_type_chart.update_traces(width=one_day)
+    daily_work_percent_by_caregiver_role_and_type_chart.update_traces(
+        width=DAY_MILLISECONDS,
+    )
 
     return daily_work_percent_by_caregiver_role_and_type_chart.to_html()
 

@@ -8,10 +8,10 @@ from django.views.generic.edit import FormView
 
 import plotly.express as px
 
+from core.constants import DAY_MILLISECONDS
+
 from .forms import WorkForm
 from .models import Work
-
-minutes_in_hour = 60.0
 
 
 def dictfetchall(cursor):
@@ -164,8 +164,9 @@ def prepare_daily_work_percent_by_caregiver_role_and_type_chart(data):
     )
 
     # Ensure that all bar widths are one day (where units are in milliseconds)
-    one_day = 24 * 60 * 60 * 1000
-    daily_work_percent_by_caregiver_role_and_type_chart.update_traces(width=one_day)
+    daily_work_percent_by_caregiver_role_and_type_chart.update_traces(
+        width=DAY_MILLISECONDS,
+    )
 
     return daily_work_percent_by_caregiver_role_and_type_chart.to_html()
 

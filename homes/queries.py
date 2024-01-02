@@ -5,6 +5,8 @@ from django.db.models.functions import TruncMonth
 from django.utils import timezone
 import pandas as pd
 
+from core.constants import HOUR_MINUTES, YEAR_DAYS
+
 
 def dictfetchall(cursor):
     """Return a list of dictionaries containing all rows from a database
@@ -133,7 +135,7 @@ def home_monthly_activity_hours_by_type(home) -> pd.DataFrame:
     from metrics.models import ResidentActivity
 
     today = timezone.now()
-    one_year_ago = today - timedelta(days=365)
+    one_year_ago = today - timedelta(days=YEAR_DAYS)
 
     activities = (
         ResidentActivity.objects.filter(
@@ -145,7 +147,33 @@ def home_monthly_activity_hours_by_type(home) -> pd.DataFrame:
         )
         .values("month", "activity_type")
         .order_by("month")
-        .annotate(activity_hours=Sum("activity_minutes") / 60)
+        .annotate(activity_hours=Sum("activity_minutes") / HOUR_MINUTES)
+        .distinct()
+    )
+
+    return pd.DataFrame(list(activities))
+
+
+def home_monthly_activity_hours_by_caregiver_role(home) -> pd.DataFrame:
+    """Returns a DataFrame of hours of activities grouped by month and
+    caregiver role."""
+
+    from metrics.models import ResidentActivity
+
+    today = timezone.now()
+    one_year_ago = today - timedelta(days=YEAR_DAYS)
+
+    activities = (
+        ResidentActivity.objects.filter(
+            activity_date__gte=one_year_ago,
+            home=home,
+        )
+        .annotate(
+            month=TruncMonth("activity_date"),
+        )
+        .values("month", "caregiver_role")
+        .order_by("month")
+        .annotate(activity_hours=Sum("activity_minutes") / HOUR_MINUTES)
         .distinct()
     )
 

@@ -2,6 +2,7 @@ from django.db import models
 from django.utils.translation import gettext as _
 import pandas as pd
 import plotly.express as px
+from core.constants import HOUR_MINUTES
 
 from metrics.models import ResidentActivity
 
@@ -55,12 +56,11 @@ def prepare_activity_hours_by_type_chart(
     activities: models.QuerySet[ResidentActivity],
 ) -> str:
     """Prepare a bar chart of activity counts by type for a resident."""
-    # This must be a float so that the division below returns a float
-    minutes_in_hour = 60.0
 
     activities_agg = (
         activities.values("activity_type")
-        .annotate(total_hours=models.Sum("activity_minutes") / minutes_in_hour)
+        # This must be a float so that the division below returns a float
+        .annotate(total_hours=models.Sum("activity_minutes") / float(HOUR_MINUTES))
         .order_by("activity_type")
     )
 
@@ -109,12 +109,11 @@ def prepare_activity_hours_by_caregiver_role_chart(
     activities: models.QuerySet[ResidentActivity],
 ) -> str:
     """Prepare a bar chart of activity counts by type for a resident."""
-    # This must be a float so that the division below returns a float
-    minutes_in_hour = 60.0
 
     activities_agg = (
         activities.values("caregiver_role")
-        .annotate(total_hours=models.Sum("activity_minutes") / minutes_in_hour)
+        # This must be a float so that the division below returns a float
+        .annotate(total_hours=models.Sum("activity_minutes") / float(HOUR_MINUTES))
         .order_by("caregiver_role")
     )
 
