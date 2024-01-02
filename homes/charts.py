@@ -1,34 +1,15 @@
-from django.db import connection
 from django.db.models import Sum
 from django.utils.translation import gettext as _
 
-import pandas as pd
 import plotly.express as px
+from homes.queries import (
+    get_activity_counts_by_resident_and_activity_type,
+    get_daily_total_hours_by_role_and_work_type_with_percent,
+    get_home_total_hours_by_role_with_percent,
+    get_total_hours_by_role_and_work_type_with_percent,
+)
 
 from metrics.models import ResidentActivity
-
-
-def dictfetchall(cursor):
-    """Return a list of dictionaries containing all rows from a database
-    cursor."""
-    columns = [col[0] for col in cursor.description]
-    return [dict(zip(columns, row)) for row in cursor.fetchall()]
-
-
-def get_activity_counts_by_resident_and_activity_type(home_id):
-    query = """
-        SELECT COUNT(ra.resident_id) AS activity_count, ra.activity_type AS activity_type, r.first_name || ' ' || r.last_initial AS resident_name
-        FROM resident_activity AS ra
-        JOIN resident AS r ON ra.resident_id = r.id
-        WHERE ra.home_id = %s
-        GROUP BY ra.resident_id, ra.activity_type
-    """
-    with connection.cursor() as cursor:
-        cursor.execute(query, [home_id])
-
-        result = dictfetchall(cursor)
-
-    return pd.DataFrame(result)
 
 
 def prepare_activity_counts_by_resident_and_activity_type_chart(home):
@@ -70,103 +51,6 @@ def prepare_activity_counts_by_resident_and_activity_type_chart(home):
     )
 
     return activity_counts_by_resident_and_activity_type_chart.to_html()
-
-
-def get_daily_total_hours_by_role_and_work_type_with_percent(home_id):
-    query = """
-    with daily_work_totals_by_type as (
-        select
-            date,
-            caregiver_role.name as role_name,
-            work_type.name as work_type,
-            sum(duration_hours) as daily_total_hours
-        from work
-        left join work_type on type_id = work_type.id
-        left join caregiver_role on caregiver_role_id = caregiver_role.id
-        where home_id = %s
-        group by date, role_name, work_type
-    ),
-    daily_work_totals_by_type_with_role_total_hours as (
-        select
-            *,
-            sum(daily_total_hours) over (partition by date, role_name) as daily_role_total_hours
-        from daily_work_totals_by_type
-    )
-
-    select
-        *,
-        CAST(daily_total_hours as float) / CAST(daily_role_total_hours as float) as percent_of_daily_role_total_hours
-    from daily_work_totals_by_type_with_role_total_hours;
-    """
-
-    with connection.cursor() as cursor:
-        cursor.execute(query, [home_id])
-
-        result = dictfetchall(cursor)
-
-    return result
-
-
-def get_total_hours_by_role_and_work_type_with_percent(home_id):
-    query = """
-    with work_totals_by_type as (
-        select
-            caregiver_role.name as role_name,
-            work_type.name as work_type,
-            sum(duration_hours) as total_hours
-        from work
-        left join work_type on type_id = work_type.id
-        left join caregiver_role on caregiver_role_id = caregiver_role.id
-        where home_id = %s
-        group by role_name, work_type
-    ),
-    work_totals_by_type_with_role_total_hours as (
-        select
-            *,
-            sum(total_hours) over (partition by role_name) as role_total_hours
-        from work_totals_by_type
-    )
-
-    select
-        *,
-        CAST(total_hours as float) / CAST(role_total_hours as float) as percent_of_role_total_hours
-    from work_totals_by_type_with_role_total_hours;
-    """
-
-    with connection.cursor() as cursor:
-        cursor.execute(query, [home_id])
-
-        result = dictfetchall(cursor)
-
-    return result
-
-
-def get_home_total_hours_by_role_with_percent(home_id):
-    query = """
-    with work_totals_by_caregiver_role as (
-        select
-            home.name as home_name,
-            caregiver_role.name as role_name,
-            CAST(sum(duration_hours) as FLOAT) as total_hours
-        from work
-        left join home on home_id = home.id
-        left join caregiver_role on caregiver_role_id = caregiver_role.id
-        where home_id = %s
-        group by home_name, role_name
-    )
-
-    select
-        *,
-        (total_hours / SUM(total_hours) over ()) as percent_of_role_total_hours
-    from work_totals_by_caregiver_role;
-    """
-
-    with connection.cursor() as cursor:
-        cursor.execute(query, [home_id])
-
-        result = dictfetchall(cursor)
-
-    return result
 
 
 def prepare_work_by_type_chart(home):
