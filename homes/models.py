@@ -1,7 +1,6 @@
 import datetime
 from typing import TYPE_CHECKING
-from django.db.models import Count, Sum, Q, QuerySet
-from django.db.models.functions import TruncMonth
+from django.db.models import Count, Q, QuerySet
 from django.utils import timezone
 from datetime import timedelta
 from django.db import models
@@ -369,32 +368,6 @@ class Home(models.Model):
         ]
 
         return chart_data
-
-    @property
-    def monthly_activity_counts_by_type(self) -> pd.DataFrame:
-        """Returns a list of dictionaries of counts of activities grouped by
-        month and type."""
-
-        from metrics.models import ResidentActivity
-
-        today = timezone.now()
-        one_year_ago = today - timedelta(days=365)
-
-        activities = (
-            ResidentActivity.objects.filter(
-                activity_date__gte=one_year_ago,
-                home=self,
-            )
-            .annotate(
-                month=TruncMonth("activity_date"),
-            )
-            .values("month", "activity_type")
-            .order_by("month")
-            .annotate(activity_hours=Sum("activity_minutes") / 60)
-            .distinct()
-        )
-
-        return pd.DataFrame(list(activities))
 
 
 class HomeGroup(models.Model):

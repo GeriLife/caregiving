@@ -1,4 +1,8 @@
+from datetime import timedelta
 from django.db import connection
+from django.db.models import Sum
+from django.db.models.functions import TruncMonth
+from django.utils import timezone
 import pandas as pd
 
 
@@ -120,3 +124,29 @@ def get_home_total_hours_by_role_with_percent(home_id):
         result = dictfetchall(cursor)
 
     return result
+
+
+def home_monthly_activity_counts_by_type(home) -> pd.DataFrame:
+    """Returns a list of dictionaries of counts of activities grouped by month
+    and type."""
+
+    from metrics.models import ResidentActivity
+
+    today = timezone.now()
+    one_year_ago = today - timedelta(days=365)
+
+    activities = (
+        ResidentActivity.objects.filter(
+            activity_date__gte=one_year_ago,
+            home=home,
+        )
+        .annotate(
+            month=TruncMonth("activity_date"),
+        )
+        .values("month", "activity_type")
+        .order_by("month")
+        .annotate(activity_hours=Sum("activity_minutes") / 60)
+        .distinct()
+    )
+
+    return pd.DataFrame(list(activities))

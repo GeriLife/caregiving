@@ -2,11 +2,13 @@ from django.db.models import Sum
 from django.utils.translation import gettext as _
 
 import plotly.express as px
+
 from homes.queries import (
     get_activity_counts_by_resident_and_activity_type,
     get_daily_total_hours_by_role_and_work_type_with_percent,
     get_home_total_hours_by_role_with_percent,
     get_total_hours_by_role_and_work_type_with_percent,
+    home_monthly_activity_counts_by_type,
 )
 
 from metrics.models import ResidentActivity
@@ -237,7 +239,7 @@ def prepare_work_by_caregiver_role_and_type_charts(context):
 
 
 def prepare_monthly_activity_counts_by_type_chart(home):
-    monthly_activity_counts_by_type = home.monthly_activity_counts_by_type
+    monthly_activity_counts_by_type = home_monthly_activity_counts_by_type(home)
 
     # Create a mapping from the enum to localized labels
     activity_type_mapping = {
