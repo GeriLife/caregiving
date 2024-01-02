@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GeriLife Caregivers\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-01-02 00:50+0000\n"
+"POT-Creation-Date: 2024-01-02 03:57+0000\n"
 "Language: fi\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -51,7 +51,7 @@ msgid "Activities list page"
 msgstr "Aktiviteettiluettelosivu"
 
 #: activities/templates/activities/resident_activity_list.html:17
-#: residents/charts.py:30 residents/charts.py:45
+#: residents/charts.py:31 residents/charts.py:46
 msgid "Date"
 msgstr "Päivämäärä"
 
@@ -100,95 +100,111 @@ msgstr "Englanti"
 msgid "Suomi"
 msgstr "Suomi"
 
-#: homes/charts.py:57
+#: homes/charts.py:56
 msgid "Resident activity count by type"
 msgstr "Asukastoiminnan määrä tyypeittäin"
 
-#: homes/charts.py:59
-msgid "Activity Count"
+#: homes/charts.py:58
+#, fuzzy
+#| msgid "Activity Count"
+msgid "Activity Hours"
 msgstr "Aktiviteettien määrä"
 
-#: homes/charts.py:60
+#: homes/charts.py:59
 #, fuzzy
 #| msgid "Resident"
 msgid "Resident Name"
 msgstr "Asukas"
 
-#: homes/charts.py:61
+#: homes/charts.py:60
 msgid "Activity Type"
 msgstr "Toiminnan tyyppi"
 
-#: homes/charts.py:183
+#: homes/charts.py:86
 msgid "Work hours by type"
 msgstr "Työajat tyypeittäin"
 
-#: homes/charts.py:185 homes/charts.py:228 homes/charts.py:305
-#: homes/charts.py:326 work/views.py:108 work/views.py:152 work/views.py:183
-#: work/views.py:202
+#: homes/charts.py:88 homes/charts.py:133 homes/charts.py:213
+#: homes/charts.py:235 work/views.py:108 work/views.py:152 work/views.py:184
+#: work/views.py:203
 msgid "Type of work"
 msgstr "Työn tyyppi"
 
-#: homes/charts.py:186 homes/charts.py:206 homes/charts.py:325
-#: work/views.py:109 work/views.py:134 work/views.py:201
+#: homes/charts.py:89 homes/charts.py:110 homes/charts.py:234 work/views.py:109
+#: work/views.py:134 work/views.py:202
 msgid "Total hours"
 msgstr "Tunteja yhteensä"
 
-#: homes/charts.py:203 work/views.py:131
+#: homes/charts.py:107 work/views.py:131
 msgid "Work hours by caregiver role"
 msgstr "Työajat hoitajan roolin mukaan"
 
-#: homes/charts.py:205 homes/charts.py:226 homes/charts.py:260
-#: homes/charts.py:303 homes/charts.py:324 metrics/models.py:64
-#: residents/charts.py:141 residents/charts.py:153 work/views.py:133
-#: work/views.py:150 work/views.py:181 work/views.py:200
+#: homes/charts.py:109 homes/charts.py:131 homes/charts.py:167
+#: homes/charts.py:211 homes/charts.py:233 homes/charts.py:315
+#: metrics/models.py:64 residents/charts.py:140 residents/charts.py:152
+#: work/views.py:133 work/views.py:150 work/views.py:182 work/views.py:201
 msgid "Caregiver role"
 msgstr "Omaishoitajan rooli"
 
-#: homes/charts.py:224 work/views.py:148
+#: homes/charts.py:129 work/views.py:148
 msgid "Daily work percent by caregiver role and work type"
 msgstr "Päivittäinen työprosentti hoitajan roolin ja työtyypin mukaan"
 
-#: homes/charts.py:227 homes/charts.py:304 work/views.py:151 work/views.py:182
+#: homes/charts.py:132 homes/charts.py:212 work/views.py:151 work/views.py:183
 msgid "Work percent"
 msgstr "Työprosentti"
 
-#: homes/charts.py:301 work/views.py:179
+#: homes/charts.py:209 work/views.py:180
 msgid "Work percent by caregiver role and work type"
 msgstr "Työprosentti hoitajan roolin ja työtyypin mukaan"
 
-#: homes/charts.py:322 work/views.py:198
+#: homes/charts.py:231 work/views.py:199
 msgid "Work hours by caregiver role and work type"
 msgstr "Työajat hoitajan roolin ja työtyypin mukaan"
 
-#: homes/charts.py:368
-msgid "Monthly activity counts by type"
+#: homes/charts.py:275
+#, fuzzy
+#| msgid "Monthly activity counts by type"
+msgid "Monthly activity hours by type"
 msgstr "Kuukausittaiset aktiviteetit lasketaan tyypin mukaan"
 
-#: homes/charts.py:370 metrics/models.py:54
+#: homes/charts.py:277 homes/charts.py:314
+msgid "Month"
+msgstr "Kuukausi"
+
+#: homes/charts.py:278 metrics/models.py:54
 msgid "Activity type"
 msgstr "Aktiviteetin tyyppi"
 
-#: homes/charts.py:371
-msgid "Activity count"
+#: homes/charts.py:279 homes/charts.py:316
+#, fuzzy
+#| msgid "Activity Count"
+msgid "Activity hours"
 msgstr "Aktiviteettien määrä"
 
-#: homes/models.py:214 homes/models.py:404 residents/models.py:21
+#: homes/charts.py:312
+#, fuzzy
+#| msgid "Work hours by caregiver role"
+msgid "Monthly activity hours by caregiver role"
+msgstr "Työajat hoitajan roolin mukaan"
+
+#: homes/models.py:213 homes/models.py:377 residents/models.py:21
 msgid "UUID used in URLs"
 msgstr "URL-osoitteissa käytetty UUID"
 
-#: homes/models.py:220
+#: homes/models.py:219
 msgid "home"
 msgstr "koti"
 
-#: homes/models.py:221
+#: homes/models.py:220
 msgid "homes"
 msgstr "koteja"
 
-#: homes/models.py:410
+#: homes/models.py:383
 msgid "home group"
 msgstr "kotiryhmä"
 
-#: homes/models.py:411
+#: homes/models.py:384
 #, fuzzy
 #| msgid "homes"
 msgid "home groups"
@@ -209,8 +225,9 @@ msgid ""
 "Table of residents showing current activity status, total activity count, "
 "and daily activity indicators for past seven days."
 msgstr ""
-"Taulukko asukkaista, joka näyttää tämänhetkisen aktiivisuuden tilan, aktiivisuuden kokonaismäärän,"
-"ja päivittäisen aktiivisuuden indikaattorit viimeisen seitsemän päivän ajalta"
+"Taulukko asukkaista, joka näyttää tämänhetkisen aktiivisuuden tilan, "
+"aktiivisuuden kokonaismäärän,ja päivittäisen aktiivisuuden indikaattorit "
+"viimeisen seitsemän päivän ajalta"
 
 #: homes/templates/homes/home_detail.html:18
 msgid "Name"
@@ -330,11 +347,11 @@ msgstr "residenssi"
 msgid "resident_activities"
 msgstr "residenssit"
 
-#: residents/charts.py:28
+#: residents/charts.py:29
 msgid "Daily activity minutes"
 msgstr "Päivittäiset aktiviteettiminuutit"
 
-#: residents/charts.py:31 residents/charts.py:46
+#: residents/charts.py:32 residents/charts.py:47
 msgid "Total activity minutes"
 msgstr "Toimintaminuutit yhteensä"
 
@@ -348,12 +365,12 @@ msgstr "Työajat tyypeittäin"
 msgid "Type of activity"
 msgstr "Toiminnan tyyppi"
 
-#: residents/charts.py:88 residents/charts.py:100 residents/charts.py:142
-#: residents/charts.py:154
+#: residents/charts.py:88 residents/charts.py:100 residents/charts.py:141
+#: residents/charts.py:153
 msgid "Duration in hours"
 msgstr "Kesto tunteina"
 
-#: residents/charts.py:139
+#: residents/charts.py:138
 #, fuzzy
 #| msgid "Work hours by caregiver role"
 msgid "Activity hours by caregiver role"
@@ -462,35 +479,35 @@ msgstr "Kirjautua ulos"
 msgid "Cancel"
 msgstr "Peruuttaa"
 
-#: work/models.py:15
+#: work/models.py:16
 msgid "work type"
 msgstr "työtyyppi"
 
-#: work/models.py:16
+#: work/models.py:17
 msgid "work types"
 msgstr "työtyypit"
 
-#: work/models.py:27
+#: work/models.py:28
 msgid "The home in which this work was performed"
 msgstr "Koti, jossa tämä työ tehtiin"
 
-#: work/models.py:33
+#: work/models.py:34
 msgid "The general type of work performed"
 msgstr "Suoritetun työn yleinen tyyppi"
 
-#: work/models.py:39
+#: work/models.py:40
 msgid "The role or job title of the person who performed this work"
 msgstr "Tämän työn suorittaneen henkilön rooli tai tehtävänimike"
 
-#: work/models.py:41
+#: work/models.py:42
 msgid "The date this work was performed"
 msgstr "Päivämäärä, jolloin tämä työ tehtiin"
 
-#: work/models.py:43
+#: work/models.py:44
 msgid "The number of minutes used performing this work"
 msgstr "Tämän työn suorittamiseen käytetty minuuttimäärä"
 
-#: work/models.py:53 work/models.py:54
+#: work/models.py:54 work/models.py:55
 msgid "work"
 msgstr "työ"
 
@@ -501,6 +518,9 @@ msgstr "Työraportti"
 #: work/views.py:106
 msgid "Work hours by work type"
 msgstr "Työajat työtyypeittäin"
+
+#~ msgid "Activity count"
+#~ msgstr "Aktiviteettien määrä"
 
 #~ msgid "admin/"
 #~ msgstr "hallinto/"
