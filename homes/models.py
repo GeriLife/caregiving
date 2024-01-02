@@ -1,6 +1,6 @@
 import datetime
 from typing import TYPE_CHECKING
-from django.db.models import Count, Q, QuerySet
+from django.db.models import Count, Sum, Q, QuerySet
 from django.db.models.functions import TruncMonth
 from django.utils import timezone
 from datetime import timedelta
@@ -390,7 +390,7 @@ class Home(models.Model):
             )
             .values("month", "activity_type")
             .order_by("month")
-            .annotate(count=Count("id"))
+            .annotate(activity_hours=Sum("activity_minutes") / 60)
             .distinct()
         )
 

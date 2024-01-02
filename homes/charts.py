@@ -252,12 +252,12 @@ def prepare_monthly_activity_counts_by_type_chart(home):
     monthly_activity_counts_by_type_chart = px.bar(
         monthly_activity_counts_by_type,
         x="month",
-        y="count",
+        y="activity_hours",
         color="activity_type",
-        title=_("Monthly activity counts by type"),
+        title=_("Monthly activity hours by type"),
         labels={
             "activity_type": _("Activity type"),
-            "activity_count": _("Activity count"),
+            "activity_hours": _("Activity hours"),
         },
     )
 
