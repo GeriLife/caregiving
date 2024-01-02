@@ -148,7 +148,6 @@ def home_monthly_activity_hours_by_type(home) -> pd.DataFrame:
         .values("month", "activity_type")
         .order_by("month")
         .annotate(activity_hours=Sum("activity_minutes") / HOUR_MINUTES)
-        .distinct()
     )
 
     return pd.DataFrame(list(activities))
@@ -174,7 +173,6 @@ def home_monthly_activity_hours_by_caregiver_role(home) -> pd.DataFrame:
         .values("month", "caregiver_role")
         .order_by("month")
         .annotate(activity_hours=Sum("activity_minutes") / HOUR_MINUTES)
-        .distinct()
     )
 
     return pd.DataFrame(list(activities))

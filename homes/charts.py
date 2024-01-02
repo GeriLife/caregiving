@@ -1,6 +1,7 @@
 from django.db.models import Sum
 from django.utils.translation import gettext as _
 
+import pandas as pd
 import plotly.express as px
 from core.constants import DAY_MILLISECONDS
 
@@ -9,10 +10,32 @@ from homes.queries import (
     get_daily_total_hours_by_role_and_work_type_with_percent,
     get_home_total_hours_by_role_with_percent,
     get_total_hours_by_role_and_work_type_with_percent,
+    home_monthly_activity_hours_by_caregiver_role,
     home_monthly_activity_hours_by_type,
 )
 
 from metrics.models import ResidentActivity
+
+
+def _apply_activity_type_locale(df: pd.DataFrame) -> pd.DataFrame:
+    # Create a mapping from the enum to localized labels
+    activity_type_mapping = {
+        choice.value: _(choice.label) for choice in ResidentActivity.ActivityTypeChoices
+    }
+
+    # Apply the mapping to localize the activity_type values
+    df["activity_type"] = df["activity_type"].map(activity_type_mapping)
+
+
+def _apply_caregiver_role_locale(df: pd.DataFrame) -> pd.DataFrame:
+    # Create a mapping from the enum to localized labels
+    caregiver_role_mapping = {
+        choice.value: _(choice.label)
+        for choice in ResidentActivity.CaregiverRoleChoices
+    }
+
+    # Apply the mapping to localize the caregiver_role values
+    df["caregiver_role"] = df["caregiver_role"].map(caregiver_role_mapping)
 
 
 def prepare_activity_counts_by_resident_and_activity_type_chart(home):
@@ -20,17 +43,7 @@ def prepare_activity_counts_by_resident_and_activity_type_chart(home):
         get_activity_counts_by_resident_and_activity_type(home.id)
     )
 
-    # Create a mapping from the enum to localized labels
-    activity_type_mapping = {
-        choice.value: _(choice.label) for choice in ResidentActivity.ActivityTypeChoices
-    }
-
-    # Apply the mapping to localize the activity_type values
-    activity_counts_by_resident_and_activity_type[
-        "activity_type"
-    ] = activity_counts_by_resident_and_activity_type["activity_type"].map(
-        activity_type_mapping,
-    )
+    _apply_activity_type_locale(activity_counts_by_resident_and_activity_type)
 
     activity_counts_by_resident_and_activity_type_chart = px.bar(
         activity_counts_by_resident_and_activity_type,
@@ -243,15 +256,7 @@ def prepare_work_by_caregiver_role_and_type_charts(context):
 def prepare_monthly_activity_hours_by_type_chart(home):
     monthly_activity_hours_by_type = home_monthly_activity_hours_by_type(home)
 
-    # Create a mapping from the enum to localized labels
-    activity_type_mapping = {
-        choice.value: _(choice.label) for choice in ResidentActivity.ActivityTypeChoices
-    }
-
-    # Apply the mapping to localize the activity_type values
-    monthly_activity_hours_by_type["activity_type"] = monthly_activity_hours_by_type[
-        "activity_type"
-    ].map(activity_type_mapping)
+    _apply_activity_type_locale(monthly_activity_hours_by_type)
 
     monthly_activity_hours_by_type_chart = px.bar(
         monthly_activity_hours_by_type,
@@ -279,3 +284,38 @@ def prepare_monthly_activity_hours_by_type_chart(home):
     )
 
     return monthly_activity_hours_by_type_chart.to_html()
+
+
+def prepare_monthly_activity_hours_by_caregiver_role_chart(home):
+    monthly_activity_hours_by_caregiver_role = (
+        home_monthly_activity_hours_by_caregiver_role(home)
+    )
+
+    _apply_caregiver_role_locale(monthly_activity_hours_by_caregiver_role)
+
+    monthly_activity_hours_by_caregiver_role_chart = px.bar(
+        monthly_activity_hours_by_caregiver_role,
+        x="month",
+        y="activity_hours",
+        color="caregiver_role",
+        title=_("Monthly activity hours by caregiver role"),
+        labels={
+            "caregiver_role": _("Caregiver role"),
+            "activity_hours": _("Activity hours"),
+        },
+    )
+
+    # Set plot background/paper color to transparent
+    monthly_activity_hours_by_caregiver_role_chart.update_layout(
+        plot_bgcolor="rgba(0, 0, 0, 0)",
+        paper_bgcolor="rgba(0, 0, 0, 0)",
+        # ensure text is visible on dark background
+        font_color="#FFFFFF",
+        # only display month on x-axis
+        xaxis={
+            "dtick": "M1",
+            "tickformat": "%b\n%Y",
+        },
+    )
+
+    return monthly_activity_hours_by_caregiver_role_chart.to_html()
