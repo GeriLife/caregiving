@@ -6,10 +6,11 @@ from datetime import timedelta
 from django.db import models
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
+import numpy as np
 import pandas as pd
 from shortuuid.django_fields import ShortUUIDField
 
-from core.constants import WEEKLY_ACTIVITY_RANGES
+from core.constants import WEEK_DAYS, WEEKLY_ACTIVITY_RANGES
 
 if TYPE_CHECKING:
     from residents.models import Resident
@@ -240,7 +241,7 @@ class Home(models.Model):
     def current_residents_with_recent_activity_metadata(self):
         current_residents = self.current_residents.all()
 
-        date_range = _generate_date_range(7)
+        date_range = _generate_date_range(WEEK_DAYS)
         df_combinations = _create_resident_date_combinations(
             current_residents,
             date_range,
@@ -309,19 +310,74 @@ class Home(models.Model):
                 activity_counts["good_active_count"] += 1
             elif activity_count in WEEKLY_ACTIVITY_RANGES["high"]["range"]:
                 activity_counts["high_active_count"] += 1
+
+        return activity_counts
+
+    def get_resident_percents_by_activity_level_normalized(self) -> dict[str, float]:
+        """Returns the resident counts by activity level annotated with a
+        percent.
+
+        The percent values, when rounded to the nearest integer, should
+        sum to 100.
+        """
+
+        activity_counts = self.resident_counts_by_activity_level
+
         if activity_counts["total_count"] != 0:
-            activity_counts["inactive_percent"] = (
-                activity_counts["inactive_count"] / activity_counts["total_count"]
-            ) * 100
-            activity_counts["low_active_percent"] = (
-                activity_counts["low_active_count"] / activity_counts["total_count"]
-            ) * 100
-            activity_counts["good_active_percent"] = (
-                activity_counts["good_active_count"] / activity_counts["total_count"]
-            ) * 100
-            activity_counts["high_active_percent"] = (
-                activity_counts["high_active_count"] / activity_counts["total_count"]
-            ) * 100
+            # Calculate raw percentages
+            raw_percents = np.array(
+                [
+                    (activity_counts["inactive_count"] / activity_counts["total_count"])
+                    * 100,
+                    (
+                        activity_counts["low_active_count"]
+                        / activity_counts["total_count"]
+                    )
+                    * 100,
+                    (
+                        activity_counts["good_active_count"]
+                        / activity_counts["total_count"]
+                    )
+                    * 100,
+                    (
+                        activity_counts["high_active_count"]
+                        / activity_counts["total_count"]
+                    )
+                    * 100,
+                ],
+            )
+
+            # Round the percentages
+            rounded_percents = np.round(raw_percents).astype(int)
+
+            # Adjust the rounded percentages to sum up to 100
+            while rounded_percents.sum() != 100:
+                difference = 100 - rounded_percents.sum()
+                indices = np.argsort(
+                    raw_percents - rounded_percents,
+                )  # Get indices to adjust based on largest fractional parts
+                for index in indices:
+                    should_increment = (
+                        difference > 0 and rounded_percents[index] < raw_percents[index]
+                    )
+                    should_decrement = (
+                        difference < 0 and rounded_percents[index] > raw_percents[index]
+                    )
+
+                    if should_increment or should_decrement:
+                        rounded_percents[index] += np.sign(difference)
+                        if rounded_percents.sum() == 100:
+                            break
+
+            # Update the activity_counts dictionary with the adjusted percentages
+            keys = [
+                "inactive_percent",
+                "low_active_percent",
+                "good_active_percent",
+                "high_active_percent",
+            ]
+            for key, value in zip(keys, rounded_percents):
+                activity_counts[key] = value
         else:
             activity_counts["inactive_percent"] = 0
             activity_counts["low_active_percent"] = 0
@@ -335,9 +391,11 @@ class Home(models.Model):
         """Returns a list of dictionaries of counts of residents by activity
         level."""
 
-        activity_level_counts = self.resident_counts_by_activity_level
+        activity_level_counts = (
+            self.get_resident_percents_by_activity_level_normalized()
+        )
 
-        if not self.resident_counts_by_activity_level["total_count"]:
+        if not activity_level_counts["total_count"]:
             return []
 
         chart_data = [
