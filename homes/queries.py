@@ -126,8 +126,8 @@ def get_home_total_hours_by_role_with_percent(home_id):
     return result
 
 
-def home_monthly_activity_counts_by_type(home) -> pd.DataFrame:
-    """Returns a list of dictionaries of counts of activities grouped by month
+def home_monthly_activity_hours_by_type(home) -> pd.DataFrame:
+    """Returns a list of dictionaries of hours of activities grouped by month
     and type."""
 
     from metrics.models import ResidentActivity

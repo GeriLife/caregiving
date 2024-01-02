@@ -7,7 +7,7 @@ from django.views.generic.list import ListView
 from .charts import (
     prepare_activity_counts_by_resident_and_activity_type_chart,
     prepare_daily_work_percent_by_caregiver_role_and_type_chart,
-    prepare_monthly_activity_counts_by_type_chart,
+    prepare_monthly_activity_hours_by_type_chart,
     prepare_work_by_caregiver_role_and_type_charts,
     prepare_work_by_caregiver_role_chart,
     prepare_work_by_type_chart,
@@ -60,7 +60,7 @@ class HomeDetailView(DetailView):
 
         context[
             "monthly_activity_counts_by_type_chart"
-        ] = prepare_monthly_activity_counts_by_type_chart(home)
+        ] = prepare_monthly_activity_hours_by_type_chart(home)
 
         return context
 

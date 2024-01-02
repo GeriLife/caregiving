@@ -8,7 +8,7 @@ from homes.queries import (
     get_daily_total_hours_by_role_and_work_type_with_percent,
     get_home_total_hours_by_role_with_percent,
     get_total_hours_by_role_and_work_type_with_percent,
-    home_monthly_activity_counts_by_type,
+    home_monthly_activity_hours_by_type,
 )
 
 from metrics.models import ResidentActivity
@@ -238,8 +238,8 @@ def prepare_work_by_caregiver_role_and_type_charts(context):
     return context
 
 
-def prepare_monthly_activity_counts_by_type_chart(home):
-    monthly_activity_counts_by_type = home_monthly_activity_counts_by_type(home)
+def prepare_monthly_activity_hours_by_type_chart(home):
+    monthly_activity_hours_by_type = home_monthly_activity_hours_by_type(home)
 
     # Create a mapping from the enum to localized labels
     activity_type_mapping = {
@@ -247,12 +247,12 @@ def prepare_monthly_activity_counts_by_type_chart(home):
     }
 
     # Apply the mapping to localize the activity_type values
-    monthly_activity_counts_by_type["activity_type"] = monthly_activity_counts_by_type[
+    monthly_activity_hours_by_type["activity_type"] = monthly_activity_hours_by_type[
         "activity_type"
     ].map(activity_type_mapping)
 
-    monthly_activity_counts_by_type_chart = px.bar(
-        monthly_activity_counts_by_type,
+    monthly_activity_hours_by_type_chart = px.bar(
+        monthly_activity_hours_by_type,
         x="month",
         y="activity_hours",
         color="activity_type",
@@ -264,7 +264,7 @@ def prepare_monthly_activity_counts_by_type_chart(home):
     )
 
     # Set plot background/paper color to transparent
-    monthly_activity_counts_by_type_chart.update_layout(
+    monthly_activity_hours_by_type_chart.update_layout(
         plot_bgcolor="rgba(0, 0, 0, 0)",
         paper_bgcolor="rgba(0, 0, 0, 0)",
         # ensure text is visible on dark background
@@ -276,4 +276,4 @@ def prepare_monthly_activity_counts_by_type_chart(home):
         },
     )
 
-    return monthly_activity_counts_by_type_chart.to_html()
+    return monthly_activity_hours_by_type_chart.to_html()
