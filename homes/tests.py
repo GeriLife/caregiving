@@ -5,6 +5,7 @@ from django.test import TestCase
 from django.core.management.base import CommandError
 from django.utils import timezone
 
+from core.constants import WEEKLY_ACTIVITY_RANGES
 from metrics.factories import ResidentActivityFactory
 from metrics.models import ResidentActivity
 from residents.models import Residency, Resident
@@ -20,6 +21,7 @@ class HomeModelTests(TestCase):
         self.home1 = HomeFactory(name="Home 1")
 
         self.home_1_current_resident_inactive = ResidentFactory(first_name="Alice")
+        self.home_1_current_resident_active = ResidentFactory(first_name="Barbara")
         self.home_1_current_resident_low_active = ResidentFactory(first_name="Paulene")
 
         self.home_1_past_resident = ResidentFactory(first_name="Bob")
@@ -30,8 +32,14 @@ class HomeModelTests(TestCase):
             move_in="2020-01-01",
             move_out=None,
         )
-        self.home_1_current_resident_active_residency = ResidencyFactory(
+        self.home_1_current_resident_low_active_residency = ResidencyFactory(
             resident=self.home_1_current_resident_low_active,
+            home=self.home1,
+            move_in="2020-01-01",
+            move_out=None,
+        )
+        self.home_1_current_resident_active_residency = ResidencyFactory(
+            resident=self.home_1_current_resident_active,
             home=self.home1,
             move_in="2020-01-01",
             move_out=None,
@@ -49,14 +57,22 @@ class HomeModelTests(TestCase):
             resident=self.home_1_current_resident_low_active,
             activity_date=today,
             home=self.home1,
-            residency=self.home_1_current_resident_active_residency,
+            residency=self.home_1_current_resident_low_active_residency,
         )
+
+        for _ in range(WEEKLY_ACTIVITY_RANGES["good"]["max_inclusive"]):
+            ResidentActivityFactory(
+                resident=self.home_1_current_resident_active,
+                activity_date=today,
+                home=self.home1,
+                residency=self.home_1_current_resident_active_residency,
+            )
 
     def test_mock_data(self):
         self.assertEqual(Home.objects.count(), 1)
-        self.assertEqual(Residency.objects.count(), 3)
-        self.assertEqual(Resident.objects.count(), 3)
-        self.assertEqual(ResidentActivity.objects.count(), 1)
+        self.assertEqual(Residency.objects.count(), 4)
+        self.assertEqual(Resident.objects.count(), 4)
+        self.assertEqual(ResidentActivity.objects.count(), 10)
 
         # assert home_1_current_resident_low_active in self.home_1_current_resident_active_activity.residents
         self.assertEqual(
@@ -73,7 +89,7 @@ class HomeModelTests(TestCase):
     def test_home_current_residents(self):
         current_residents_home1 = self.home1.current_residents
 
-        expected_current_residents_count = 2
+        expected_current_residents_count = 3
         self.assertEqual(
             current_residents_home1.count(),
             expected_current_residents_count,
@@ -102,6 +118,10 @@ class HomeModelTests(TestCase):
                 "recent_activity_count": 0,
             },
             {
+                "resident": self.home_1_current_resident_active,
+                "recent_activity_count": 9,
+            },
+            {
                 "resident": self.home_1_current_resident_low_active,
                 "recent_activity_count": 1,
             },
@@ -126,10 +146,10 @@ class HomeModelTests(TestCase):
         )
 
         expected_resident_counts_by_activity_level = {
-            "total_count": 2,
+            "total_count": 3,
             "inactive_count": 1,
             "low_active_count": 1,
-            "good_active_count": 0,
+            "good_active_count": 1,
             "high_active_count": 0,
         }
         self.assertEqual(
@@ -143,14 +163,14 @@ class HomeModelTests(TestCase):
         )
 
         expected_resident_percents_by_activity_level_normalized = {
-            "total_count": 2,
+            "total_count": 3,
             "inactive_count": 1,
             "low_active_count": 1,
-            "good_active_count": 0,
+            "good_active_count": 1,
             "high_active_count": 0,
-            "inactive_percent": 50.0,
-            "low_active_percent": 50.0,
-            "good_active_percent": 0.0,
+            "inactive_percent": 34,
+            "low_active_percent": 33,
+            "good_active_percent": 33,
             "high_active_percent": 0.0,
         }
         self.assertEqual(
@@ -167,17 +187,17 @@ class HomeModelTests(TestCase):
             {
                 "activity_level_label": "Inactive",
                 "activity_level_class": "danger",
-                "value": 50.0,
+                "value": 34,
             },
             {
                 "activity_level_label": "Low",
                 "activity_level_class": "warning",
-                "value": 50.0,
+                "value": 33,
             },
             {
                 "activity_level_label": "Moderate",
                 "activity_level_class": "success",
-                "value": 0.0,
+                "value": 33,
             },
             {
                 "activity_level_label": "High",
@@ -189,6 +209,17 @@ class HomeModelTests(TestCase):
             home1_resident_counts_by_activity_level_chart_data,
             expected_resident_counts_by_activity_level_chart_data,
         )
+
+        values_sum = sum(
+            [
+                item["value"]
+                for item in home1_resident_counts_by_activity_level_chart_data
+            ],
+        )
+
+        expected_values_sum = 100.0
+
+        self.assertEqual(values_sum, expected_values_sum)
 
 
 class MakeHomeTest(TestCase):
