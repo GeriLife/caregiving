@@ -15,10 +15,10 @@
             <table class="table">
                 <caption>{% translate "Table of residents showing current activity status, total activity count, and daily activity indicators for past seven days." %}</caption>
                 <tr>
-                    <th class="col-2">{% translate "Name" %}</th>
-                    <th>{% translate "Activity Level" %}</th>
-                    <th class="text-center">{% translate "Total Activities" %}</th>
-                    <th>{% translate "Active Days" %}</th>
+                    <th class="col-lg-1 col-2">{% translate "Name" %}</th>
+                    <th class="col-md-1">{% translate "Activity Level" %}</th>
+                    <th class="col-md-1 text-center">{% translate "Total Activities" %}</th>
+                    <th class="col-md-1 text-center">{% translate "Active Days" %}</th>
                     {% for day in home.current_residents_with_recent_activity_metadata.residents.0.recent_activity_days %}
                         <th class="text-center">{{ day.date|date:"D" }}</th> <!-- Show day names -->
                     {% endfor %}
