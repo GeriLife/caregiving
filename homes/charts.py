@@ -335,3 +335,34 @@ def prepare_work_by_caregiver_role_and_type_charts(context):
     )
 
     return context
+
+
+def prepare_monthly_activity_counts_by_type_chart(home):
+    monthly_activity_counts_by_type = home.monthly_activity_counts_by_type
+
+    monthly_activity_counts_by_type_chart = px.bar(
+        monthly_activity_counts_by_type,
+        x="month",
+        y="count",
+        color="activity_type",
+        title=_("Monthly activity counts by type"),
+        labels={
+            "activity_type": _("Activity type"),
+            "activity_count": _("Activity count"),
+        },
+    )
+
+    # Set plot background/paper color to transparent
+    monthly_activity_counts_by_type_chart.update_layout(
+        plot_bgcolor="rgba(0, 0, 0, 0)",
+        paper_bgcolor="rgba(0, 0, 0, 0)",
+        # ensure text is visible on dark background
+        font_color="#FFFFFF",
+        # only display month on x-axis
+        xaxis={
+            "dtick": "M1",
+            "tickformat": "%b\n%Y",
+        },
+    )
+
+    return monthly_activity_counts_by_type_chart.to_html()

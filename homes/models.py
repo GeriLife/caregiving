@@ -371,7 +371,7 @@ class Home(models.Model):
         return chart_data
 
     @property
-    def monthly_grouped_activities_by_type(self) -> list[dict]:
+    def monthly_activity_counts_by_type(self) -> list[dict]:
         """Returns a list of dictionaries of counts of activities grouped by
         month and type."""
 
@@ -391,6 +391,7 @@ class Home(models.Model):
             .values("month", "activity_type")
             .order_by("month")
             .annotate(count=Count("id"))
+            .distinct()
         )
 
         return list(activities)
