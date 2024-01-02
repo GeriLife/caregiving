@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GeriLife Caregivers\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-01-02 03:57+0000\n"
+"POT-Creation-Date: 2024-01-02 04:03+0000\n"
 "Language: fi\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -104,15 +104,11 @@ msgstr "Suomi"
 msgid "Resident activity count by type"
 msgstr "Asukastoiminnan määrä tyypeittäin"
 
-#: homes/charts.py:58
-#, fuzzy
-#| msgid "Activity Count"
-msgid "Activity Hours"
+#: homes/charts.py:58 homes/charts.py:278 homes/charts.py:316
+msgid "Activity hours"
 msgstr "Aktiviteettien määrä"
 
 #: homes/charts.py:59
-#, fuzzy
-#| msgid "Resident"
 msgid "Resident Name"
 msgstr "Asukas"
 
@@ -172,15 +168,9 @@ msgstr "Kuukausittaiset aktiviteetit lasketaan tyypin mukaan"
 msgid "Month"
 msgstr "Kuukausi"
 
-#: homes/charts.py:278 metrics/models.py:54
+#: homes/charts.py:279 metrics/models.py:54
 msgid "Activity type"
 msgstr "Aktiviteetin tyyppi"
-
-#: homes/charts.py:279 homes/charts.py:316
-#, fuzzy
-#| msgid "Activity Count"
-msgid "Activity hours"
-msgstr "Aktiviteettien määrä"
 
 #: homes/charts.py:312
 #, fuzzy
@@ -518,42 +508,3 @@ msgstr "Työraportti"
 #: work/views.py:106
 msgid "Work hours by work type"
 msgstr "Työajat työtyypeittäin"
-
-#~ msgid "Activity count"
-#~ msgstr "Aktiviteettien määrä"
-
-#~ msgid "admin/"
-#~ msgstr "hallinto/"
-
-#~ msgid "accounts/"
-#~ msgstr "tilit/"
-
-#~ msgid "homes/"
-#~ msgstr "koteja/"
-
-#~ msgid "residents/"
-#~ msgstr "asukkaille/"
-
-#~ msgid "work/"
-#~ msgstr "työ/"
-
-#~ msgid "Home name"
-#~ msgstr "Kodin nimi"
-
-#~ msgid "Work percent by role"
-#~ msgstr "Työskentele prosentteina roolin mukaan"
-
-#~ msgid "No work recorded."
-#~ msgstr "Ei tallennettua työtä."
-
-#~ msgid "create"
-#~ msgstr "luoda"
-
-#~ msgid "<slug:pk>/update"
-#~ msgstr "<slug:pk>/päivittää"
-
-#~ msgid "submit/"
-#~ msgstr "lähetä/"
-
-#~ msgid "report/"
-#~ msgstr "raportti/"

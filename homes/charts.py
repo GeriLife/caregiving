@@ -55,7 +55,7 @@ def prepare_activity_counts_by_resident_and_activity_type_chart(home: Home) -> s
         orientation="h",
         title=_("Resident activity count by type"),
         labels={
-            "activity_hours": _("Activity Hours"),
+            "activity_hours": _("Activity hours"),
             "full_name": _("Resident Name"),
             "activity_type": _("Activity Type"),
         },
@@ -275,8 +275,8 @@ def prepare_monthly_activity_hours_by_type_chart(home: Home) -> str:
         title=_("Monthly activity hours by type"),
         labels={
             "month": _("Month"),
-            "activity_type": _("Activity type"),
             "activity_hours": _("Activity hours"),
+            "activity_type": _("Activity type"),
         },
     )
 
