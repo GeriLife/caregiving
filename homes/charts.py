@@ -2,7 +2,15 @@ from django.db import connection
 from django.db.models import Sum
 from django.utils.translation import gettext as _
 
+import pandas as pd
 import plotly.express as px
+
+from metrics.models import ResidentActivity
+
+# Create a mapping from the enum to localized labels
+ACTIVITY_TYPE_MAPPING = {
+    choice.value: _(choice.label) for choice in ResidentActivity.ActivityTypeChoices
+}
 
 
 def dictfetchall(cursor):
@@ -25,12 +33,19 @@ def get_activity_counts_by_resident_and_activity_type(home_id):
 
         result = dictfetchall(cursor)
 
-    return result
+    return pd.DataFrame(result)
 
 
 def prepare_activity_counts_by_resident_and_activity_type_chart(home):
     activity_counts_by_resident_and_activity_type = (
         get_activity_counts_by_resident_and_activity_type(home.id)
+    )
+
+    # Apply the mapping to localize the activity_type values
+    activity_counts_by_resident_and_activity_type[
+        "activity_type"
+    ] = activity_counts_by_resident_and_activity_type["activity_type"].map(
+        ACTIVITY_TYPE_MAPPING,
     )
 
     activity_counts_by_resident_and_activity_type_chart = px.bar(
@@ -39,7 +54,7 @@ def prepare_activity_counts_by_resident_and_activity_type_chart(home):
         y="resident_name",
         color="activity_type",
         orientation="h",
-        title=_("Resident Activity Count By Type"),
+        title=_("Resident activity count by type"),
         labels={
             "activity_count": _("Activity Count"),
             "resident_name": _("Resident Name"),
@@ -339,6 +354,11 @@ def prepare_work_by_caregiver_role_and_type_charts(context):
 
 def prepare_monthly_activity_counts_by_type_chart(home):
     monthly_activity_counts_by_type = home.monthly_activity_counts_by_type
+
+    # Apply the mapping to localize the activity_type values
+    monthly_activity_counts_by_type["activity_type"] = monthly_activity_counts_by_type[
+        "activity_type"
+    ].map(ACTIVITY_TYPE_MAPPING)
 
     monthly_activity_counts_by_type_chart = px.bar(
         monthly_activity_counts_by_type,

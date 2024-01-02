@@ -371,7 +371,7 @@ class Home(models.Model):
         return chart_data
 
     @property
-    def monthly_activity_counts_by_type(self) -> list[dict]:
+    def monthly_activity_counts_by_type(self) -> pd.DataFrame:
         """Returns a list of dictionaries of counts of activities grouped by
         month and type."""
 
@@ -394,7 +394,7 @@ class Home(models.Model):
             .distinct()
         )
 
-        return list(activities)
+        return pd.DataFrame(list(activities))
 
 
 class HomeGroup(models.Model):
