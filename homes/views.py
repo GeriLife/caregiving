@@ -45,6 +45,9 @@ class HomeGroupListView(TemplateView):
 
         user = self.request.user
 
+        if not user.is_authenticated:
+            return context
+
         if user.is_superuser:
             context["homes_without_group"] = Home.objects.filter(
                 home_group__isnull=True,
