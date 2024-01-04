@@ -19,4 +19,4 @@ class User(AbstractUser):
     def homes(self) -> QuerySet["homes.Home"]:
         from homes.models import Home
 
-        return Home.objects.filter(homeuserrelation__user=self)
+        return Home.objects.filter(home_user_relations__user=self)
