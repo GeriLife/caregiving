@@ -11,6 +11,7 @@ import numpy as np
 import pandas as pd
 from shortuuid.django_fields import ShortUUIDField
 
+
 from core.constants import WEEK_DAYS, WEEKLY_ACTIVITY_RANGES
 
 if TYPE_CHECKING:
@@ -251,6 +252,11 @@ class Home(models.Model):
 
     def get_absolute_url(self):
         return reverse("home-detail-view", kwargs={"url_uuid": self.url_uuid})
+
+    @property
+    def members(self) -> QuerySet[user_model]:
+        """Returns a QuerySet of all members of this home."""
+        return user_model.objects.filter(home_user_relations__home=self)
 
     @property
     def current_residents(self) -> models.QuerySet["Resident"]:
