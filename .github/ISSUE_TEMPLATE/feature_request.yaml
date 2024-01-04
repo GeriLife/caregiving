@@ -1,0 +1,62 @@
+name: Feature Request
+description: Suggest an idea for this project
+title: "[Feature]: "
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: "Thanks for taking the time to fill out our feature request form 🌟"
+
+  - type: input
+    id: title
+    attributes:
+      label: Feature Title
+      description: "A concise title that reflects the proposed feature."
+      placeholder: "Enter the title for the feature request"
+    validations:
+      required: true
+
+  - type: textarea
+    id: feature-description
+    attributes:
+      label: Feature Description
+      description: "Provide a clear and detailed explanation of the feature you're proposing."
+      placeholder: "Describe the feature here"
+    validations:
+      required: true
+
+  - type: textarea
+    id: motivation
+    attributes:
+      label: Motivation
+      description: "Why is this feature important? Describe the need for this feature."
+      placeholder: "Explain the motivation behind this feature"
+    validations:
+      required: true
+
+  - type: textarea
+    id: possible-implementation
+    attributes:
+      label: Possible Implementation
+      description: "If you have ideas about how to implement this feature, provide those details here."
+      placeholder: "Describe any potential implementation ideas"
+    validations:
+      required: false
+
+  - type: textarea
+    id: alternatives-considered
+    attributes:
+      label: Alternatives Considered
+      description: "Have you considered any alternative solutions or features?"
+      placeholder: "Describe any alternatives you've considered"
+    validations:
+      required: false
+
+  - type: textarea
+    id: additional-context
+    attributes:
+      label: Additional Context
+      description: "Add any other context or screenshots about the feature request here."
+      placeholder: "Add additional context or information"
+    validations:
+      required: false
