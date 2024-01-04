@@ -17,35 +17,54 @@ from .charts import (
 from .models import Home
 
 
+def regroup_homes_by_home_group(homes):
+    # group homes with group by group name
+    home_groups_with_homes = {}
+
+    for home in homes:
+        if home.home_group.name not in home_groups_with_homes:
+            home_groups_with_homes[home.home_group.name] = []
+
+        home_groups_with_homes[home.home_group.name].append(home)
+
+    # Restructure home_groups_with_homes to a list of tuples
+    # to make it easier to iterate over in the template
+    home_groups_with_homes = [
+        {"group_name": name, "homes": homes}
+        for name, homes in home_groups_with_homes.items()
+    ]
+
+    return home_groups_with_homes
+
+
 class HomeGroupListView(TemplateView):
     template_name = "homes/home_group_list.html"
 
     def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
         context = super().get_context_data(**kwargs)
 
-        context["homes_without_group"] = self.request.user.homes.filter(
-            home_group__isnull=True,
+        user = self.request.user
+
+        if user.is_superuser:
+            context["homes_without_group"] = Home.objects.filter(
+                home_group__isnull=True,
+            )
+
+            context["homes_with_group"] = Home.objects.filter(
+                home_group__isnull=False,
+            )
+        else:
+            context["homes_without_group"] = self.request.user.homes.filter(
+                home_group__isnull=True,
+            )
+
+            context["homes_with_group"] = self.request.user.homes.filter(
+                home_group__isnull=False,
+            )
+
+        home_groups_with_homes = regroup_homes_by_home_group(
+            context["homes_with_group"],
         )
-
-        context["homes_with_group"] = self.request.user.homes.filter(
-            home_group__isnull=False,
-        )
-
-        # group homes with group by group name
-        home_groups_with_homes = {}
-
-        for home in context["homes_with_group"]:
-            if home.home_group.name not in home_groups_with_homes:
-                home_groups_with_homes[home.home_group.name] = []
-
-            home_groups_with_homes[home.home_group.name].append(home)
-
-        # Restructure home_groups_with_homes to a list of tuples
-        # to make it easier to iterate over in the template
-        home_groups_with_homes = [
-            {"group_name": name, "homes": homes}
-            for name, homes in home_groups_with_homes.items()
-        ]
 
         context["home_groups_with_homes"] = home_groups_with_homes
 
