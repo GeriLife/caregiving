@@ -3,11 +3,9 @@
 {% load i18n %}
 
 {% block content %}
-    <h1>Homes</h1>
+    <h1>{% translate "Homes" %}</h1>
 
     <p>{% translate "Homes showing the percent of residents by activity level" %}</p>
-
-
 
     {% for home_group in home_groups_with_homes %}
         <div class="card mb-2">
@@ -36,7 +34,6 @@
                                 {% endif %}
                             </div>
                         </div>
-
                     </li>
                 {% endfor %}
             </ul>
@@ -52,6 +49,7 @@
                         {{ home }}
                     </a>
                 </div>
+
                 {% if home.resident_counts_by_activity_level_chart_data %}
                     <div class="col-md-9">
                         <div class="mt-3">
