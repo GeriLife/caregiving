@@ -1,5 +1,6 @@
 import datetime
 from typing import TYPE_CHECKING
+from django.contrib.auth import get_user_model
 from django.db.models import Count, Q, QuerySet
 from django.utils import timezone
 from datetime import timedelta
@@ -14,6 +15,9 @@ from core.constants import WEEK_DAYS, WEEKLY_ACTIVITY_RANGES
 
 if TYPE_CHECKING:
     from residents.models import Resident
+
+
+user_model = get_user_model()
 
 
 def _generate_date_range(days_ago: int) -> list[datetime.date]:
@@ -197,6 +201,28 @@ def _structure_resident_data(
         "end_date": date_range[0],
         "residents": residents_data,
     }
+
+
+class HomeUserRelation(models.Model):
+    user = models.ForeignKey(
+        to=user_model,
+        on_delete=models.CASCADE,
+        related_name="home_user_relations",
+    )
+    home = models.ForeignKey(
+        to="homes.Home",
+        on_delete=models.CASCADE,
+        related_name="home_user_relations",
+    )
+
+    def __str__(self) -> str:
+        return f"{self.user} - {self.home}"
+
+    class Meta:
+        db_table = "home_user_relation"
+        verbose_name = _("home user relation")
+        verbose_name_plural = _("home user relations")
+        unique_together = ("user", "home")
 
 
 class Home(models.Model):
