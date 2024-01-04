@@ -5,16 +5,7 @@ labels: ["bug"]
 body:
   - type: markdown
     attributes:
-      value: "Thank you for reporting a bug. Please fill in as much detail as possible."
-
-  - type: input
-    id: title
-    attributes:
-      label: Bug Report Title
-      description: "A clear and concise title for the bug report."
-      placeholder: "Enter the title for the bug report"
-    validations:
-      required: true
+      value: "Thank you for reporting a bug. 🐛 Please fill in as much detail as possible. 🌟"
 
   - type: textarea
     id: description
