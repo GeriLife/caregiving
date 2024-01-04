@@ -1,0 +1,111 @@
+name: Bug Report
+description: Create a report to help us improve
+title: "[Bug]: "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: "Thank you for reporting a bug. Please fill in as much detail as possible."
+
+  - type: input
+    id: title
+    attributes:
+      label: Bug Report Title
+      description: "A clear and concise title for the bug report."
+      placeholder: "Enter the title for the bug report"
+    validations:
+      required: true
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Description
+      description: "Provide a detailed description of the bug."
+      placeholder: "Describe the bug here"
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps-to-reproduce
+    attributes:
+      label: Steps to Reproduce
+      description: "Provide detailed steps to reproduce the bug."
+      placeholder: "1. ...\n2. ...\n3. ..."
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected-behavior
+    attributes:
+      label: Expected Behavior
+      description: "Describe what you expected to happen."
+      placeholder: "Explain the expected outcome"
+    validations:
+      required: true
+
+  - type: textarea
+    id: actual-behavior
+    attributes:
+      label: Actual Behavior
+      description: "Describe what actually happened."
+      placeholder: "Explain the actual outcome"
+    validations:
+      required: true
+
+  - type: textarea
+    id: possible-solution
+    attributes:
+      label: Possible Solution
+      description: "If you have a suggestion for fixing the bug, please describe it here."
+      placeholder: "Suggest a possible solution (optional)"
+    validations:
+      required: false
+
+  - type: textarea
+    id: context
+    attributes:
+      label: Context
+      description: "Provide any additional context that may be relevant to the bug."
+      placeholder: "Add any additional context about the problem here"
+    validations:
+      required: false
+
+  - type: dropdown
+    id: web-browser
+    attributes:
+      label: Web Browser
+      description: "Choose the web browser you used when encountered the bug."
+      options:
+        - Chrome
+        - Edge
+        - Firefox
+        - Safari
+        - Other
+        - N/A
+    validations:
+      required: true
+
+  - type: dropdown
+    id: operating-system
+    attributes:
+      label: Operating System
+      description: "Choose the operating system on which you encountered the bug."
+      options:
+        - Windows
+        - macOS
+        - Linux
+        - iOS
+        - Android
+        - Other
+        - N/A
+    validations:
+      required: true
+
+  - type: input
+    id: environment-details
+    attributes:
+      label: Your Environment
+      description: "Include any other environment details here, like browser version, Node.js version, etc."
+      placeholder: "Environment details"
+    validations:
+      required: false
