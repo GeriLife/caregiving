@@ -2,18 +2,45 @@ from http import HTTPStatus
 from django.test import TestCase
 
 from .models import ResidentActivity
-from homes.factories import HomeFactory
+from homes.factories import HomeFactory, HomeUserRelationFactory
 from residents.factories import ResidentFactory, ResidencyFactory
 from datetime import date
 from django.urls import reverse
+from django.contrib.auth import get_user_model
+
+user_model = get_user_model()
 
 
 class ResidentActivityFormViewTestCase(TestCase):
     def setUp(self):
+        # Create a user
+        self.general_user = user_model.objects.create_user(
+            username="gerneraluser",
+            email="general@tzo.com",
+            password="testpassword",
+        )
+        self.home_user = user_model.objects.create_user(
+            username="testuser",
+            email="test@email.com",
+            password="testpassword",
+        )
+        self.superuser = user_model.objects.create_superuser(
+            username="superuser",
+            email="superuser@test.com",
+            password="superuserpassword",
+        )
+
         # Create test data using factories
         self.home1 = HomeFactory(name="Home 1")
+
+        # Add the user to the home
+        HomeUserRelationFactory(home=self.home1, user=self.home_user)
+
+        # Create two residents
         self.resident1 = ResidentFactory(first_name="Alice")
         self.resident2 = ResidentFactory(first_name="Bob")
+
+        # Create a residency for each resident
         self.residency1 = ResidencyFactory(
             home=self.home1,
             resident=self.resident1,
@@ -40,6 +67,9 @@ class ResidentActivityFormViewTestCase(TestCase):
             "activity_minutes": 30,
             "caregiver_role": ResidentActivity.CaregiverRoleChoices.NURSE,
         }
+
+        # log in superuser
+        self.client.force_login(self.superuser)
 
         # Make POST request
         response = self.client.post(
@@ -90,6 +120,9 @@ class ResidentActivityFormViewTestCase(TestCase):
             "activity_minutes": 30,
             "caregiver_role": ResidentActivity.CaregiverRoleChoices.NURSE,
         }
+
+        # log in superuser
+        self.client.force_login(self.superuser)
 
         # Make POST request
         response = self.client.post(
