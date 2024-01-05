@@ -1,15 +1,16 @@
 import uuid
 
+from django.db import transaction
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse_lazy
 from django.views.generic import ListView, FormView
-from django.db import transaction
 
 from metrics.models import ResidentActivity
 from residents.models import Residency, Resident
 from metrics.forms import ResidentActivityForm
 
 
-class ResidentActivityListView(ListView):
+class ResidentActivityListView(LoginRequiredMixin, ListView):
     template_name = "activities/resident_activity_list.html"
     queryset = ResidentActivity.objects.all()
     context_object_name = "activities"
@@ -17,10 +18,17 @@ class ResidentActivityListView(ListView):
     ordering = ["-activity_date"]
 
 
-class ResidentActivityFormView(FormView):
+class ResidentActivityFormView(LoginRequiredMixin, FormView):
     template_name = "activities/resident_activity_form.html"
     form_class = ResidentActivityForm
     success_url = reverse_lazy("activity-list-view")
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+
+        kwargs["user"] = self.request.user
+
+        return kwargs
 
     @transaction.atomic
     def post(self, request, *args, **kwargs):
