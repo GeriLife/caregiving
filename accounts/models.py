@@ -20,3 +20,12 @@ class User(AbstractUser):
         from homes.models import Home
 
         return Home.objects.filter(home_user_relations__user=self)
+
+    @property
+    def can_add_activity(self) -> bool:
+        """Return True if the user can add an activity.
+
+        A user can add an activity if they are a superuser or if they
+        are associated with at least one home.
+        """
+        return self.is_superuser or self.homes.exists()
