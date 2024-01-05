@@ -24,6 +24,12 @@ class ResidentActivityFormView(LoginRequiredMixin, FormView):
     success_url = reverse_lazy("activity-list-view")
 
     def get_form_kwargs(self):
+        """Override the get_form_kwargs method to pass the user to the form.
+
+        This will allow the form to filter the residents by the user's
+        homes or the superuser to filter by all homes.
+        """
+
         kwargs = super().get_form_kwargs()
 
         kwargs["user"] = self.request.user

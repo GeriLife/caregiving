@@ -70,12 +70,20 @@ def prepare_resident_choices(residencies: QuerySet[Residency]) -> list[tuple[int
 
 def get_resident_choices(user=None):
     # Fetch Residency objects with related 'home' and 'resident' in a single query
-    residencies = Residency.objects.filter(move_out__isnull=True).select_related(
+    if user.is_superuser:
+        residencies = Residency.objects.filter(move_out__isnull=True)
+    else:
+        residencies = Residency.objects.filter(
+            home__in=user.homes.all(),
+            move_out__isnull=True,
+        )
+
+    residencies.select_related(
         "home",
         "resident",
     )
 
-    resident_choices = prepare_resident_choices(residencies)
+    resident_choices = prepare_resident_choices(residencies=residencies)
 
     return resident_choices
 
@@ -92,9 +100,14 @@ class ResidentActivityForm(forms.Form):
     activity_minutes = forms.IntegerField()
     caregiver_role = forms.ChoiceField(choices=caregiver_role_choices)
 
-    def __init__(self, user: user_model, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+    def __init__(self, *args, **kwargs):
+        """Initialize the form.
 
+        Include the request user in the form kwargs if available so it
+        can be used to filter the resident choices.
+        """
         user = kwargs.pop("user", None)
+
+        super().__init__(*args, **kwargs)
 
         self.fields["residents"].choices = get_resident_choices(user=user)
