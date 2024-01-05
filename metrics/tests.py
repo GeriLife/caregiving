@@ -1,6 +1,9 @@
 from http import HTTPStatus
 from django.test import TestCase
 
+from metrics.forms import group_residents_by_home, prepare_resident_choices
+from residents.models import Residency
+
 from .models import ResidentActivity
 from homes.factories import HomeFactory, HomeUserRelationFactory
 from residents.factories import ResidentFactory, ResidencyFactory
@@ -187,3 +190,66 @@ class ResidentActivityFormViewTestCase(TestCase):
 
         # Ensure counts have not changed, indicating a rollback
         self.assertEqual(resident_activity_count_pre, resident_activity_count_post)
+
+
+class ResidentDataPreparationTest(TestCase):
+    def setUp(self):
+        # Create test homes
+        self.home1 = HomeFactory(
+            name="Home A",
+        )
+        self.home2 = HomeFactory(
+            name="Home B",
+        )
+
+        # Create test residents
+        self.resident1 = ResidentFactory()
+        self.resident2 = ResidentFactory()
+        self.resident3 = ResidentFactory()
+
+        # Create residencies
+        ResidencyFactory(
+            home=self.home1,
+            resident=self.resident1,
+        )
+        ResidencyFactory(
+            home=self.home1,
+            resident=self.resident2,
+        )
+        ResidencyFactory(
+            home=self.home2,
+            resident=self.resident3,
+        )
+
+    def test_group_residents_by_home(self):
+        residencies = Residency.objects.select_related("home", "resident").all()
+        grouped = group_residents_by_home(residencies)
+
+        self.assertIn(
+            self.home1.name,
+            grouped,
+        )
+        self.assertIn(
+            self.home2.name,
+            grouped,
+        )
+        self.assertIn(
+            (self.resident1.id, self.resident1.full_name),
+            grouped[self.home1.name],
+        )
+        self.assertIn(
+            (self.resident2.id, self.resident2.full_name),
+            grouped[self.home1.name],
+        )
+        self.assertIn(
+            (self.resident3.id, self.resident3.full_name),
+            grouped[self.home2.name],
+        )
+
+    def test_prepare_resident_choices(self):
+        residencies = Residency.objects.select_related("home", "resident").all()
+        choices = prepare_resident_choices(residencies)
+
+        # Assuming homes are sorted alphabetically in the choices list
+        self.assertEqual(choices[0][0], "Home A")
+        self.assertEqual(choices[1][0], "Home B")
