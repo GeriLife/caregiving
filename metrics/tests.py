@@ -98,7 +98,7 @@ class ResidentActivityFormViewTestCase(TestCase):
 
         activity_residents = [self.resident1.id, self.resident2.id]
         # Prepare data for POST request
-        self.data = {
+        data = {
             "residents": activity_residents,
             "activity_date": date.today(),
             "activity_type": ResidentActivity.ActivityTypeChoices.OUTDOOR,
@@ -112,7 +112,7 @@ class ResidentActivityFormViewTestCase(TestCase):
         # Make POST request
         response = self.client.post(
             self.url,
-            self.data,
+            data,
         )
 
         # The response should indicate a successful form submission
@@ -151,7 +151,7 @@ class ResidentActivityFormViewTestCase(TestCase):
         resident_activity_count_pre = ResidentActivity.objects.all().count()
 
         # Prepare data for POST request with a resident that does not have a residency
-        self.data = {
+        data = {
             "residents": [non_resident.id],
             "activity_type": ResidentActivity.ActivityTypeChoices.OUTDOOR,
             "activity_date": date.today(),
@@ -165,7 +165,7 @@ class ResidentActivityFormViewTestCase(TestCase):
         # Make POST request
         response = self.client.post(
             self.url,
-            self.data,
+            data,
         )
 
         # The response should indicate a failure to process the form
@@ -190,6 +190,35 @@ class ResidentActivityFormViewTestCase(TestCase):
 
         # Ensure counts have not changed, indicating a rollback
         self.assertEqual(resident_activity_count_pre, resident_activity_count_post)
+
+    def test_general_user_get_403_on_post(self):
+        """Test that a general user gets a 403 response.
+
+        I.e., the user should not be associated with any residents and
+        so should not be authorized to submit the form.
+        """
+        # log in general user
+        self.client.force_login(self.general_user)
+
+        data = {
+            "residents": [self.resident1.id],
+            "activity_type": ResidentActivity.ActivityTypeChoices.OUTDOOR,
+            "activity_date": date.today(),
+            "activity_minutes": 30,
+            "caregiver_role": ResidentActivity.CaregiverRoleChoices.NURSE,
+        }
+
+        # Make POST request
+        response = self.client.post(
+            self.url,
+            data,
+        )
+
+        # The response should indicate a failure to process the form
+        self.assertEqual(
+            response.status_code,
+            HTTPStatus.FORBIDDEN,
+        )
 
 
 class ResidentDataPreparationTest(TestCase):

@@ -59,6 +59,9 @@ class ResidentActivityFormView(LoginRequiredMixin, FormView):
             # generate group activity ID based on current epoch time
             group_activity_id = uuid.uuid4()
 
+            if not request.user.can_manage_residents(resident_ids):
+                return self.handle_no_permission()
+
             for resident_id in resident_ids:
                 try:
                     resident = Resident.objects.get(id=resident_id)
