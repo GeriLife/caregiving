@@ -1,4 +1,7 @@
 from typing import Any
+
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.core.exceptions import PermissionDenied
 from django.shortcuts import get_object_or_404
 
 from django.views.generic.detail import DetailView
@@ -37,7 +40,7 @@ def regroup_homes_by_home_group(homes):
     return home_groups_with_homes
 
 
-class HomeGroupListView(TemplateView):
+class HomeGroupListView(LoginRequiredMixin, TemplateView):
     template_name = "homes/home_group_list.html"
 
     def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
@@ -74,7 +77,10 @@ class HomeGroupListView(TemplateView):
         return context
 
 
-class HomeDetailView(DetailView):
+# user should be logged in
+
+
+class HomeDetailView(LoginRequiredMixin, DetailView):
     model = Home
     context_object_name = "home"
 
@@ -89,11 +95,15 @@ class HomeDetailView(DetailView):
                 url_uuid=url_uuid,
             )  # Filter the queryset based on url_uuid
 
-        obj = get_object_or_404(
+        home = get_object_or_404(
             queryset,
         )  # Get the object or return a 404 error if not found
 
-        return obj
+        # ensure the user has access to the home
+        if not home.has_access(user=self.request.user):
+            raise PermissionDenied
+
+        return home
 
     def prepare_activity_charts(self, context):
         """Prepare activity charts and add them to the template context."""

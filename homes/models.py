@@ -258,6 +258,14 @@ class Home(models.Model):
         """Returns a QuerySet of all members of this home."""
         return user_model.objects.filter(home_user_relations__home=self)
 
+    def has_access(self, user: user_model) -> bool:
+        """Returns True if the user has access to this home.
+
+        - Superusers have access to all homes.
+        - Members of the home have access to the home.
+        """
+        return user.is_superuser or user in self.members.all()
+
     @property
     def current_residents(self) -> models.QuerySet["Resident"]:
         """Returns a QuerySet of all current residents for this home."""
