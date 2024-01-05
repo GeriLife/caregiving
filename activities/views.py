@@ -23,6 +23,13 @@ class ResidentActivityFormView(LoginRequiredMixin, FormView):
     form_class = ResidentActivityForm
     success_url = reverse_lazy("activity-list-view")
 
+    # Check whether request user is authorized to view this page
+    def dispatch(self, request, *args, **kwargs):
+        if not request.user.can_add_activity:
+            return self.handle_no_permission()
+
+        return super().dispatch(request, *args, **kwargs)
+
     def get_form_kwargs(self):
         """Override the get_form_kwargs method to pass the user to the form.
 
