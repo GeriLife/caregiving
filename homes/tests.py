@@ -1,4 +1,5 @@
 from datetime import date, timedelta
+from http import HTTPStatus
 from io import StringIO
 from django.core.management import call_command
 
@@ -560,3 +561,52 @@ class HomeGroupListViewTest(TestCase):
         self.client.login(username="testuser", password="password")
         response = self.client.get(self.url)
         self.assertTemplateUsed(response, "homes/home_group_list.html")
+
+
+class HomeDetailViewTests(TestCase):
+    def setUp(self):
+        # Create users
+        self.regular_user = User.objects.create_user(
+            username="regular",
+            password="test",
+        )
+        self.super_user = User.objects.create_superuser(
+            username="super",
+            password="test",
+        )
+        self.member_user = User.objects.create_user(username="member", password="test")
+
+        # Create a home
+        self.home = HomeFactory()
+
+        self.url = reverse("home-detail-view", kwargs={"url_uuid": self.home.url_uuid})
+
+        # Create a relation where member_user is a member of home
+        HomeUserRelationFactory(home=self.home, user=self.member_user)
+
+    def test_access_denied_non_member(self):
+        self.client.login(username="regular", password="test")
+
+        response = self.client.get(self.url)
+        self.assertEqual(
+            response.status_code,
+            HTTPStatus.FORBIDDEN,
+        )
+
+    def test_access_granted_member(self):
+        self.client.login(username="member", password="test")
+
+        response = self.client.get(self.url)
+        self.assertEqual(
+            response.status_code,
+            HTTPStatus.OK,
+        )
+
+    def test_access_granted_superuser(self):
+        self.client.login(username="super", password="test")
+
+        response = self.client.get(self.url)
+        self.assertEqual(
+            response.status_code,
+            HTTPStatus.OK,
+        )
