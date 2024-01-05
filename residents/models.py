@@ -91,6 +91,7 @@ class Residency(models.Model):
     resident = models.ForeignKey(
         to=Resident,
         on_delete=models.PROTECT,
+        related_name="residencies",
     )
     home = models.ForeignKey(
         to=Home,
