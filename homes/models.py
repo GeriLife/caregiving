@@ -273,8 +273,8 @@ class Home(models.Model):
         from residents.models import Resident
 
         return Resident.objects.filter(
-            residency__home=self,
-            residency__move_out__isnull=True,
+            residencies__home=self,
+            residencies__move_out__isnull=True,
         ).order_by("first_name")
 
     @property
