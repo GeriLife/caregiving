@@ -12,7 +12,7 @@ user_model = get_user_model()
 
 
 class ResidentActivityFormViewTestCase(TestCase):
-    def setUp(self):
+    def setUp(self) -> None:
         # Create a user
         self.general_user = user_model.objects.create_user(
             username="gerneraluser",
@@ -52,6 +52,41 @@ class ResidentActivityFormViewTestCase(TestCase):
             move_out=None,
         )
 
+        self.url = reverse("resident-activity-form-view")
+
+    def test_general_user_gets_403(self):
+        """Test that a general user gets a 403 response."""
+        # log in general user
+        self.client.force_login(self.general_user)
+
+        # Make GET request
+        response = self.client.get(self.url)
+
+        # The response should indicate a failure to process the form
+        self.assertEqual(response.status_code, HTTPStatus.FORBIDDEN)
+
+    def test_home_user_gets_200(self):
+        """Test that a home user gets a 200 response."""
+        # log in home user
+        self.client.force_login(self.home_user)
+
+        # Make GET request
+        response = self.client.get(self.url)
+
+        # The response should indicate a successful form submission
+        self.assertEqual(response.status_code, HTTPStatus.OK)
+
+    def test_superuser_gets_200(self):
+        """Test that a superuser gets a 200 response."""
+        # log in superuser
+        self.client.force_login(self.superuser)
+
+        # Make GET request
+        response = self.client.get(self.url)
+
+        # The response should indicate a successful form submission
+        self.assertEqual(response.status_code, HTTPStatus.OK)
+
     def test_resident_activity_form_view_create_multiple_resident_activity(self):
         """Test that multiple resident activities can be created with one POST
         request."""
@@ -73,7 +108,7 @@ class ResidentActivityFormViewTestCase(TestCase):
 
         # Make POST request
         response = self.client.post(
-            reverse("resident-activity-form-view"),
+            self.url,
             self.data,
         )
 
@@ -126,7 +161,7 @@ class ResidentActivityFormViewTestCase(TestCase):
 
         # Make POST request
         response = self.client.post(
-            reverse("resident-activity-form-view"),
+            self.url,
             self.data,
         )
 
