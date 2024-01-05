@@ -1,8 +1,12 @@
 from datetime import date, timedelta
+from http import HTTPStatus
 from io import StringIO
 from django.core.management import call_command
-from django.test import TestCase
+
 from django.core.management.base import CommandError
+from django.contrib.auth import get_user_model
+from django.test import TestCase
+from django.urls import reverse
 from django.utils import timezone
 
 from core.constants import WEEKLY_ACTIVITY_RANGES
@@ -10,9 +14,11 @@ from metrics.factories import ResidentActivityFactory
 from metrics.models import ResidentActivity
 from residents.models import Residency, Resident
 
-from .factories import HomeFactory
-from .models import Home
+from .factories import HomeFactory, HomeGroupFactory, HomeUserRelationFactory
+from .models import Home, HomeGroup, HomeUserRelation
 from residents.factories import ResidentFactory, ResidencyFactory
+
+User = get_user_model()
 
 
 class HomeModelTests(TestCase):
@@ -321,3 +327,286 @@ class CurrentResidentsWithRecentActivityMetadataTest(TestCase):
                 [date.today() - timedelta(days=i) for i in range(7)],
             )
             self.assertTrue(day_data["was_active"])  # Assuming activity every day
+
+
+class HomeGroupListViewTest(TestCase):
+    def setUp(self):
+        self.url = reverse("home-list-view")
+
+        # Setup test users
+        self.user = User.objects.create_user(
+            username="testuser",
+            password="password",
+        )
+        self.superuser = User.objects.create_superuser(
+            username="admin",
+            password="admin",
+        )
+
+        # Setup test home groups using factories
+        self.home_group_with_multiple_homes = HomeGroupFactory(
+            name="Group with multiple homes",
+        )
+        self.home_group_with_single_home = HomeGroupFactory(
+            name="Group with single home",
+        )
+        self.home_group_without_homes = HomeGroupFactory(name="Group without homes")
+
+        # Setup test homes using factories
+        # Homes in home_group_with_multiple_homes
+        self.home_in_group_with_multiple_homes1 = HomeFactory(
+            name="Home in multi-home group 1",
+            home_group=self.home_group_with_multiple_homes,
+        )
+        self.home_in_group_with_multiple_homes2 = HomeFactory(
+            name="Home in multi-home group 2",
+            home_group=self.home_group_with_multiple_homes,
+        )
+
+        # Single home in home_group_with_single_home
+        self.home_in_group_with_single_home = HomeFactory(
+            name="Home in single-home group",
+            home_group=self.home_group_with_single_home,
+        )
+
+        # Home without any group
+        self.home_without_group = HomeFactory(
+            name="Home without group",
+        )
+
+        # Home not associated with any user
+        self.home_without_user = HomeFactory(
+            name="Home without user",
+        )
+
+        # Associate user with homes
+        HomeUserRelationFactory(
+            home=self.home_in_group_with_multiple_homes1,
+            user=self.user,
+        )
+        HomeUserRelationFactory(
+            home=self.home_in_group_with_multiple_homes2,
+            user=self.user,
+        )
+        HomeUserRelationFactory(
+            home=self.home_in_group_with_single_home,
+            user=self.user,
+        )
+        HomeUserRelationFactory(home=self.home_without_group, user=self.user)
+
+    def test_mock_data(self):
+        # Check the total count of Homes and HomeGroups
+        self.assertEqual(Home.objects.count(), 5)  # Updated count
+        self.assertEqual(HomeGroup.objects.count(), 3)  # Updated count
+        self.assertEqual(HomeUserRelation.objects.count(), 4)  # Updated count
+
+        # Assert that homes are correctly associated with their home groups
+        self.assertEqual(
+            self.home_in_group_with_multiple_homes1.home_group,
+            self.home_group_with_multiple_homes,
+        )
+        self.assertEqual(
+            self.home_in_group_with_multiple_homes2.home_group,
+            self.home_group_with_multiple_homes,
+        )
+        self.assertEqual(
+            self.home_in_group_with_single_home.home_group,
+            self.home_group_with_single_home,
+        )
+        self.assertIsNone(self.home_without_group.home_group)
+        self.assertIsNone(self.home_without_user.home_group)
+
+        # Check if the HomeGroup with no homes actually has no homes associated
+        self.assertFalse(self.home_group_without_homes.homes.exists())
+
+        # Assert user belongs to the correct number of homes
+        self.assertEqual(self.user.homes.count(), 4)  # Updated count
+
+        # Check if the specific homes are associated with the user
+        self.assertIn(self.home_in_group_with_multiple_homes1, self.user.homes.all())
+        self.assertIn(self.home_in_group_with_multiple_homes2, self.user.homes.all())
+        self.assertIn(self.home_in_group_with_single_home, self.user.homes.all())
+        self.assertIn(self.home_without_group, self.user.homes.all())
+        self.assertNotIn(self.home_without_user, self.user.homes.all())
+
+        # Assert superuser has no homes associated
+        self.assertEqual(self.superuser.homes.count(), 0)
+
+    def test_context_data_for_regular_user(self):
+        # Log in as the regular user
+        self.client.login(username="testuser", password="password")
+
+        # Get the response from the HomeGroupListView
+        response = self.client.get(self.url)
+
+        # Check that the response status code is 200
+        self.assertEqual(response.status_code, 200)
+
+        # Extract the context data
+        context = response.context
+
+        # Check that homes without a group are correctly in the context
+        homes_without_group = context["homes_without_group"]
+        self.assertIn(self.home_without_group, homes_without_group)
+        self.assertNotIn(self.home_without_user, homes_without_group)
+
+        # Check that homes with a group are correctly in the context
+        homes_with_group = context["homes_with_group"]
+        self.assertIn(self.home_in_group_with_multiple_homes1, homes_with_group)
+        self.assertIn(self.home_in_group_with_multiple_homes2, homes_with_group)
+        self.assertIn(self.home_in_group_with_single_home, homes_with_group)
+        self.assertNotIn(self.home_without_user, homes_with_group)
+
+        # Ensure that the home_groups_with_homes context is correctly formatted
+        home_groups_with_homes = context["home_groups_with_homes"]
+
+        # Check for the presence of each group and their corresponding homes
+        for group in [
+            self.home_group_with_multiple_homes,
+            self.home_group_with_single_home,
+        ]:
+            group_in_context = next(
+                (g for g in home_groups_with_homes if g["group_name"] == group.name),
+                None,
+            )
+            self.assertIsNotNone(
+                group_in_context,
+                f"Group '{group.name}' not found in context.",
+            )
+            if group == self.home_group_with_multiple_homes:
+                self.assertIn(
+                    self.home_in_group_with_multiple_homes1,
+                    group_in_context["homes"],
+                )
+                self.assertIn(
+                    self.home_in_group_with_multiple_homes2,
+                    group_in_context["homes"],
+                )
+            elif group == self.home_group_with_single_home:
+                self.assertIn(
+                    self.home_in_group_with_single_home,
+                    group_in_context["homes"],
+                )
+
+    def test_context_data_for_superuser(self):
+        # Log in as the superuser
+        self.client.login(username="admin", password="admin")
+
+        # Get the response from the HomeGroupListView
+        response = self.client.get(self.url)
+
+        # Check that the response status code is 200
+        self.assertEqual(response.status_code, 200)
+
+        # Extract the context data
+        context = response.context
+
+        # Check that all homes are in the context data, regardless of home group
+        all_homes = Home.objects.all()
+        homes_without_group = context["homes_without_group"]
+        homes_with_group = context["homes_with_group"]
+
+        for home in all_homes:
+            if home.home_group is None:
+                self.assertIn(home, homes_without_group)
+            else:
+                self.assertIn(home, homes_with_group)
+
+        # Ensure that the home_groups_with_homes context is correctly formatted
+        home_groups_with_homes = context["home_groups_with_homes"]
+
+        # Check for the presence of each group and their corresponding homes
+        for group in [
+            self.home_group_with_multiple_homes,
+            self.home_group_with_single_home,
+        ]:
+            group_in_context = next(
+                (g for g in home_groups_with_homes if g["group_name"] == group.name),
+                None,
+            )
+            self.assertIsNotNone(
+                group_in_context,
+                f"Group '{group.name}' not found in context.",
+            )
+
+            # Validate the homes within each group
+            if group == self.home_group_with_multiple_homes:
+                self.assertIn(
+                    self.home_in_group_with_multiple_homes1,
+                    group_in_context["homes"],
+                )
+                self.assertIn(
+                    self.home_in_group_with_multiple_homes2,
+                    group_in_context["homes"],
+                )
+            elif group == self.home_group_with_single_home:
+                self.assertIn(
+                    self.home_in_group_with_single_home,
+                    group_in_context["homes"],
+                )
+
+        # Validate the handling of the group without homes
+        self.assertFalse(
+            any(
+                group["group_name"] == self.home_group_without_homes.name
+                for group in home_groups_with_homes
+            ),
+        )
+
+        # Validate homes without groups
+        self.assertIn(self.home_without_group, homes_without_group)
+        self.assertIn(self.home_without_user, homes_without_group)
+
+    def test_home_group_list_view_uses_correct_template(self):
+        self.client.login(username="testuser", password="password")
+        response = self.client.get(self.url)
+        self.assertTemplateUsed(response, "homes/home_group_list.html")
+
+
+class HomeDetailViewTests(TestCase):
+    def setUp(self):
+        # Create users
+        self.regular_user = User.objects.create_user(
+            username="regular",
+            password="test",
+        )
+        self.super_user = User.objects.create_superuser(
+            username="super",
+            password="test",
+        )
+        self.member_user = User.objects.create_user(username="member", password="test")
+
+        # Create a home
+        self.home = HomeFactory()
+
+        self.url = reverse("home-detail-view", kwargs={"url_uuid": self.home.url_uuid})
+
+        # Create a relation where member_user is a member of home
+        HomeUserRelationFactory(home=self.home, user=self.member_user)
+
+    def test_access_denied_non_member(self):
+        self.client.login(username="regular", password="test")
+
+        response = self.client.get(self.url)
+        self.assertEqual(
+            response.status_code,
+            HTTPStatus.FORBIDDEN,
+        )
+
+    def test_access_granted_member(self):
+        self.client.login(username="member", password="test")
+
+        response = self.client.get(self.url)
+        self.assertEqual(
+            response.status_code,
+            HTTPStatus.OK,
+        )
+
+    def test_access_granted_superuser(self):
+        self.client.login(username="super", password="test")
+
+        response = self.client.get(self.url)
+        self.assertEqual(
+            response.status_code,
+            HTTPStatus.OK,
+        )

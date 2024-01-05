@@ -6,7 +6,7 @@
         <a class="navbar-brand" href="/">
             GeriLife Caregiving
         </a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="{% translate 'Toggle navigation' %}">
             <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
@@ -17,11 +17,15 @@
                             {% translate "Add work" %}
                         </button>
                     </li>
-                    <li class="nav-item">
-                        <a href="{% url 'resident-activity-form-view' %}" class="btn btn-outline-primary ms-lg-1 mt-1 mt-lg-0">
-                            {% translate "Add activity" %}
-                        </a>
-                    </li>
+                    {% if request.user.can_add_activity %}
+                        <li class="nav-item">
+                            <a
+                                href="{% url 'resident-activity-form-view' %}"
+                                class="btn btn-outline-primary ms-lg-1 mt-1 mt-lg-0">
+                                {% translate "Add activity" %}
+                            </a>
+                        </li>
+                    {% endif %}
                 {% endif %}
                 <li class="nav-item">
                     <a href="{% url 'work-report-view' %}" class="nav-link">

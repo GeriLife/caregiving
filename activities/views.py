@@ -1,15 +1,16 @@
 import uuid
 
+from django.db import transaction
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse_lazy
 from django.views.generic import ListView, FormView
-from django.db import transaction
 
 from metrics.models import ResidentActivity
 from residents.models import Residency, Resident
 from metrics.forms import ResidentActivityForm
 
 
-class ResidentActivityListView(ListView):
+class ResidentActivityListView(LoginRequiredMixin, ListView):
     template_name = "activities/resident_activity_list.html"
     queryset = ResidentActivity.objects.all()
     context_object_name = "activities"
@@ -17,10 +18,30 @@ class ResidentActivityListView(ListView):
     ordering = ["-activity_date"]
 
 
-class ResidentActivityFormView(FormView):
+class ResidentActivityFormView(LoginRequiredMixin, FormView):
     template_name = "activities/resident_activity_form.html"
     form_class = ResidentActivityForm
     success_url = reverse_lazy("activity-list-view")
+
+    # Check whether request user is authorized to view this page
+    def dispatch(self, request, *args, **kwargs):
+        if not request.user.can_add_activity:
+            return self.handle_no_permission()
+
+        return super().dispatch(request, *args, **kwargs)
+
+    def get_form_kwargs(self):
+        """Override the get_form_kwargs method to pass the user to the form.
+
+        This will allow the form to filter the residents by the user's
+        homes or the superuser to filter by all homes.
+        """
+
+        kwargs = super().get_form_kwargs()
+
+        kwargs["user"] = self.request.user
+
+        return kwargs
 
     @transaction.atomic
     def post(self, request, *args, **kwargs):
@@ -37,6 +58,9 @@ class ResidentActivityFormView(FormView):
 
             # generate group activity ID based on current epoch time
             group_activity_id = uuid.uuid4()
+
+            if not request.user.can_manage_residents(resident_ids):
+                return self.handle_no_permission()
 
             for resident_id in resident_ids:
                 try:

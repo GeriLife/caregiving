@@ -3,18 +3,18 @@
 {% load i18n %}
 
 {% block content %}
-    <h1>Homes</h1>
+    <h1>{% translate "Homes" %}</h1>
 
     <p>{% translate "Homes showing the percent of residents by activity level" %}</p>
 
-    {% for home_group in home_groups %}
+    {% for home_group in home_groups_with_homes %}
         <div class="card mb-2">
             <div class="card-header">
                 <i class="bi bi-collection-fill"></i>
-                {{ home_group }}
+                {{ home_group.group_name }}
             </div>
             <ul class="list-group list-group-flush">
-                {% for home in home_group.homes.all %}
+                {% for home in home_group.homes %}
                     <li class="list-group-item d-flex align-items-center">
                         <div class="container">
                             <div class="row">
@@ -34,7 +34,6 @@
                                 {% endif %}
                             </div>
                         </div>
-
                     </li>
                 {% endfor %}
             </ul>
@@ -50,6 +49,7 @@
                         {{ home }}
                     </a>
                 </div>
+
                 {% if home.resident_counts_by_activity_level_chart_data %}
                     <div class="col-md-9">
                         <div class="mt-3">

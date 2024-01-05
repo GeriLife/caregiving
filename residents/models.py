@@ -86,11 +86,22 @@ class Resident(models.Model):
             "text": text,
         }
 
+    @property
+    def current_residency(self):
+        """Return the resident's current residency."""
+        return self.residencies.get(move_out__isnull=True)
+
+    @property
+    def current_home(self):
+        """Return the resident's current home."""
+        return self.current_residency.home
+
 
 class Residency(models.Model):
     resident = models.ForeignKey(
         to=Resident,
         on_delete=models.PROTECT,
+        related_name="residencies",
     )
     home = models.ForeignKey(
         to=Home,

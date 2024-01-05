@@ -1,5 +1,6 @@
 import datetime
 from typing import TYPE_CHECKING
+from django.contrib.auth import get_user_model
 from django.db.models import Count, Q, QuerySet
 from django.utils import timezone
 from datetime import timedelta
@@ -10,10 +11,14 @@ import numpy as np
 import pandas as pd
 from shortuuid.django_fields import ShortUUIDField
 
+
 from core.constants import WEEK_DAYS, WEEKLY_ACTIVITY_RANGES
 
 if TYPE_CHECKING:
     from residents.models import Resident
+
+
+user_model = get_user_model()
 
 
 def _generate_date_range(days_ago: int) -> list[datetime.date]:
@@ -199,6 +204,28 @@ def _structure_resident_data(
     }
 
 
+class HomeUserRelation(models.Model):
+    user = models.ForeignKey(
+        to=user_model,
+        on_delete=models.CASCADE,
+        related_name="home_user_relations",
+    )
+    home = models.ForeignKey(
+        to="homes.Home",
+        on_delete=models.CASCADE,
+        related_name="home_user_relations",
+    )
+
+    def __str__(self) -> str:
+        return f"{self.user} - {self.home}"
+
+    class Meta:
+        db_table = "home_user_relation"
+        verbose_name = _("home user relation")
+        verbose_name_plural = _("home user relations")
+        unique_together = ("user", "home")
+
+
 class Home(models.Model):
     name = models.CharField(max_length=25)
     # add a foreign key relationship to HomeGroup
@@ -227,14 +254,27 @@ class Home(models.Model):
         return reverse("home-detail-view", kwargs={"url_uuid": self.url_uuid})
 
     @property
+    def members(self) -> QuerySet[user_model]:
+        """Returns a QuerySet of all members of this home."""
+        return user_model.objects.filter(home_user_relations__home=self)
+
+    def has_access(self, user: user_model) -> bool:
+        """Returns True if the user has access to this home.
+
+        - Superusers have access to all homes.
+        - Members of the home have access to the home.
+        """
+        return user.is_superuser or user in self.members.all()
+
+    @property
     def current_residents(self) -> models.QuerySet["Resident"]:
         """Returns a QuerySet of all current residents for this home."""
         # avoid circular import
         from residents.models import Resident
 
         return Resident.objects.filter(
-            residency__home=self,
-            residency__move_out__isnull=True,
+            residencies__home=self,
+            residencies__move_out__isnull=True,
         ).order_by("first_name")
 
     @property
