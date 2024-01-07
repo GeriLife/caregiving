@@ -17,7 +17,7 @@ from .charts import (
     prepare_work_by_type_chart,
 )
 
-from .models import Home
+from .models import Home, HomeUserRelation
 
 
 def regroup_homes_by_home_group(homes):
@@ -160,4 +160,28 @@ class HomeDetailView(LoginRequiredMixin, DetailView):
             context = self.prepare_work_charts(context)
         if context["activity_has_been_recorded"]:
             context = self.prepare_activity_charts(context)
+        return context
+
+
+class HomeUserRelationListView(LoginRequiredMixin, TemplateView):
+    template_name = "homes/home_user_relation_list.html"
+
+    def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
+        context = super().get_context_data(**kwargs)
+
+        home = get_object_or_404(
+            Home,
+            url_uuid=self.kwargs.get("url_uuid"),
+        )
+
+        # ensure the user can manage the home
+        if not home.user_can_manage(user=self.request.user):
+            raise PermissionDenied
+
+        context["home"] = home
+
+        context["home_user_relations"] = HomeUserRelation.objects.filter(
+            home=home,
+        )
+
         return context

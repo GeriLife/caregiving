@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+
+{% load i18n %}
+
+{% block content %}
+
+    <div class="d-flex justify-content-between align-items-center">
+        <h1>
+            <a
+                href="{{ home.get_absolute_url }}"
+                class="btn btn-outline-primary">
+                <i class="bi bi-house"></i>
+                {{ home }}
+            </a>
+
+            {% translate "Manage Caregivers" %}
+        </h1>
+
+        <button class="btn btn-outline-primary">
+            <i class="bi bi-person-add"></i>
+
+            {% translate "Add Caregiver" %}
+        </button>
+    </div>
+
+    {% if home_user_relations %}
+        <ul class="list-group">
+            {% for user_relation in home_user_relations %}
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                    <span>
+                        {{ user_relation.user.username }}
+                    </span>
+
+                    <div>
+                        {% if user_relation.user.is_superuser %}
+                            <span class="badge bg-primary rounded-pill">
+                                {% translate "Superuser" %}
+                            </span>
+                        {% endif %}
+
+                        {% if user_relation.is_manager %}
+                            <span class="badge bg-primary rounded-pill">
+                                {% translate "Manager" %}
+                            </span>
+                        {% endif %}
+                    </div>
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <div class="alert alert-info">
+            {% translate "No caregivers found." %}
+        </div>
+    {% endif %}
+
+{% endblock content %}

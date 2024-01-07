@@ -6,10 +6,12 @@
         <div class="d-flex justify-content-between align-items-center">
             <h1>{{ home.name }}</h1>
             {% if user_can_manage %}
-                <button class="btn btn-outline-primary">
+                <a
+                    href="{% url 'home-user-relation-list-view' home.url_uuid %}"
+                    class="btn btn-outline-primary">
                     <i class="bi bi-people"></i>
                     {% translate "Manage Caregivers" %}
-                </button>
+                </a>
             {% endif %}
         </div>
 
