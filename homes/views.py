@@ -1,11 +1,17 @@
 from typing import Any
 
+from django.contrib import messages
+from django.contrib.auth import get_user_model
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.exceptions import PermissionDenied
 from django.shortcuts import get_object_or_404
 
+from django.utils.translation import gettext as _
+from django.views.generic.edit import FormView
 from django.views.generic.detail import DetailView
 from django.views.generic.base import TemplateView
+
+from homes.forms import AddCaregiverForm
 
 from .charts import (
     prepare_activity_counts_by_resident_and_activity_type_chart,
@@ -16,8 +22,9 @@ from .charts import (
     prepare_work_by_caregiver_role_chart,
     prepare_work_by_type_chart,
 )
-
 from .models import Home, HomeUserRelation
+
+user_model = get_user_model()
 
 
 def regroup_homes_by_home_group(homes):
@@ -163,25 +170,68 @@ class HomeDetailView(LoginRequiredMixin, DetailView):
         return context
 
 
-class HomeUserRelationListView(LoginRequiredMixin, TemplateView):
+class HomeUserRelationListView(LoginRequiredMixin, FormView):
+    form_class = AddCaregiverForm  # Use form_class instead of form
     template_name = "homes/home_user_relation_list.html"
+    success_url = "/success-url/"  # Modify with your success URL
 
-    def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
+    def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
-        home = get_object_or_404(
-            Home,
-            url_uuid=self.kwargs.get("url_uuid"),
-        )
+        home = get_object_or_404(Home, url_uuid=self.kwargs.get("url_uuid"))
 
         # ensure the user can manage the home
         if not home.user_can_manage(user=self.request.user):
             raise PermissionDenied
 
         context["home"] = home
-
-        context["home_user_relations"] = HomeUserRelation.objects.filter(
-            home=home,
-        )
+        context["home_user_relations"] = HomeUserRelation.objects.filter(home=home)
 
         return context
+
+    def form_valid(self, form):
+        email = form.cleaned_data["email"]
+
+        user_exists = user_model.objects.filter(email=email).exists()
+
+        if not user_exists:
+            # TODO: Send an invitation email
+            error_message = _("User does not exist")
+            form.add_error("email", error_message)
+            messages.error(self.request, error_message)
+            return self.form_invalid(form)
+
+        user = user_model.objects.get(email=email)
+
+        home = get_object_or_404(Home, url_uuid=self.kwargs.get("url_uuid"))
+
+        home_user_exists = HomeUserRelation.objects.filter(
+            home=home,
+            user=user,
+        ).exists()
+
+        if home_user_exists:
+            error_message = _("User is already a caregiver in this home")
+            form.add_error("email", error_message)
+            messages.error(self.request, error_message)
+
+            return self.form_invalid(form)
+
+        try:
+            HomeUserRelation.objects.create(
+                home=home,
+                user=user,
+            )
+        except Exception:
+            error_message = _("Something went wrong")
+            form.add_error("email", error_message)
+            messages.error(self.request, error_message)
+
+            return self.form_invalid(form)
+
+        return super().form_valid(form)
+
+    def form_invalid(self, form):
+        # Handle the logic when the form is invalid
+        # For example, return to the form with error messages
+        return super().form_invalid(form)

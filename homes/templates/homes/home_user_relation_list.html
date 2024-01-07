@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 
 {% load i18n %}
+{% load crispy_forms_tags %}
 
 {% block content %}
 
@@ -16,9 +17,8 @@
             {% translate "Manage Caregivers" %}
         </h1>
 
-        <button class="btn btn-outline-primary">
-            <i class="bi bi-person-add"></i>
-
+        <button class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#addCaregiverModal">
+            <i class="bi bi-person-plus"></i>
             {% translate "Add Caregiver" %}
         </button>
     </div>
@@ -53,4 +53,39 @@
         </div>
     {% endif %}
 
+    <div class="modal fade" id="addCaregiverModal" tabindex="-1" aria-labelledby="addCaregiverModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <form action="" method="post">
+                    {% csrf_token %}
+                    <div class="modal-header">
+                        <h2 class="modal-title" id="addCaregiverModalLabel">
+                            {% translate "Add Caregiver" %}
+                        </h2>
+                        <button
+                            type="button"
+                            class="btn-close"
+                            data-bs-dismiss="modal"
+                            aria-label="{% translate 'Close' %}">
+                        </button>
+                    </div>
+
+                    <div class="modal-body">
+                        <p>{% translate "Enter the email of the caregiver you want to add." %}</p>
+
+                        {{ form|crispy }}
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                            {% translate "Close" %}
+                        </button>
+                        <button type="submit" class="btn btn-primary">
+                            {% translate "Add Caregiver" %}
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
 {% endblock content %}
