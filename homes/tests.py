@@ -10,6 +10,8 @@ from django.urls import reverse
 from django.utils import timezone
 
 from core.constants import WEEKLY_ACTIVITY_RANGES
+from homes.forms import AddCaregiverForm
+from homes.views import HomeUserRelationListView
 from metrics.factories import ResidentActivityFactory
 from metrics.models import ResidentActivity
 from residents.models import Residency, Resident
@@ -609,4 +611,296 @@ class HomeDetailViewTests(TestCase):
         self.assertEqual(
             response.status_code,
             HTTPStatus.OK,
+        )
+
+
+class HomeUserRelationListViewTest(TestCase):
+    def setUp(self):
+        """Create a home and some users.
+
+        Users
+        - user: A regular user
+        - existingcaregiver: A user who is already a caregiver in the home
+        - superuser: A superuser
+
+        Add existingcaregiver as a caregiver in the home.
+
+        Set the url to the HomeUserRelationListView for the home.
+        """
+        self.user = User.objects.create_user(
+            "user",
+            "user@example.com",
+            "password",
+        )
+        self.existing_caregiver = User.objects.create_user(
+            "existingcaregiver",
+            "caregiver@example.com",
+            "password",
+        )
+        self.super_user = User.objects.create_superuser(
+            "superuser",
+            "super@user.com",
+            "password",
+        )
+        self.home = Home.objects.create(
+            name="Test Home",
+            url_uuid="123-abc",
+        )
+        self.home_user_relation = HomeUserRelation.objects.create(
+            home=self.home,
+            user=self.existing_caregiver,
+        )
+        self.url = reverse(
+            "home-user-relation-list-view",
+            kwargs={"url_uuid": self.home.url_uuid},
+        )
+
+    def test_login_required(self):
+        """Ensure that the user is redirected to the login page if they are not
+        logged in."""
+        response = self.client.get(self.url)
+        self.assertRedirects(
+            response,
+            f"/accounts/login/?next={self.url}",
+        )
+
+    def test_user_permission(self):
+        """Ensure that a regular user cannot access the page."""
+        self.client.login(
+            username="user",
+            password="password",
+        )
+        response = self.client.get(self.url)
+        self.assertEqual(
+            response.status_code,
+            HTTPStatus.FORBIDDEN,
+        )
+
+    def test_context_data(self):
+        """Ensure the context contains.
+
+        - the home
+        - the home_user_relations
+        - the form (AddCaregiverForm)
+        """
+        self.client.login(
+            username="superuser",
+            password="password",
+        )
+        response = self.client.get(self.url)
+        self.assertEqual(
+            response.context["home"],
+            self.home,
+        )
+
+        home_user_relations = response.context["home_user_relations"]
+        expected_home_user_relations = HomeUserRelation.objects.filter(
+            home=self.home,
+        )
+        self.assertEqual(
+            list(home_user_relations),
+            list(expected_home_user_relations),
+        )
+        expected_form_class = AddCaregiverForm
+        self.assertEqual(
+            expected_form_class,
+            HomeUserRelationListView.form_class,
+        )
+
+    def test_form_display(self):
+        """Ensure that the form is displayed on the page."""
+        self.client.login(
+            username="superuser",
+            password="password",
+        )
+        response = self.client.get(self.url)
+        # Check if a form tag is present
+        self.assertContains(
+            response,
+            "<form",
+        )
+
+    def test_successful_form_submission(self):
+        """Ensure that an existing user can be added as a caregiver in the
+        home."""
+        self.client.login(
+            username="superuser",
+            password="password",
+        )
+        user_to_add = User.objects.create_user(
+            "newuser",
+            "newuser@example.com",
+            "password",
+        )
+        form_data = {"email": user_to_add.email}
+        response = self.client.post(
+            self.url,
+            form_data,
+        )
+        self.assertEqual(
+            response.status_code,
+            HTTPStatus.FOUND,
+        )  # Assuming redirection after success
+
+        # Check if the user was added to the home
+        self.assertTrue(
+            HomeUserRelation.objects.filter(
+                user=user_to_add,
+                home=self.home,
+            ).exists(),
+        )
+
+    def test_invalid_form_submission(self):
+        """Ensure that an invalid form submission does not add a user as a
+        caregiver in the home."""
+        self.client.login(
+            username="superuser",
+            password="password",
+        )
+        form_data = {"email": "invalid_email"}
+        response = self.client.post(self.url, form_data)
+
+        # Stays on the same page
+        self.assertEqual(
+            response.status_code,
+            HTTPStatus.OK,
+        )
+
+        # Access the form from the response context
+        form = response.context.get("form")
+        # Ensure the form is present in the context
+        self.assertIsNotNone(form)
+
+        # Ensure there are errors in the form
+        self.assertTrue(
+            form.errors,
+        )
+
+        # Check that the 'email' field has errors
+        self.assertIn(
+            "email",
+            form.errors,
+        )
+
+        # Check for the correct error message
+        self.assertIn(
+            "Enter a valid email address.",
+            form.errors["email"],
+        )
+
+    def test_user_already_a_caregiver(self):
+        """Ensure that a user cannot be added as a caregiver if they are
+        already a caregiver in the home.
+
+        This test assumes that the form is invalid if the user is
+        already a caregiver in the home.
+        """
+        self.client.login(
+            username="superuser",
+            password="password",
+        )
+        form_data = {"email": self.existing_caregiver.email}
+        response = self.client.post(
+            self.url,
+            form_data,
+        )
+
+        # Check that the response status is 200 (stays on the same page with form errors)
+        self.assertEqual(
+            response.status_code,
+            HTTPStatus.OK,
+        )
+
+        # Access the form from the response context
+        form = response.context.get("form")
+        self.assertIsNotNone(form)  # Ensure the form is present in the context
+
+        # Check for form errors
+        self.assertTrue(form.errors)  # Ensure there are errors in the form
+        self.assertIn(
+            "email",
+            form.errors,
+        )  # Check that the 'email' field has errors
+
+        # Optionally, check for a specific error message
+        # Replace 'User is already a caregiver' with the actual error message from your form logic
+        expected_error_message = "User is already a caregiver in this home"
+        self.assertIn(
+            expected_error_message,
+            form.errors["email"],
+        )
+
+    def test_user_does_not_exist(self):
+        """Ensure that a user cannot be added as a caregiver if they do not
+        exist.
+
+        This test assumes that the form is invalid if the user does not
+        exist.
+        """
+        self.client.login(
+            username="superuser",
+            password="password",
+        )
+        form_data = {"email": "non_user@example.com"}
+
+        response = self.client.post(
+            self.url,
+            form_data,
+        )
+
+        # Check that the response status is 200 (stays on the same page with form errors)
+        self.assertEqual(
+            response.status_code,
+            HTTPStatus.OK,
+        )
+
+        # Access the form from the response context
+        form = response.context.get("form")
+
+        # Ensure the form is present in the context
+        self.assertIsNotNone(form)
+
+        # Check for form errors
+        self.assertTrue(form.errors)
+
+        # Check that the 'email' field has errors
+        self.assertIn(
+            "email",
+            form.errors,
+        )
+
+        # Check for a specific error message
+        expected_error_message = "User does not exist"
+
+        self.assertIn(
+            expected_error_message,
+            form.errors["email"],
+        )
+
+    def test_redirection_after_successful_form_submission(self):
+        """Ensure that the user is redirected to the same page after a
+        successful form submission."""
+        self.client.login(
+            username="superuser",
+            password="password",
+        )
+        user_to_add = self.user
+
+        form_data = {"email": user_to_add.email}
+
+        response = self.client.post(
+            self.url,
+            form_data,
+        )
+
+        # Check that the response status is 302 (redirection)
+        self.assertEqual(
+            response.status_code,
+            HTTPStatus.FOUND,
+        )
+
+        # Check that the redirection is to the same page
+        self.assertEqual(
+            response.url,
+            self.url,
         )
