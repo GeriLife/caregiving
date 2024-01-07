@@ -142,9 +142,13 @@ class HomeDetailView(LoginRequiredMixin, DetailView):
         return context
 
     def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
+        """Add charts and permissions to the template context."""
         context = super().get_context_data(**kwargs)
 
         home = context["home"]
+
+        # Check if user can manage the home
+        context["user_can_manage"] = home.user_can_manage(self.request.user)
 
         # Check if work has been recorded
         # by selecting one record
