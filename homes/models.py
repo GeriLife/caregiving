@@ -266,6 +266,13 @@ class Home(models.Model):
         """
         return user.is_superuser or user in self.members.all()
 
+    def user_can_manage(self, user: user_model) -> bool:
+        """Returns True if the user can manage this home.
+
+        - Superusers can manage all homes.
+        """
+        return user.is_superuser
+
     @property
     def current_residents(self) -> models.QuerySet["Resident"]:
         """Returns a QuerySet of all current residents for this home."""
