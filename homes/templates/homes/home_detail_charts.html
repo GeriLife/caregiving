@@ -3,11 +3,18 @@
 </div>
 
 <div class="row">
-    {{ monthly_activity_hours_by_type_chart|safe }}
-</div>
+    <!--
+        Note: these column dimensions must be specified,
+        so that Plotly charts will not overlap.
+    -->
+    <div class="col-sm-12 col-md-12 col-lg-6">
+        {{ monthly_activity_hours_by_type_chart|safe }}
+    </div>
 
-<div class="row">
-    {{ monthly_activity_hours_by_caregiver_role_chart|safe }}
+
+    <div class="col-sm-12 col-md-12 col-lg-6">
+        {{ monthly_activity_hours_by_caregiver_role_chart|safe }}
+    </div>
 </div>
 
 <div class="row">
