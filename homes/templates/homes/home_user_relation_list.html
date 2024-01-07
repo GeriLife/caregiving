@@ -53,7 +53,12 @@
         </div>
     {% endif %}
 
-    <div class="modal fade" id="addCaregiverModal" tabindex="-1" aria-labelledby="addCaregiverModalLabel" aria-hidden="true">
+    <div
+        class="modal fade"
+        id="addCaregiverModal"
+        tabindex="-1"
+        aria-labelledby="addCaregiverModalLabel"
+        aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
                 <form action="" method="post">
@@ -89,3 +94,14 @@
         </div>
     </div>
 {% endblock content %}
+
+{% block extra_js %}
+    <script>
+        document.addEventListener('DOMContentLoaded', (event) => {
+            {% if form.errors %}
+                var myModal = new bootstrap.Modal(document.getElementById('addCaregiverModal'));
+                myModal.show();
+            {% endif %}
+        });
+    </script>
+{% endblock extra_js %}
