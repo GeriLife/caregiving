@@ -70,20 +70,6 @@ COMMANDS = [
         ],
     ),
     Command(
-        alias="start-db",
-        help_text="Start the database",
-        commands_list=[
-            "docker compose up -d wf_postgres_service",
-        ],
-    ),
-    Command(
-        alias="stop-db",
-        help_text="Stop the database",
-        commands_list=[
-            "docker compose stop wf_postgres_service",
-        ],
-    ),
-    Command(
         alias="install",
         help_text="Install project dependencies",
         commands_list=[

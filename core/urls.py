@@ -18,6 +18,10 @@ from django.urls import include, path
 from django.views.generic.base import TemplateView
 
 urlpatterns = [
+    path(
+        "__debug__/",
+        include("debug_toolbar.urls"),
+    ),
     path("admin/", admin.site.urls),
     path(
         "i18n/",
@@ -47,5 +51,11 @@ urlpatterns = [
         "work/",
         include("work.urls"),
     ),
-    path("", TemplateView.as_view(template_name="home.html"), name="home"),
+    path(
+        "",
+        TemplateView.as_view(
+            template_name="home.html",
+        ),
+        name="home",
+    ),
 ]
