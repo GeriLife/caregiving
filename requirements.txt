@@ -1,7 +1,9 @@
 asgiref==3.7.2
+coverage==7.3.3
 crispy-bootstrap5==2023.10
 Django==5.0
 django-crispy-forms==2.1
+django-debug-toolbar==4.2.0
 django-environ==0.11.2
 factory-boy==3.3.0
 Faker==21.0.0
