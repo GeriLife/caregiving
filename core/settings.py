@@ -35,6 +35,10 @@ DEBUG = env.bool(
     default=True,
 )
 
+INTERNAL_IPS = [
+    "127.0.0.1",
+]
+
 ALLOWED_HOSTS = env.list(
     "DJANGO_ALLOWED_HOSTS",
     default=[
@@ -56,6 +60,7 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "crispy_forms",
     "crispy_bootstrap5",
+    "debug_toolbar",
     "accounts",
     "activities",
     "caregivers",
@@ -71,6 +76,12 @@ CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
 CRISPY_TEMPLATE_PACK = "bootstrap5"
 
 MIDDLEWARE = [
+    # The order of MIDDLEWARE is important.
+    # Include the Debug Toolbar middleware as early as possible in the list.
+    # However, it must come after any other middleware that encodes
+    # the response’s content, such as GZipMiddleware.
+    # https://django-debug-toolbar.readthedocs.io/en/latest/installation.html#add-the-middleware
+    "debug_toolbar.middleware.DebugToolbarMiddleware",
     "django.middleware.security.SecurityMiddleware",
     "whitenoise.middleware.WhiteNoiseMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
