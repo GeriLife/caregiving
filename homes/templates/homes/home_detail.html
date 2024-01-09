@@ -26,6 +26,9 @@
             <table class="table">
                 <caption>{% translate "Table of residents showing current activity status, total activity count, and daily activity indicators for past seven days." %}</caption>
                 <tr>
+                    <th class="col">
+                        {% translate "View" %}
+                    </th>
                     <th class="col-lg-1 col-2">{% translate "Name" %}</th>
                     <th class="col-md-1">{% translate "Activity Level" %}</th>
                     <th class="col-md-1 text-center">{% translate "Total Activities" %}</th>
@@ -36,7 +39,15 @@
                 </tr>
                 {% for resident in home.current_residents_with_recent_activity_metadata.residents %}
                     <tr>
-                        <td>{{ resident.resident.full_name }}</td>
+                        <td>
+                            <a class="btn btn-outline-primary btn-sm"
+                               href="{% url 'resident-detail-view' resident.resident.url_uuid %}">
+                                <i class="bi bi-eye"></i>
+                            </a>
+                        </td>
+                        <td>
+                            {{ resident.resident.first_name }}&nbsp;{{ resident.resident.last_initial }}
+                        </td>
                         <td>
                             <span class="badge text-bg-{{ resident.resident.activity_level.color_class }}">
                                 {{ resident.resident.activity_level.text }}
