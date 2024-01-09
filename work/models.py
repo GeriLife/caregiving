@@ -1,5 +1,3 @@
-from django.core.validators import MinValueValidator
-from django.db.models import CheckConstraint, Q
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
@@ -43,22 +41,11 @@ class Work(models.Model):
     duration_minutes = models.PositiveIntegerField(
         help_text=_("The number of minutes used performing this work"),
     )
-    duration_hours = models.FloatField(
-        validators=[
-            MinValueValidator(0.0),
-        ],
-    )
 
     class Meta:
         db_table = "work"
         verbose_name = _("work")
         verbose_name_plural = _("work")
-        constraints = (
-            CheckConstraint(
-                check=Q(duration_hours__gte=0.0),
-                name="work_duration_hours_gte_zero",
-            ),
-        )
 
     def get_duration_hours(self):
         return self.duration_minutes / HOUR_MINUTES
