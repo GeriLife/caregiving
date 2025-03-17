@@ -55,4 +55,4 @@ class Work(models.Model):
         super().save(*args, **kwargs)
 
     def __str__(self):
-        return f"{ self.home } - { self.caregiver_role } - { self.type } - { self.date } - { self.duration }"
+        return f"{self.home} - {self.caregiver_role} - {self.type} - {self.date} - {self.duration}"

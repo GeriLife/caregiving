@@ -24,7 +24,7 @@ class Resident(models.Model):
 
     @property
     def full_name(self):
-        return f"{ self.first_name } { self.last_initial }"
+        return f"{self.first_name} {self.last_initial}"
 
     class Meta:
         db_table = "resident"
@@ -121,7 +121,7 @@ class Residency(models.Model):
         verbose_name_plural = _("residencies")
 
     def __str__(self) -> str:
-        return f"{ self.resident.full_name } - { self.home.name }"
+        return f"{self.resident.full_name} - {self.home.name}"
 
     def clean(self) -> None:
         """Ensure residency is valid.
