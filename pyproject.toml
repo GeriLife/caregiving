@@ -13,6 +13,7 @@ dependencies = [
     "django-environ>=0.11.2,<1.0",
     "faker>=21.0.0,<22.0",
     "numpy>=2.2.4<3.0.0",
+    "pandas>=2.2.3",
     "plotly>=5.18.0,<6.0",
     "psycopg2-binary>=2.9.9,<3.0",
     "shortuuid>=1.0.11,<2.0",
