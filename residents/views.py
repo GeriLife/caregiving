@@ -45,20 +45,20 @@ class ResidentDetailView(LoginRequiredMixin, DetailView):
         activities = self.object.resident_activities.all()
 
         if activities:
-            context[
-                "resident_activities_by_date_chart"
-            ] = prepare_daily_activity_minutes_scatter_chart(activities)
-
-            context[
-                "activity_hours_by_type_chart"
-            ] = prepare_activity_hours_by_type_chart(
-                activities,
+            context["resident_activities_by_date_chart"] = (
+                prepare_daily_activity_minutes_scatter_chart(activities)
             )
 
-            context[
-                "activity_hours_by_caregiver_role_chart"
-            ] = prepare_activity_hours_by_caregiver_role_chart(
-                activities,
+            context["activity_hours_by_type_chart"] = (
+                prepare_activity_hours_by_type_chart(
+                    activities,
+                )
+            )
+
+            context["activity_hours_by_caregiver_role_chart"] = (
+                prepare_activity_hours_by_caregiver_role_chart(
+                    activities,
+                )
             )
 
         return context

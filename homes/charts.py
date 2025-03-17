@@ -246,16 +246,16 @@ def prepare_work_by_caregiver_role_and_type_charts(context: dict) -> dict:
         get_total_hours_by_role_and_work_type_with_percent(home.id)
     )
 
-    context[
-        "work_percent_by_caregiver_role_and_type_chart"
-    ] = prepare_work_percent_by_caregiver_role_and_type_chart(
-        work_by_caregiver_role_and_type_with_percent,
+    context["work_percent_by_caregiver_role_and_type_chart"] = (
+        prepare_work_percent_by_caregiver_role_and_type_chart(
+            work_by_caregiver_role_and_type_with_percent,
+        )
     )
 
-    context[
-        "work_by_caregiver_role_and_type_chart"
-    ] = prepare_work_by_caregiver_role_and_type_chart(
-        work_by_caregiver_role_and_type_with_percent,
+    context["work_by_caregiver_role_and_type_chart"] = (
+        prepare_work_by_caregiver_role_and_type_chart(
+            work_by_caregiver_role_and_type_with_percent,
+        )
     )
 
     return context
