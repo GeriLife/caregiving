@@ -10,12 +10,18 @@ such as bug reports, ideas, design, testing, and code.
   - [Development](#development)
     - [Prerequisites](#prerequisites)
       - [pipx](#pipx)
+      - [UV Package Manager](#uv-package-manager)
       - [Pre-commit](#pre-commit)
     - [Activate virtual environment](#activate-virtual-environment)
     - [Install dependencies](#install-dependencies)
     - [Migrations](#migrations)
     - [Create superuser](#create-superuser)
     - [Run the server](#run-the-server)
+  - [Package Management with UV](#package-management-with-uv)
+    - [Adding New Dependencies](#adding-new-dependencies)
+    - [Benefits of UV](#benefits-of-uv)
+    - [Updating Dependencies](#updating-dependencies)
+    - [Other Useful UV Commands](#other-useful-uv-commands)
   - [Privacy and Data Protection Guidelines](#privacy-and-data-protection-guidelines)
 
 ## Community Discussions
@@ -65,6 +71,14 @@ We also use the following tools for development.
 We recommend using [pipx](https://pypa.github.io/pipx/installation/) to
 install the development tools.
 
+#### UV Package Manager
+
+We use [uv](https://github.com/astral-sh/uv), a modern Python package manager built for speed and reliability. Install it using pipx:
+
+```sh
+pipx install uv
+```
+
 #### Pre-commit
 
 We use pre-commit to run various code quality commands prior to each commit.
@@ -85,6 +99,12 @@ pre-commit install
 
 Whenever you develop, make sure you are in the project's virtual environment.
 
+Create a virtual environment using UV:
+
+```sh
+uv venv .venv
+```
+
 Linux / OSX:
 
 ```sh
@@ -99,11 +119,18 @@ Windows:
 
 ### Install dependencies
 
-Once you have the above prerequisites installed, install the project development
-dependencies as follows.
+Once you have the above prerequisites installed, install the project dependencies using UV.
+
+For production dependencies:
 
 ```sh
-pip install -r requirements.dev.txt
+uv sync
+```
+
+For development dependencies (includes testing tools):
+
+```sh
+uv sync --dev
 ```
 
 ### Migrations
@@ -137,6 +164,66 @@ When all migrations are applied and you have a superuser, run the server as foll
 
 ```sh
 python manage.py runserver
+```
+
+## Package Management with UV
+
+### Adding New Dependencies
+
+To add a new dependency to the project:
+
+```sh
+# Add a regular dependency
+uv add package-name
+
+# Add a development dependency
+uv add --dev package-name
+
+# Add a dependency with a specific version
+uv add "package-name>=1.0,<2.0"
+```
+
+These commands will automatically update your pyproject.toml file and create/update the lock file.
+
+### Benefits of UV
+
+UV provides several advantages over traditional package management tools:
+
+- **Speed**: UV is dramatically faster at resolving and installing dependencies
+- **Reliability**: Consistent installations across environments with lock file support
+- **Dependency Groups**: Cleaner separation between production and development dependencies
+- **Modern Features**: Native support for PEP 517/518 standards with pyproject.toml
+- **Unified Interface**: Single tool for Python version management and package management
+
+### Updating Dependencies
+
+To update dependencies to their latest compatible versions:
+
+```sh
+# Update all dependencies
+uv sync --upgrade
+
+# Update specific dependency
+uv add --upgrade package-name
+```
+
+### Other Useful UV Commands
+
+```sh
+# View dependency tree
+uv tree
+
+# Lock dependencies without installing
+uv lock
+
+# Run a script within the project environment
+uv run python manage.py runserver
+
+# Check for outdated packages
+uv list --outdated
+
+# Remove a dependency
+uv remove package-name
 ```
 
 ## Privacy and Data Protection Guidelines
