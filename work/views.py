@@ -1,14 +1,14 @@
 from typing import Any
 
 from django.db import connection
-from django.db.models import Sum
+from django.db.models import Sum, ExpressionWrapper, FloatField
 from django.utils.translation import gettext as _
 from django.views.generic import TemplateView
 from django.views.generic.edit import FormView
 
 import plotly.express as px
 
-from core.constants import DAY_MILLISECONDS
+from core.constants import DAY_MILLISECONDS, HOUR_MINUTES
 
 from .forms import WorkForm
 from .models import Work
@@ -28,7 +28,7 @@ def get_daily_total_hours_by_role_and_work_type_with_percent():
             date,
             caregiver_role.name as role_name,
             work_type.name as work_type,
-            sum(duration_hours) as daily_total_hours
+            sum(duration_minutes) / 60.0 as daily_total_hours
         from work
         left join work_type on type_id = work_type.id
         left join caregiver_role on caregiver_role_id = caregiver_role.id
@@ -61,7 +61,7 @@ def get_total_hours_by_role_and_work_type_with_percent():
         select
             caregiver_role.name as role_name,
             work_type.name as work_type,
-            sum(duration_hours) as total_hours
+            sum(duration_minutes) / 60.0 as total_hours
         from work
         left join work_type on type_id = work_type.id
         left join caregiver_role on caregiver_role_id = caregiver_role.id
@@ -89,10 +89,16 @@ def get_total_hours_by_role_and_work_type_with_percent():
 
 
 def get_work_by_type_data():
+    # Convert duration_minutes to hours in the query
     work_by_type = (
         Work.objects.values("type__name")
         .order_by("type__name")
-        .annotate(total_hours=Sum("duration_hours"))
+        .annotate(
+            total_hours=ExpressionWrapper(
+                Sum("duration_minutes") / HOUR_MINUTES,
+                output_field=FloatField(),
+            ),
+        )
     )
 
     return list(work_by_type)
@@ -108,16 +114,30 @@ def prepare_work_by_type_chart(data):
             "type__name": _("Type of work"),
             "total_hours": _("Total hours"),
         },
-    ).to_html()
+        template="plotly_dark",
+    )
 
-    return work_by_type_chart
+    # Set plot background/paper color to transparent
+    work_by_type_chart.update_layout(
+        plot_bgcolor="rgba(0, 0, 0, 0)",
+        paper_bgcolor="rgba(0, 0, 0, 0)",
+        font_color="#FFFFFF",
+    )
+
+    return work_by_type_chart.to_html()
 
 
 def get_work_by_caregiver_role_data():
+    # Convert duration_minutes to hours in the query
     work_by_caregiver_role_data = (
         Work.objects.values("caregiver_role__name")
         .order_by("caregiver_role__name")
-        .annotate(total_hours=Sum("duration_hours"))
+        .annotate(
+            total_hours=ExpressionWrapper(
+                Sum("duration_minutes") / HOUR_MINUTES,
+                output_field=FloatField(),
+            ),
+        )
     )
 
     return list(work_by_caregiver_role_data)
@@ -133,9 +153,17 @@ def prepare_work_by_caregiver_role_chart(data):
             "caregiver_role__name": _("Caregiver role"),
             "total_hours": _("Total hours"),
         },
-    ).to_html()
+        template="plotly_dark",
+    )
 
-    return work_by_caregiver_role_chart
+    # Set plot background/paper color to transparent
+    work_by_caregiver_role_chart.update_layout(
+        plot_bgcolor="rgba(0, 0, 0, 0)",
+        paper_bgcolor="rgba(0, 0, 0, 0)",
+        font_color="#FFFFFF",
+    )
+
+    return work_by_caregiver_role_chart.to_html()
 
 
 def prepare_daily_work_percent_by_caregiver_role_and_type_chart(data):
@@ -153,6 +181,7 @@ def prepare_daily_work_percent_by_caregiver_role_and_type_chart(data):
         },
         # Add numeric text on bars
         text_auto=True,
+        template="plotly_dark",
     )
 
     # Format y-axis as percentages
@@ -166,6 +195,19 @@ def prepare_daily_work_percent_by_caregiver_role_and_type_chart(data):
     # Ensure that all bar widths are one day (where units are in milliseconds)
     daily_work_percent_by_caregiver_role_and_type_chart.update_traces(
         width=DAY_MILLISECONDS,
+    )
+
+    # Set plot background/paper color to transparent
+    daily_work_percent_by_caregiver_role_and_type_chart.update_layout(
+        plot_bgcolor="rgba(0, 0, 0, 0)",
+        paper_bgcolor="rgba(0, 0, 0, 0)",
+        font_color="#FFFFFF",
+    )
+
+    # Remove individual y-axis labels and add a single global one
+    daily_work_percent_by_caregiver_role_and_type_chart.update_yaxes(title_text="")
+    daily_work_percent_by_caregiver_role_and_type_chart.update_layout(
+        yaxis_title=_("Work percent"),
     )
 
     return daily_work_percent_by_caregiver_role_and_type_chart.to_html()
@@ -184,8 +226,16 @@ def prepare_work_percent_by_caregiver_role_and_type_chart(data):
             "work_type": _("Type of work"),
         },
         text_auto=True,
+        template="plotly_dark",
     )
     work_percent_by_caregiver_role_and_type_chart.layout.yaxis.tickformat = ",.0%"
+
+    # Set plot background/paper color to transparent
+    work_percent_by_caregiver_role_and_type_chart.update_layout(
+        plot_bgcolor="rgba(0, 0, 0, 0)",
+        paper_bgcolor="rgba(0, 0, 0, 0)",
+        font_color="#FFFFFF",
+    )
 
     return work_percent_by_caregiver_role_and_type_chart.to_html()
 
@@ -202,6 +252,14 @@ def prepare_work_by_caregiver_role_and_type_chart(data):
             "total_hours": _("Total hours"),
             "work_type": _("Type of work"),
         },
+        template="plotly_dark",
+    )
+
+    # Set plot background/paper color to transparent
+    work_by_caregiver_role_and_type_chart.update_layout(
+        plot_bgcolor="rgba(0, 0, 0, 0)",
+        paper_bgcolor="rgba(0, 0, 0, 0)",
+        font_color="#FFFFFF",
     )
 
     return work_by_caregiver_role_and_type_chart.to_html()
