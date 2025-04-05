@@ -126,3 +126,5 @@ dmypy.json
 
 # IDE related ignores
 .vscode
+
+.DS_Store
