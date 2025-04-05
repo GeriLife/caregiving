@@ -50,9 +50,5 @@ class Work(models.Model):
     def get_duration_hours(self):
         return self.duration_minutes / HOUR_MINUTES
 
-    def save(self, *args, **kwargs):
-        self.duration_hours = self.get_duration_hours()
-        super().save(*args, **kwargs)
-
     def __str__(self):
-        return f"{self.home} - {self.caregiver_role} - {self.type} - {self.date} - {self.duration}"
+        return f"{self.home} - {self.caregiver_role} - {self.type} - {self.date} - {self.duration_minutes} minutes"

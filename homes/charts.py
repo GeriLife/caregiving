@@ -1,9 +1,9 @@
-from django.db.models import Sum
+from django.db.models import Sum, ExpressionWrapper, FloatField
 from django.utils.translation import gettext as _
 
 import pandas as pd
 import plotly.express as px
-from core.constants import DAY_MILLISECONDS
+from core.constants import DAY_MILLISECONDS, HOUR_MINUTES
 from homes.models import Home
 
 from homes.queries import (
@@ -76,7 +76,12 @@ def prepare_work_by_type_chart(home: Home) -> str:
     work_by_type = list(
         home.work_performed.values("type__name")
         .order_by("type__name")
-        .annotate(total_hours=Sum("duration_hours")),
+        .annotate(
+            total_hours=ExpressionWrapper(
+                Sum("duration_minutes") / HOUR_MINUTES,
+                output_field=FloatField(),
+            ),
+        ),
     )
 
     work_by_type_chart = px.bar(
@@ -97,7 +102,12 @@ def prepare_work_by_caregiver_role_chart(home: Home) -> str:
     work_by_caregiver_role = list(
         home.work_performed.values("caregiver_role__name")
         .order_by("caregiver_role__name")
-        .annotate(total_hours=Sum("duration_hours")),
+        .annotate(
+            total_hours=ExpressionWrapper(
+                Sum("duration_minutes") / HOUR_MINUTES,
+                output_field=FloatField(),
+            ),
+        ),
     )
 
     work_by_caregiver_role_chart = px.bar(

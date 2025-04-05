@@ -1,14 +1,14 @@
 from typing import Any
 
 from django.db import connection
-from django.db.models import Sum
+from django.db.models import Sum, ExpressionWrapper, FloatField
 from django.utils.translation import gettext as _
 from django.views.generic import TemplateView
 from django.views.generic.edit import FormView
 
 import plotly.express as px
 
-from core.constants import DAY_MILLISECONDS
+from core.constants import DAY_MILLISECONDS, HOUR_MINUTES
 
 from .forms import WorkForm
 from .models import Work
@@ -28,7 +28,7 @@ def get_daily_total_hours_by_role_and_work_type_with_percent():
             date,
             caregiver_role.name as role_name,
             work_type.name as work_type,
-            sum(duration_hours) as daily_total_hours
+            sum(duration_minutes) / 60.0 as daily_total_hours
         from work
         left join work_type on type_id = work_type.id
         left join caregiver_role on caregiver_role_id = caregiver_role.id
@@ -61,7 +61,7 @@ def get_total_hours_by_role_and_work_type_with_percent():
         select
             caregiver_role.name as role_name,
             work_type.name as work_type,
-            sum(duration_hours) as total_hours
+            sum(duration_minutes) / 60.0 as total_hours
         from work
         left join work_type on type_id = work_type.id
         left join caregiver_role on caregiver_role_id = caregiver_role.id
@@ -89,10 +89,16 @@ def get_total_hours_by_role_and_work_type_with_percent():
 
 
 def get_work_by_type_data():
+    # Convert duration_minutes to hours in the query
     work_by_type = (
         Work.objects.values("type__name")
         .order_by("type__name")
-        .annotate(total_hours=Sum("duration_hours"))
+        .annotate(
+            total_hours=ExpressionWrapper(
+                Sum("duration_minutes") / HOUR_MINUTES,
+                output_field=FloatField(),
+            ),
+        )
     )
 
     return list(work_by_type)
@@ -114,10 +120,16 @@ def prepare_work_by_type_chart(data):
 
 
 def get_work_by_caregiver_role_data():
+    # Convert duration_minutes to hours in the query
     work_by_caregiver_role_data = (
         Work.objects.values("caregiver_role__name")
         .order_by("caregiver_role__name")
-        .annotate(total_hours=Sum("duration_hours"))
+        .annotate(
+            total_hours=ExpressionWrapper(
+                Sum("duration_minutes") / HOUR_MINUTES,
+                output_field=FloatField(),
+            ),
+        )
     )
 
     return list(work_by_caregiver_role_data)

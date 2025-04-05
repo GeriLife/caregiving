@@ -22,7 +22,7 @@ def get_daily_total_hours_by_role_and_work_type_with_percent(home_id):
             date,
             caregiver_role.name as role_name,
             work_type.name as work_type,
-            sum(duration_hours) as daily_total_hours
+            sum(duration_minutes) / 60.0 as daily_total_hours
         from work
         left join work_type on type_id = work_type.id
         left join caregiver_role on caregiver_role_id = caregiver_role.id
@@ -56,7 +56,7 @@ def get_total_hours_by_role_and_work_type_with_percent(home_id):
         select
             caregiver_role.name as role_name,
             work_type.name as work_type,
-            sum(duration_hours) as total_hours
+            sum(duration_minutes) / 60.0 as total_hours
         from work
         left join work_type on type_id = work_type.id
         left join caregiver_role on caregiver_role_id = caregiver_role.id
@@ -90,7 +90,7 @@ def get_home_total_hours_by_role_with_percent(home_id):
         select
             home.name as home_name,
             caregiver_role.name as role_name,
-            CAST(sum(duration_hours) as FLOAT) as total_hours
+            CAST(sum(duration_minutes) / 60.0 as FLOAT) as total_hours
         from work
         left join home on home_id = home.id
         left join caregiver_role on caregiver_role_id = caregiver_role.id
