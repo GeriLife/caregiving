@@ -1,3 +1,5 @@
+{% load i18n %}
+
 <div class="row">
     {{ activity_counts_by_resident_and_activity_type_chart|safe }}
 </div>
@@ -16,6 +18,10 @@
         {{ monthly_activity_hours_by_caregiver_role_chart|safe }}
     </div>
 </div>
+
+<h2>{% translate "Work" %}</h2>
+
+<p>{% translate "Work recorded in the past 30 days." %}</p>
 
 <div class="row">
     {{ daily_work_percent_by_caregiver_role_and_type_chart|safe }}

@@ -67,17 +67,16 @@
             </table>
         {% endif %}
 
-        {% include "homes/home_detail_charts.html" %}
-
         <div class="row">
-            <!-- only load analytics charts if work has been recorded -->
+            <!-- only load analytics charts if activities have been recorded -->
             <h2>
-                {% translate "Work" %}
+                {% translate "Activities" %}
             </h2>
             {% if work_has_been_recorded %}
+                <p>{% translate "Activities recorded in the past 30 days" %}</p>
                 {% include "homes/home_detail_charts.html" %}
             {% else %}
-                <p>{% translate "No work has been recorded yet." %}</p>
+                <p>{% translate "No activities have been recorded yet." %}</p>
             {% endif %}
         </div>
     </div>
