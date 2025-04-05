@@ -114,9 +114,17 @@ def prepare_work_by_type_chart(data):
             "type__name": _("Type of work"),
             "total_hours": _("Total hours"),
         },
-    ).to_html()
+        template="plotly_dark",
+    )
 
-    return work_by_type_chart
+    # Set plot background/paper color to transparent
+    work_by_type_chart.update_layout(
+        plot_bgcolor="rgba(0, 0, 0, 0)",
+        paper_bgcolor="rgba(0, 0, 0, 0)",
+        font_color="#FFFFFF",
+    )
+
+    return work_by_type_chart.to_html()
 
 
 def get_work_by_caregiver_role_data():
@@ -145,9 +153,17 @@ def prepare_work_by_caregiver_role_chart(data):
             "caregiver_role__name": _("Caregiver role"),
             "total_hours": _("Total hours"),
         },
-    ).to_html()
+        template="plotly_dark",
+    )
 
-    return work_by_caregiver_role_chart
+    # Set plot background/paper color to transparent
+    work_by_caregiver_role_chart.update_layout(
+        plot_bgcolor="rgba(0, 0, 0, 0)",
+        paper_bgcolor="rgba(0, 0, 0, 0)",
+        font_color="#FFFFFF",
+    )
+
+    return work_by_caregiver_role_chart.to_html()
 
 
 def prepare_daily_work_percent_by_caregiver_role_and_type_chart(data):
@@ -165,6 +181,7 @@ def prepare_daily_work_percent_by_caregiver_role_and_type_chart(data):
         },
         # Add numeric text on bars
         text_auto=True,
+        template="plotly_dark",
     )
 
     # Format y-axis as percentages
@@ -178,6 +195,19 @@ def prepare_daily_work_percent_by_caregiver_role_and_type_chart(data):
     # Ensure that all bar widths are one day (where units are in milliseconds)
     daily_work_percent_by_caregiver_role_and_type_chart.update_traces(
         width=DAY_MILLISECONDS,
+    )
+
+    # Set plot background/paper color to transparent
+    daily_work_percent_by_caregiver_role_and_type_chart.update_layout(
+        plot_bgcolor="rgba(0, 0, 0, 0)",
+        paper_bgcolor="rgba(0, 0, 0, 0)",
+        font_color="#FFFFFF",
+    )
+
+    # Remove individual y-axis labels and add a single global one
+    daily_work_percent_by_caregiver_role_and_type_chart.update_yaxes(title_text="")
+    daily_work_percent_by_caregiver_role_and_type_chart.update_layout(
+        yaxis_title=_("Work percent"),
     )
 
     return daily_work_percent_by_caregiver_role_and_type_chart.to_html()
@@ -196,8 +226,16 @@ def prepare_work_percent_by_caregiver_role_and_type_chart(data):
             "work_type": _("Type of work"),
         },
         text_auto=True,
+        template="plotly_dark",
     )
     work_percent_by_caregiver_role_and_type_chart.layout.yaxis.tickformat = ",.0%"
+
+    # Set plot background/paper color to transparent
+    work_percent_by_caregiver_role_and_type_chart.update_layout(
+        plot_bgcolor="rgba(0, 0, 0, 0)",
+        paper_bgcolor="rgba(0, 0, 0, 0)",
+        font_color="#FFFFFF",
+    )
 
     return work_percent_by_caregiver_role_and_type_chart.to_html()
 
@@ -214,6 +252,14 @@ def prepare_work_by_caregiver_role_and_type_chart(data):
             "total_hours": _("Total hours"),
             "work_type": _("Type of work"),
         },
+        template="plotly_dark",
+    )
+
+    # Set plot background/paper color to transparent
+    work_by_caregiver_role_and_type_chart.update_layout(
+        plot_bgcolor="rgba(0, 0, 0, 0)",
+        paper_bgcolor="rgba(0, 0, 0, 0)",
+        font_color="#FFFFFF",
     )
 
     return work_by_caregiver_role_and_type_chart.to_html()

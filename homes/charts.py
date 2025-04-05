@@ -184,6 +184,12 @@ def prepare_daily_work_percent_by_caregiver_role_and_type_chart(home: Home) -> s
         font_color="#FFFFFF",
     )
 
+    # Remove individual y-axis labels and add a single global one
+    daily_work_percent_by_caregiver_role_and_type_chart.update_yaxes(title_text="")
+    daily_work_percent_by_caregiver_role_and_type_chart.update_layout(
+        yaxis_title=_("Work percent"),
+    )
+
     return daily_work_percent_by_caregiver_role_and_type_chart.to_html()
 
 
