@@ -1,75 +1,183 @@
 {% extends "base.html" %}
 {% load i18n %}
-{% load crispy_forms_tags %}
-
 
 {% block extra_css %}
     <link href="https://cdn.jsdelivr.net/npm/tom-select@2.3.1/dist/css/tom-select.css" rel="stylesheet">
 
     <style>
+        /* Tailwind-compatible Tom Select styling */
         .ts-control {
             border: none;
         }
 
-        .ts-dropdown{
-            background-color: #495057;
-            color: #ccc;
+        .ts-dropdown {
+            @apply bg-base-300 text-base-content;
         }
 
-    /* Home optgroup */
+        /* Home optgroup */
         .ts-dropdown .optgroup-header {
-            background-color: #343a40;
-            color: #ccc;
-            font-weight: bold;
+            @apply bg-base-200 text-base-content font-bold;
         }
 
         .ts-dropdown .optgroup .active {
-            background-color: #343a40;
-            color: #ccc;
+            @apply bg-base-200 text-base-content;
         }
 
         .ts-wrapper .selectmultiple {
-            background-color: #495057;
-            color: #ccc;
+            @apply bg-base-300 text-base-content;
         }
 
         .ts-wrapper .ts-control {
-            background-color: #495057;
-            color: #ccc;
+            @apply bg-base-300 text-base-content;
         }
 
         .ts-wrapper.multi .ts-control > div {
-            background-color: #343a40;
-            color: #ccc;
+            @apply bg-base-200 text-base-content;
         }
 
         .ts-wrapper.multi .ts-control > div.active {
-            background-color: #343a40;
-            color: #ccc;
+            @apply bg-base-200 text-base-content;
         }
     </style>
 {% endblock extra_css %}
 
-
 {% block content %}
-    <h1>{% translate "Create Resident Activity" %}</h1>
-    <form method="POST" action="" class="form">
-        {% csrf_token %}
+    <div class="card bg-base-100 shadow-xl">
+        <div class="card-body">
+            <h1 class="card-title text-2xl mb-4">{% translate "Create Resident Activity" %}</h1>
 
-        {{ form|crispy }}
+            <form method="POST" action="" class="space-y-6">
+                {% csrf_token %}
 
-        <button type="submit" class="btn btn-primary">
-            {% translate "Save" %}
-        </button>
-    </form>
+                <!-- Resident Selection -->
+                <div class="form-control w-full">
+                    <label class="label">
+                        <span class="label-text">{{ form.residents.label }}</span>
+                    </label>
+                    <select id="id_residents" name="{{ form.residents.name }}" multiple="multiple"
+                            class="select select-bordered w-full {% if form.residents.errors %}select-error{% endif %}">
+                        {% for group_name, group_options in form.fields.residents.choices %}
+                            <optgroup label="{{ group_name }}">
+                                {% for value, label in group_options %}
+                                    <option value="{{ value }}" {% if value in form.residents.value %}selected{% endif %}>{{ label }}</option>
+                                {% endfor %}
+                            </optgroup>
+                        {% endfor %}
+                    </select>
+                    {% if form.residents.errors %}
+                        <label class="label">
+                            <span class="label-text-alt text-error">{{ form.residents.errors }}</span>
+                        </label>
+                    {% endif %}
+                    {% if form.residents.help_text %}
+                        <label class="label">
+                            <span class="label-text-alt">{{ form.residents.help_text }}</span>
+                        </label>
+                    {% endif %}
+                </div>
+
+                <!-- Activity Type -->
+                <div class="form-control w-full">
+                    <label class="label">
+                        <span class="label-text">{{ form.activity_type.label }}</span>
+                    </label>
+                    <select name="{{ form.activity_type.name }}"
+                            class="select select-bordered w-full {% if form.activity_type.errors %}select-error{% endif %}">
+                        <option disabled selected>{% translate "Select activity type" %}</option>
+                        {% for value, label in form.fields.activity_type.choices %}
+                            <option value="{{ value }}" {% if value == form.activity_type.value %}selected{% endif %}>{{ label }}</option>
+                        {% endfor %}
+                    </select>
+                    {% if form.activity_type.errors %}
+                        <label class="label">
+                            <span class="label-text-alt text-error">{{ form.activity_type.errors }}</span>
+                        </label>
+                    {% endif %}
+                    {% if form.activity_type.help_text %}
+                        <label class="label">
+                            <span class="label-text-alt">{{ form.activity_type.help_text }}</span>
+                        </label>
+                    {% endif %}
+                </div>
+
+                <!-- Activity Minutes -->
+                <div class="form-control w-full">
+                    <label class="label">
+                        <span class="label-text">{{ form.activity_minutes.label }}</span>
+                    </label>
+                    <input type="number" name="{{ form.activity_minutes.name }}"
+                           class="input input-bordered w-full {% if form.activity_minutes.errors %}input-error{% endif %}"
+                           value="{{ form.activity_minutes.value|default:'' }}" min="1" />
+                    {% if form.activity_minutes.errors %}
+                        <label class="label">
+                            <span class="label-text-alt text-error">{{ form.activity_minutes.errors }}</span>
+                        </label>
+                    {% endif %}
+                    {% if form.activity_minutes.help_text %}
+                        <label class="label">
+                            <span class="label-text-alt">{{ form.activity_minutes.help_text }}</span>
+                        </label>
+                    {% endif %}
+                </div>
+
+                <!-- Caregiver Role -->
+                <div class="form-control w-full">
+                    <label class="label">
+                        <span class="label-text">{{ form.caregiver_role.label }}</span>
+                    </label>
+                    <select name="{{ form.caregiver_role.name }}"
+                            class="select select-bordered w-full {% if form.caregiver_role.errors %}select-error{% endif %}">
+                        <option disabled selected>{% translate "Select caregiver role" %}</option>
+                        {% for value, label in form.fields.caregiver_role.choices %}
+                            <option value="{{ value }}" {% if value == form.caregiver_role.value %}selected{% endif %}>{{ label }}</option>
+                        {% endfor %}
+                    </select>
+                    {% if form.caregiver_role.errors %}
+                        <label class="label">
+                            <span class="label-text-alt text-error">{{ form.caregiver_role.errors }}</span>
+                        </label>
+                    {% endif %}
+                    {% if form.caregiver_role.help_text %}
+                        <label class="label">
+                            <span class="label-text-alt">{{ form.caregiver_role.help_text }}</span>
+                        </label>
+                    {% endif %}
+                </div>
+
+                <!-- Activity Date -->
+                <div class="form-control w-full">
+                    <label class="label">
+                        <span class="label-text">{{ form.activity_date.label }}</span>
+                    </label>
+                    <input type="date" name="{{ form.activity_date.name }}"
+                           class="input input-bordered w-full {% if form.activity_date.errors %}input-error{% endif %}"
+                           value="{{ form.activity_date.value|date:'Y-m-d' }}" />
+                    {% if form.activity_date.errors %}
+                        <label class="label">
+                            <span class="label-text-alt text-error">{{ form.activity_date.errors }}</span>
+                        </label>
+                    {% endif %}
+                    {% if form.activity_date.help_text %}
+                        <label class="label">
+                            <span class="label-text-alt">{{ form.activity_date.help_text }}</span>
+                        </label>
+                    {% endif %}
+                </div>
+
+                <div class="card-actions justify-end">
+                    <button type="submit" class="btn btn-primary">
+                        {% translate "Save" %}
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
 {% endblock %}
-
 
 {% block extra_js %}
     <script src="https://cdn.jsdelivr.net/npm/tom-select@2.3.1/dist/js/tom-select.complete.min.js"></script>
 
     <script>
-        console.log("hello");
         const settings = {
             plugins: [
                 'checkbox_options',
