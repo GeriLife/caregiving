@@ -1,47 +1,51 @@
 {% extends 'base.html' %}
-
 {% load i18n %}
 
-
 {% block content %}
-    <h1>
-        {{ resident.full_name }}
-
-        <a
-            class="btn btn-sm btn-outline-primary"
-            href="{% url 'resident-update-view' resident.url_uuid %}"
-        >
+    <div class="flex justify-between items-center mb-6">
+        <h1 class="text-2xl font-bold">
+            {{ resident.full_name }}
+        </h1>
+        <a class="btn btn-sm btn-outline btn-primary"
+           href="{% url 'resident-update-view' resident.url_uuid %}">
             {% translate "Edit" %}
         </a>
-    </h1>
+    </div>
 
-    <p>
-        <strong>{% translate "Activity level" %}:</strong>
-        <span class="badge text-bg-{{ resident.activity_level.color_class }} fs-6">
-            {{ resident.activity_level.text }}
-        </span>
-    </p>
+    <div class="mb-6">
+        <div class="flex items-center">
+            <span class="font-semibold mr-2">{% translate "Activity level" %}:</span>
+            <span class="badge {% if resident.activity_level.color_class == 'success' %}badge-success{% elif resident.activity_level.color_class == 'warning' %}badge-warning{% elif resident.activity_level.color_class == 'danger' %}badge-error{% else %}badge-info{% endif %}">
+                {{ resident.activity_level.text }}
+            </span>
+        </div>
+    </div>
 
     {% if resident.resident_activities.count %}
-        <div class="container">
-        <!--
-            Note: these column dimensions must be specified,
-            so that Plotly charts will not overlap.
-        -->
-            <div class="row">
-                <div class="col-sm-12 col-md-12 col-lg-12">
-                    {{ resident_activities_by_date_chart|safe }}
-                </div>
+        <!-- Daily activity chart (full width) -->
+        <div class="card bg-base-100 shadow-xl mb-6">
+            <div class="card-body">
+                {{ resident_activities_by_date_chart|safe }}
             </div>
+        </div>
 
-            <div class="row mt-3 mb-3">
-                <div class="col-sm-12 col-md-6 col-lg-6">
+        <!-- Two-column charts layout -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="card bg-base-100 shadow-xl">
+                <div class="card-body">
                     {{ activity_hours_by_type_chart|safe }}
                 </div>
-                <div class="col-sm-12 col-md-6 col-lg-6">
+            </div>
+            <div class="card bg-base-100 shadow-xl">
+                <div class="card-body">
                     {{ activity_hours_by_caregiver_role_chart|safe }}
                 </div>
             </div>
+        </div>
+    {% else %}
+        <div class="alert alert-info">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="stroke-current shrink-0 w-6 h-6"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+            <span>{% translate "No activities recorded for this resident." %}</span>
         </div>
     {% endif %}
 {% endblock content %}
