@@ -31,7 +31,14 @@
           <li><a href="{% url 'home-list-view' %}">{% translate "Homes" %}</a></li>
           <li><a href="{% url 'resident-list-view' %}">{% translate "Residents" %}</a></li>
           {% if user.is_authenticated %}
-            <li><a href="{% url 'logout' %}">{% translate "Log out" %}</a></li>
+            <li>
+              <form action="{% url 'logout' %}" method="post" class="w-full">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-ghost btn-sm w-full text-left">
+                  {% translate "Log out" %}
+                </button>
+              </form>
+            </li>
           {% else %}
             <li><a href="{% url 'login' %}">{% translate "Log in" %}</a></li>
             <li><a href="{% url 'signup' %}">{% translate "Sign up" %}</a></li>
@@ -76,7 +83,10 @@
       <!-- Authentication links -->
       <div class="hidden lg:flex">
         {% if user.is_authenticated %}
-          <a href="{% url 'logout' %}" class="btn btn-ghost btn-sm">{% translate "Log out" %}</a>
+          <form action="{% url 'logout' %}" method="post">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-ghost btn-sm">{% translate "Log out" %}</button>
+          </form>
         {% else %}
           <a href="{% url 'login' %}" class="btn btn-ghost btn-sm mr-1">{% translate "Log in" %}</a>
           <a href="{% url 'signup' %}" class="btn btn-ghost btn-sm">{% translate "Sign up" %}</a>
