@@ -2,16 +2,17 @@
 {% load i18n %}
 
 <div class="navbar bg-base-200">
-  <div class="container mx-auto">
-    <div class="navbar-start">
-      <!-- Mobile menu dropdown -->
-      <div class="dropdown lg:hidden">
+  <div class="container mx-auto flex flex-row justify-between items-center">
+    <!-- Left side: Logo and hamburger menu -->
+    <div class="flex items-center">
+      <!-- Mobile menu hamburger -->
+      <div class="dropdown dropdown-bottom lg:hidden">
         <div tabindex="0" role="button" class="btn btn-ghost">
           <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h8m-8 6h16"/>
           </svg>
         </div>
-        <ul tabindex="0" class="menu menu-sm dropdown-content mt-3 z-[1] p-2 shadow bg-base-200 rounded-box w-52">
+        <ul tabindex="0" class="dropdown-content menu menu-sm z-[1] p-2 shadow bg-base-200 rounded-box w-52">
           {% if user.is_authenticated %}
             <li>
               <button class="btn btn-primary btn-sm" onclick="add_work_modal.showModal()">
@@ -40,29 +41,32 @@
 
       <!-- Site name -->
       <a href="/" class="btn btn-ghost text-xl">GeriLife Caregiving</a>
+    </div>
 
-      <!-- Main navigation links (desktop) -->
-      <ul class="menu menu-horizontal px-1 hidden lg:flex ml-4">
+    <!-- Center: Main navigation (desktop only) -->
+    <div class="hidden lg:flex flex-1 justify-center">
+      <ul class="menu menu-horizontal">
         <li><a href="{% url 'work-report-view' %}">{% translate "Work Report" %}</a></li>
         <li><a href="{% url 'home-list-view' %}">{% translate "Homes" %}</a></li>
         <li><a href="{% url 'resident-list-view' %}">{% translate "Residents" %}</a></li>
       </ul>
     </div>
 
-    <div class="navbar-end">
+    <!-- Right side: Actions, language, auth -->
+    <div class="flex items-center">
       <!-- Action buttons -->
-      <div class="hidden lg:flex mr-2">
-        {% if user.is_authenticated %}
+      {% if user.is_authenticated %}
+        <div class="hidden lg:flex">
           <button class="btn btn-primary btn-sm mr-2" onclick="add_work_modal.showModal()">
             {% translate "Add work" %}
           </button>
           {% if request.user.can_add_activity %}
-            <a href="{% url 'resident-activity-form-view' %}" class="btn btn-primary btn-sm">
+            <a href="{% url 'resident-activity-form-view' %}" class="btn btn-primary btn-sm mr-2">
               {% translate "Add activity" %}
             </a>
           {% endif %}
-        {% endif %}
-      </div>
+        </div>
+      {% endif %}
 
       <!-- Language selector -->
       <div class="mr-2">
@@ -70,14 +74,14 @@
       </div>
 
       <!-- Authentication links -->
-      <ul class="menu menu-horizontal hidden lg:flex">
+      <div class="hidden lg:flex">
         {% if user.is_authenticated %}
-          <li><a href="{% url 'logout' %}">{% translate "Log out" %}</a></li>
+          <a href="{% url 'logout' %}" class="btn btn-ghost btn-sm">{% translate "Log out" %}</a>
         {% else %}
-          <li><a href="{% url 'login' %}">{% translate "Log in" %}</a></li>
-          <li><a href="{% url 'signup' %}">{% translate "Sign up" %}</a></li>
+          <a href="{% url 'login' %}" class="btn btn-ghost btn-sm mr-1">{% translate "Log in" %}</a>
+          <a href="{% url 'signup' %}" class="btn btn-ghost btn-sm">{% translate "Sign up" %}</a>
         {% endif %}
-      </ul>
+      </div>
     </div>
   </div>
 </div>
