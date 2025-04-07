@@ -1,152 +1,106 @@
-{% load crispy_forms_tags %} {% load i18n %}
+{% load crispy_forms_tags %}
+{% load i18n %}
 
 <div class="navbar bg-base-200">
-    <div class="container mx-auto">
-        <div class="navbar-start">
-            <div class="dropdown">
-                <div tabindex="0" role="button" class="btn btn-ghost lg:hidden">
-                    <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        class="h-5 w-5"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor">
-                        <path
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                            stroke-width="2"
-                            d="M4 6h16M4 12h8m-8 6h16"/>
-                    </svg>
-                </div>
-                <ul
-                    tabindex="0"
-                    class="menu menu-sm dropdown-content mt-3 z-[1] p-2 shadow bg-base-200 rounded-box w-52"
-                >
-                    {% if user.is_authenticated %}
-                        <li>
-                            <button
-                                class="btn btn-primary btn-sm"
-                                onclick="add_work_modal.showModal()"
-                            >
-                                {% translate "Add work" %}
-                            </button>
-                        </li>
-                        {% if request.user.can_add_activity %}
-                            <li>
-                                <a
-                                    href="{% url 'resident-activity-form-view' %}"
-                                    class="btn btn-primary btn-sm mt-2"
-                                >
-                                    {% translate "Add activity" %}
-                                </a>
-                            </li>
-                        {% endif %} {% endif %}
-                    <li>
-                        <a href="{% url 'work-report-view' %}">
-                            {% translate "Work Report" %}
-                        </a>
-                    </li>
-                    <li>
-                        <a href="{% url 'home-list-view' %}">
-                            {% translate "Homes" %}
-                        </a>
-                    </li>
-                    <li>
-                        <a href="{% url 'resident-list-view' %}">
-                            {% translate "Residents" %}
-                        </a>
-                    </li>
-                </ul>
-            </div>
-            <a href="/" class="btn btn-ghost text-xl">GeriLife Caregiving</a>
+  <div class="container mx-auto">
+    <div class="navbar-start">
+      <!-- Mobile menu dropdown -->
+      <div class="dropdown lg:hidden">
+        <div tabindex="0" role="button" class="btn btn-ghost">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h8m-8 6h16"/>
+          </svg>
         </div>
+        <ul tabindex="0" class="menu menu-sm dropdown-content mt-3 z-[1] p-2 shadow bg-base-200 rounded-box w-52">
+          {% if user.is_authenticated %}
+            <li>
+              <button class="btn btn-primary btn-sm" onclick="add_work_modal.showModal()">
+                {% translate "Add work" %}
+              </button>
+            </li>
+            {% if request.user.can_add_activity %}
+              <li>
+                <a href="{% url 'resident-activity-form-view' %}" class="btn btn-primary btn-sm mt-2">
+                  {% translate "Add activity" %}
+                </a>
+              </li>
+            {% endif %}
+          {% endif %}
+          <li><a href="{% url 'work-report-view' %}">{% translate "Work Report" %}</a></li>
+          <li><a href="{% url 'home-list-view' %}">{% translate "Homes" %}</a></li>
+          <li><a href="{% url 'resident-list-view' %}">{% translate "Residents" %}</a></li>
+          {% if user.is_authenticated %}
+            <li><a href="{% url 'logout' %}">{% translate "Log out" %}</a></li>
+          {% else %}
+            <li><a href="{% url 'login' %}">{% translate "Log in" %}</a></li>
+            <li><a href="{% url 'signup' %}">{% translate "Sign up" %}</a></li>
+          {% endif %}
+        </ul>
+      </div>
 
-        <div class="navbar-center hidden lg:flex">
-            <ul class="menu menu-horizontal px-1">
-                {% if user.is_authenticated %}
-                    <li>
-                        <button
-                            class="btn btn-primary btn-sm"
-                            onclick="add_work_modal.showModal()">
-                            {% translate "Add work" %}
-                        </button>
-                    </li>
-                    {% if request.user.can_add_activity %}
-                        <li class="ml-2">
-                            <a
-                                href="{% url 'resident-activity-form-view' %}"
-                                class="btn btn-primary btn-sm"
-                            >
-                                {% translate "Add activity" %}
-                            </a>
-                        </li>
-                    {% endif %}
-                {% endif %}
-                <li>
-                    <a href="{% url 'work-report-view' %}">
-                        {% translate "Work Report" %}
-                    </a>
-                </li>
-                <li>
-                    <a href="{% url 'home-list-view' %}">
-                        {% translate "Homes" %}
-                    </a>
-                </li>
-                <li>
-                    <a href="{% url 'resident-list-view' %}">
-                        {% translate "Residents" %}
-                    </a>
-                </li>
-            </ul>
-        </div>
-        <div class="navbar-end">
-            {% include "i18n.html" %}
+      <!-- Site name -->
+      <a href="/" class="btn btn-ghost text-xl">GeriLife Caregiving</a>
 
-            <ul class="menu menu-horizontal px-1">
-                {% if user.is_authenticated %}
-                    <li>
-                        <a href="{% url 'logout' %}">
-                            {% translate "Log out" %}
-                        </a>
-                    </li>
-                {% else %}
-                    <li>
-                        <a href="{% url 'login' %}">
-                            {% translate "Log in" %}
-                        </a>
-                    </li>
-                    <li>
-                        <a href="{% url 'signup' %}">
-                            {% translate "Sign up" %}
-                        </a>
-                    </li>
-                {% endif %}
-            </ul>
-        </div>
+      <!-- Main navigation links (desktop) -->
+      <ul class="menu menu-horizontal px-1 hidden lg:flex ml-4">
+        <li><a href="{% url 'work-report-view' %}">{% translate "Work Report" %}</a></li>
+        <li><a href="{% url 'home-list-view' %}">{% translate "Homes" %}</a></li>
+        <li><a href="{% url 'resident-list-view' %}">{% translate "Residents" %}</a></li>
+      </ul>
     </div>
+
+    <div class="navbar-end">
+      <!-- Action buttons -->
+      <div class="hidden lg:flex mr-2">
+        {% if user.is_authenticated %}
+          <button class="btn btn-primary btn-sm mr-2" onclick="add_work_modal.showModal()">
+            {% translate "Add work" %}
+          </button>
+          {% if request.user.can_add_activity %}
+            <a href="{% url 'resident-activity-form-view' %}" class="btn btn-primary btn-sm">
+              {% translate "Add activity" %}
+            </a>
+          {% endif %}
+        {% endif %}
+      </div>
+
+      <!-- Language selector -->
+      <div class="mr-2">
+        {% include "i18n.html" %}
+      </div>
+
+      <!-- Authentication links -->
+      <ul class="menu menu-horizontal hidden lg:flex">
+        {% if user.is_authenticated %}
+          <li><a href="{% url 'logout' %}">{% translate "Log out" %}</a></li>
+        {% else %}
+          <li><a href="{% url 'login' %}">{% translate "Log in" %}</a></li>
+          <li><a href="{% url 'signup' %}">{% translate "Sign up" %}</a></li>
+        {% endif %}
+      </ul>
+    </div>
+  </div>
 </div>
 
 <!-- Modal using daisyUI dialog -->
 <dialog id="add_work_modal" class="modal">
-    <div class="modal-box">
-        <form method="dialog">
-            <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">
-                ✕
-            </button>
-        </form>
-        <h3 class="font-bold text-lg">{% translate "Add work" %}</h3>
+  <div class="modal-box">
+    <form method="dialog">
+      <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
+    </form>
+    <h3 class="font-bold text-lg">{% translate "Add work" %}</h3>
 
-        <form action="{% url 'work-form-view' %}" method="post">
-            {% csrf_token %}
-            <div class="py-4">{{ work_form|crispy }}</div>
-            <div class="modal-action">
-                <form method="dialog">
-                    <button class="btn btn-outline">{% translate "Cancel" %}</button>
-                </form>
-                <button type="submit" class="btn btn-primary">
-                    {% translate "Add work" %}
-                </button>
-            </div>
+    <form action="{% url 'work-form-view' %}" method="post">
+      {% csrf_token %}
+      <div class="py-4">
+        {{ work_form|crispy }}
+      </div>
+      <div class="modal-action">
+        <form method="dialog">
+          <button class="btn btn-outline">{% translate "Cancel" %}</button>
         </form>
-    </div>
+        <button type="submit" class="btn btn-primary">{% translate "Add work" %}</button>
+      </div>
+    </form>
+  </div>
 </dialog>
