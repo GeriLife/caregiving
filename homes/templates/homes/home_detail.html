@@ -2,82 +2,150 @@
 {% load i18n %}
 
 {% block content %}
-    <div class="container">
-        <div class="d-flex justify-content-between align-items-center">
-            <h1>{{ home.name }}</h1>
-            {% if user_can_manage %}
-                <a
-                    href="{% url 'home-user-relation-list-view' home.url_uuid %}"
-                    class="btn btn-outline-primary">
-                    <i class="bi bi-people"></i>
-                    {% translate "Manage Caregivers" %}
-                </a>
-            {% endif %}
-        </div>
-
-
-        <p>{% translate "Percent of residents by activity level" %}</p>
-
-        {% include "homes/home_residents_activity_percents.html" with data=home.resident_counts_by_activity_level_chart_data %}
-
-        {% if home.current_residents %}
-            <h2 class="mt-3">{% translate "Current Residents" %}</h2>
-
-            <table class="table">
-                <caption>{% translate "Table of residents showing current activity status, total activity count, and daily activity indicators for past seven days." %}</caption>
-                <tr>
-                    <th class="col">
-                        {% translate "View" %}
-                    </th>
-                    <th class="col-lg-1 col-2">{% translate "Name" %}</th>
-                    <th class="col-md-1">{% translate "Activity Level" %}</th>
-                    <th class="col-md-1 text-center">{% translate "Total Activities" %}</th>
-                    <th class="col-md-1 text-center">{% translate "Active Days" %}</th>
-                    {% for day in home.current_residents_with_recent_activity_metadata.residents.0.recent_activity_days %}
-                        <th class="text-center">{{ day.date|date:"D" }}</th> <!-- Show day names -->
-                    {% endfor %}
-                </tr>
-                {% for resident in home.current_residents_with_recent_activity_metadata.residents %}
-                    <tr>
-                        <td>
-                            <a class="btn btn-outline-primary btn-sm"
-                               href="{% url 'resident-detail-view' resident.resident.url_uuid %}">
-                                <i class="bi bi-eye"></i>
-                            </a>
-                        </td>
-                        <td>
-                            {{ resident.resident.first_name }}&nbsp;{{ resident.resident.last_initial }}
-                        </td>
-                        <td>
-                            <span class="badge text-bg-{{ resident.resident.activity_level.color_class }}">
-                                {{ resident.resident.activity_level.text }}
-                            </span>
-                        </td>
-                        <td class="text-center">{{ resident.total_activity_count|floatformat:"0" }}</td>
-                        <td class="text-center">{{ resident.total_active_days }}</td>
-                        {% for day in resident.recent_activity_days %}
-                            <td class="text-center">
-                                {% if day.was_active %}
-                                    <i class="bi bi-check-lg text-success"></i>
-                                {% endif %}
-                            </td>
-                        {% endfor %}
-                    </tr>
-                {% endfor %}
-            </table>
+    <div class="flex justify-between items-center mb-6">
+        <h1 class="text-2xl font-bold">{{ home.name }}</h1>
+        {% if user_can_manage %}
+            <a href="{% url 'home-user-relation-list-view' home.url_uuid %}" class="btn btn-outline btn-primary">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                </svg>
+                {% translate "Manage Caregivers" %}
+            </a>
         {% endif %}
+    </div>
 
-        <div class="row">
-            <!-- only load analytics charts if activities have been recorded -->
-            <h2>
-                {% translate "Activities" %}
-            </h2>
-            {% if work_has_been_recorded %}
-                <p>{% translate "Activities recorded in the past 30 days" %}</p>
-                {% include "homes/home_detail_charts.html" %}
-            {% else %}
-                <p>{% translate "No activities have been recorded yet." %}</p>
-            {% endif %}
+    <div class="mb-6">
+        <p class="mb-2">{% translate "Percent of residents by activity level" %}</p>
+        {% include "homes/home_residents_activity_percents.html" with data=home.resident_counts_by_activity_level_chart_data %}
+    </div>
+
+    {% if home.current_residents %}
+        <div class="card bg-base-100 shadow-xl mb-6">
+            <div class="card-body">
+                <h2 class="card-title">{% translate "Current Residents" %}</h2>
+
+                <div class="overflow-x-auto">
+                    <table class="table table-zebra w-full">
+                        <caption class="sr-only">{% translate "Table of residents showing current activity status, total activity count, and daily activity indicators for past seven days." %}</caption>
+                        <thead>
+                            <tr>
+                                <th>{% translate "View" %}</th>
+                                <th>{% translate "Name" %}</th>
+                                <th>{% translate "Activity Level" %}</th>
+                                <th class="text-center">{% translate "Total Activities" %}</th>
+                                <th class="text-center">{% translate "Active Days" %}</th>
+                                {% for day in home.current_residents_with_recent_activity_metadata.residents.0.recent_activity_days %}
+                                    <th class="text-center">{{ day.date|date:"D" }}</th> <!-- Show day names -->
+                                {% endfor %}
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for resident in home.current_residents_with_recent_activity_metadata.residents %}
+                                <tr>
+                                    <td>
+                                        <a class="btn btn-sm btn-outline btn-primary"
+                                           href="{% url 'resident-detail-view' resident.resident.url_uuid %}">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                                            </svg>
+                                        </a>
+                                    </td>
+                                    <td>
+                                        {{ resident.resident.first_name }}&nbsp;{{ resident.resident.last_initial }}
+                                    </td>
+                                    <td>
+                                        <span class="badge {% if resident.resident.activity_level.color_class == 'success' %}badge-success{% elif resident.resident.activity_level.color_class == 'warning' %}badge-warning{% elif resident.resident.activity_level.color_class == 'danger' %}badge-error{% else %}badge-info{% endif %}">
+                                            {{ resident.resident.activity_level.text }}
+                                        </span>
+                                    </td>
+                                    <td class="text-center">{{ resident.total_activity_count|floatformat:"0" }}</td>
+                                    <td class="text-center">{{ resident.total_active_days }}</td>
+                                    {% for day in resident.recent_activity_days %}
+                                        <td class="text-center">
+                                            {% if day.was_active %}
+                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mx-auto text-success" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+                                                </svg>
+                                            {% endif %}
+                                        </td>
+                                    {% endfor %}
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
         </div>
+    {% endif %}
+
+    <div class="mb-6">
+        <h2 class="text-xl font-bold mb-4">{% translate "Activities" %}</h2>
+
+        {% if work_has_been_recorded %}
+            <p class="mb-4">{% translate "Activities recorded in the past 30 days" %}</p>
+
+            <div class="card bg-base-100 shadow-xl mb-6">
+                <div class="card-body">
+                    {{ activity_counts_by_resident_and_activity_type_chart|safe }}
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+                <div class="card bg-base-100 shadow-xl">
+                    <div class="card-body">
+                        {{ monthly_activity_hours_by_type_chart|safe }}
+                    </div>
+                </div>
+
+                <div class="card bg-base-100 shadow-xl">
+                    <div class="card-body">
+                        {{ monthly_activity_hours_by_caregiver_role_chart|safe }}
+                    </div>
+                </div>
+            </div>
+
+            <h2 class="text-xl font-bold mb-4">{% translate "Work" %}</h2>
+            <p class="mb-4">{% translate "Work recorded in the past 30 days." %}</p>
+
+            <div class="card bg-base-100 shadow-xl mb-6">
+                <div class="card-body">
+                    {{ daily_work_percent_by_caregiver_role_and_type_chart|safe }}
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                <div class="card bg-base-100 shadow-xl">
+                    <div class="card-body">
+                        {{ work_by_type_chart|safe }}
+                    </div>
+                </div>
+
+                <div class="card bg-base-100 shadow-xl">
+                    <div class="card-body">
+                        {{ work_by_caregiver_role_chart|safe }}
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="card bg-base-100 shadow-xl">
+                    <div class="card-body">
+                        {{ work_percent_by_caregiver_role_and_type_chart|safe }}
+                    </div>
+                </div>
+
+                <div class="card bg-base-100 shadow-xl">
+                    <div class="card-body">
+                        {{ work_by_caregiver_role_and_type_chart|safe }}
+                    </div>
+                </div>
+            </div>
+        {% else %}
+            <div class="alert alert-info">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="stroke-current shrink-0 w-6 h-6"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                <span>{% translate "No activities have been recorded yet." %}</span>
+            </div>
+        {% endif %}
     </div>
 {% endblock content %}
