@@ -1,16 +1,57 @@
 {% extends 'base.html' %}
 
 {% load i18n %}
-{% load crispy_forms_tags %}
 
 {% block title %}Log in{% endblock title %}
 
 {% block content %}
-    <h1>{% translate "Log in" %}</h1>
+    <div class="card bg-base-100 shadow-xl max-w-md mx-auto">
+        <div class="card-body">
+            <h1 class="card-title text-2xl mb-4">{% translate "Log in" %}</h1>
 
-    <form action="" method=post>
-        {% csrf_token %}
-        {{ form | crispy }}
-        <button class="btn btn-primary" type="submit">{% translate "Log in" %}</button>
-    </form>
+            <form action="" method="post" class="space-y-6">
+                {% csrf_token %}
+
+                <!-- Username field -->
+                <div class="form-control w-full">
+                    <label class="label">
+                        <span class="label-text">{{ form.username.label }}</span>
+                    </label>
+                    <input type="text" name="{{ form.username.name }}"
+                           class="input input-bordered w-full {% if form.username.errors %}input-error{% endif %}"
+                           value="{{ form.username.value|default:'' }}" />
+                    {% if form.username.errors %}
+                        <label class="label">
+                            <span class="label-text-alt text-error">{{ form.username.errors }}</span>
+                        </label>
+                    {% endif %}
+                </div>
+
+                <!-- Password field -->
+                <div class="form-control w-full">
+                    <label class="label">
+                        <span class="label-text">{{ form.password.label }}</span>
+                    </label>
+                    <input type="password" name="{{ form.password.name }}"
+                           class="input input-bordered w-full {% if form.password.errors %}input-error{% endif %}" />
+                    {% if form.password.errors %}
+                        <label class="label">
+                            <span class="label-text-alt text-error">{{ form.password.errors }}</span>
+                        </label>
+                    {% endif %}
+                </div>
+
+                {% if form.non_field_errors %}
+                    <div class="alert alert-error">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 shrink-0 stroke-current" fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                        <span>{{ form.non_field_errors }}</span>
+                    </div>
+                {% endif %}
+
+                <div class="card-actions">
+                    <button class="btn btn-primary" type="submit">{% translate "Log in" %}</button>
+                </div>
+            </form>
+        </div>
+    </div>
 {% endblock content %}

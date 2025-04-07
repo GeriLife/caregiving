@@ -1,9 +1,9 @@
-from django.db import models
-from django.utils.translation import gettext as _
 import pandas as pd
 import plotly.express as px
-from core.constants import HOUR_MINUTES
+from django.db import models
+from django.utils.translation import gettext as _
 
+from core.constants import HOUR_MINUTES
 from metrics.models import ResidentActivity
 
 
@@ -47,6 +47,10 @@ def prepare_daily_activity_minutes_scatter_chart(
         yaxis_title=_("Total activity minutes"),
         legend_title="",
         template="plotly_dark",
+        # Set plot background/paper color to transparent
+        plot_bgcolor="rgba(0, 0, 0, 0)",
+        paper_bgcolor="rgba(0, 0, 0, 0)",
+        font_color="#FFFFFF",
     )
 
     return fig.to_html()
@@ -100,6 +104,10 @@ def prepare_activity_hours_by_type_chart(
         yaxis_title=_("Duration in hours"),
         legend_title="",
         template="plotly_dark",
+        # Set plot background/paper color to transparent
+        plot_bgcolor="rgba(0, 0, 0, 0)",
+        paper_bgcolor="rgba(0, 0, 0, 0)",
+        font_color="#FFFFFF",
     )
 
     return fig.to_html()
@@ -153,6 +161,10 @@ def prepare_activity_hours_by_caregiver_role_chart(
         yaxis_title=_("Duration in hours"),
         legend_title="",
         template="plotly_dark",
+        # Set plot background/paper color to transparent
+        plot_bgcolor="rgba(0, 0, 0, 0)",
+        paper_bgcolor="rgba(0, 0, 0, 0)",
+        font_color="#FFFFFF",
     )
 
     return fig.to_html()

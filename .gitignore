@@ -128,3 +128,8 @@ dmypy.json
 .vscode
 
 .DS_Store
+
+# Tailwind compiled CSS
+# We can commit this if it is necessary for deployment
+# but it should be possible to generate it from the source in CI
+theme/static/css/style.css

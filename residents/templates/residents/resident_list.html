@@ -2,52 +2,47 @@
 {% load i18n %}
 
 {% block content %}
-    <h1>
-        {% translate "Residents" %}
-        <a
-            class="btn btn-sm btn-outline-primary"
-            href="{% url 'resident-create-view' %}"
-        >
+    <div class="flex justify-between items-center mb-6">
+        <h1 class="text-2xl font-bold">{% translate "Residents" %}</h1>
+        <a href="{% url 'resident-create-view' %}" class="btn btn-outline btn-primary btn-sm">
             {% translate "Create" %}
         </a>
-    </h1>
+    </div>
 
     {% if residents %}
-        <table class="table table-hover">
-            <thead>
-                <tr>
-                    <th scope="col">
-                        {% translate "View" %}
-                    </th>
-                    <th scope="col">
-                        {% translate "First name" %}
-                    </th>
-                    <th scope="col">
-                        {% translate "Last initial" %}
-                    </th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for resident in residents %}
+        <div class="overflow-x-auto">
+            <table class="table table-zebra w-full">
+                <thead>
                     <tr>
-                        <td>
-                            <a
-                                href="{% url 'resident-detail-view' resident.url_uuid %}"
-                                class="btn btn-sm btn-outline-primary"
-                                data-toggle="tooltip"
-                                data-placement="right"
-                                title="{% translate 'View resident' %}"
-                            >
-                                <i class="bi bi-eye-fill"></i>
-                            </a>
-                        </td>
-                        <td>{{ resident.first_name }}</td>
-                        <td>{{ resident.last_initial }}</td>
+                        <th>{% translate "View" %}</th>
+                        <th>{% translate "First name" %}</th>
+                        <th>{% translate "Last initial" %}</th>
                     </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+                </thead>
+                <tbody>
+                    {% for resident in residents %}
+                        <tr>
+                            <td>
+                                <a href="{% url 'resident-detail-view' resident.url_uuid %}"
+                                   class="btn btn-sm btn-outline btn-primary"
+                                   data-tip="{% translate 'View resident' %}">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                                    </svg>
+                                </a>
+                            </td>
+                            <td>{{ resident.first_name }}</td>
+                            <td>{{ resident.last_initial }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
     {% else %}
-        <p>{% translate "No residents found." %}</p>
+        <div class="alert alert-info">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="stroke-current shrink-0 w-6 h-6"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+            <span>{% translate "No residents found." %}</span>
+        </div>
     {% endif %}
 {% endblock content %}

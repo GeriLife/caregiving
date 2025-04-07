@@ -1,45 +1,45 @@
 {% extends "base.html" %}
 
 {% load i18n %}
-{% load crispy_forms_tags %}
 
 {% block content %}
-
-    <div class="d-flex justify-content-between align-items-center">
-        <h1>
-            <a
-                href="{{ home.get_absolute_url }}"
-                class="btn btn-outline-primary">
-                <i class="bi bi-house"></i>
+    <div class="flex justify-between items-center mb-6">
+        <h1 class="text-2xl font-bold flex items-center">
+            <a href="{{ home.get_absolute_url }}" class="btn btn-outline btn-primary mr-2">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                </svg>
                 {{ home }}
             </a>
 
             {% translate "Manage Caregivers" %}
         </h1>
 
-        <button class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#addCaregiverModal">
-            <i class="bi bi-person-plus"></i>
+        <button class="btn btn-outline btn-primary" onclick="add_caregiver_modal.showModal()">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+            </svg>
             {% translate "Add Caregiver" %}
         </button>
     </div>
 
     {% if home_user_relations %}
-        <ul class="list-group">
+        <ul class="menu bg-base-100 w-full rounded-box">
             {% for user_relation in home_user_relations %}
-                <li class="list-group-item d-flex justify-content-between align-items-center">
+                <li class="p-4 border-b border-base-300 flex justify-between">
                     <span>
                         {{ user_relation.user.username }}
                     </span>
 
-                    <div>
+                    <div class="flex gap-2">
                         {% if user_relation.user.is_superuser %}
-                            <span class="badge bg-primary rounded-pill">
+                            <span class="badge badge-primary">
                                 {% translate "Superuser" %}
                             </span>
                         {% endif %}
 
                         {% if user_relation.is_manager %}
-                            <span class="badge bg-primary rounded-pill">
+                            <span class="badge badge-primary">
                                 {% translate "Manager" %}
                             </span>
                         {% endif %}
@@ -49,58 +49,56 @@
         </ul>
     {% else %}
         <div class="alert alert-info">
-            {% translate "No caregivers found." %}
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="stroke-current shrink-0 w-6 h-6"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+            <span>{% translate "No caregivers found." %}</span>
         </div>
     {% endif %}
 
-    <div
-        class="modal fade"
-        id="addCaregiverModal"
-        tabindex="-1"
-        aria-labelledby="addCaregiverModalLabel"
-        aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <form action="" method="post">
-                    {% csrf_token %}
-                    <div class="modal-header">
-                        <h2 class="modal-title" id="addCaregiverModalLabel">
-                            {% translate "Add Caregiver" %}
-                        </h2>
-                        <button
-                            type="button"
-                            class="btn-close"
-                            data-bs-dismiss="modal"
-                            aria-label="{% translate 'Close' %}">
-                        </button>
-                    </div>
+    <dialog id="add_caregiver_modal" class="modal">
+        <div class="modal-box">
+            <!-- Close button outside the form -->
+            <form method="dialog" class="absolute right-2 top-2">
+                <button class="btn btn-sm btn-circle btn-ghost">✕</button>
+            </form>
 
-                    <div class="modal-body">
-                        <p>{% translate "Enter the email of the caregiver you want to add." %}</p>
+            <h3 class="font-bold text-lg mb-4">{% translate "Add Caregiver" %}</h3>
+            <p class="mb-4">{% translate "Enter the email of the caregiver you want to add." %}</p>
 
-                        {{ form|crispy }}
-                    </div>
+            <!-- Main form for adding caregiver -->
+            <form action="" method="post" class="pt-2">
+                {% csrf_token %}
+                <div class="form-control w-full">
+                    <label class="label">
+                        <span class="label-text">{{ form.email.label }}</span>
+                    </label>
+                    <input type="email" name="{{ form.email.name }}"
+                           class="input input-bordered w-full {% if form.email.errors %}input-error{% endif %}"
+                           value="{{ form.email.value|default:'' }}" required />
+                    {% if form.email.errors %}
+                        <label class="label">
+                            <span class="label-text-alt text-error">{{ form.email.errors }}</span>
+                        </label>
+                    {% endif %}
+                </div>
 
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
-                            {% translate "Close" %}
-                        </button>
-                        <button type="submit" class="btn btn-primary">
-                            {% translate "Add Caregiver" %}
-                        </button>
-                    </div>
-                </form>
-            </div>
+                <div class="modal-action">
+                    <button type="submit" class="btn btn-primary">{% translate "Add Caregiver" %}</button>
+                </div>
+            </form>
         </div>
-    </div>
+
+        <!-- Backdrop click to close -->
+        <form method="dialog" class="modal-backdrop">
+            <button>close</button>
+        </form>
+    </dialog>
 {% endblock content %}
 
 {% block extra_js %}
     <script>
         document.addEventListener('DOMContentLoaded', (event) => {
             {% if form.errors %}
-                var myModal = new bootstrap.Modal(document.getElementById('addCaregiverModal'));
-                myModal.show();
+                add_caregiver_modal.showModal();
             {% endif %}
         });
     </script>

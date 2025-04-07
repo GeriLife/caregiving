@@ -12,10 +12,9 @@ https://docs.djangoproject.com/en/4.0/ref/settings/
 import os
 from pathlib import Path
 
+import environ
 from django.contrib.messages import constants as message_constants
 from django.utils.translation import gettext_lazy as _
-
-import environ
 
 env = environ.Env()
 
@@ -58,8 +57,6 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-    "crispy_forms",
-    "crispy_bootstrap5",
     "debug_toolbar",
     "accounts",
     "activities",
@@ -69,11 +66,12 @@ INSTALLED_APPS = [
     "residents",
     "work",
     "metrics",
+    "tailwind",
+    "theme",
+    "django_browser_reload",
 ]
 
-CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
-
-CRISPY_TEMPLATE_PACK = "bootstrap5"
+TAILWIND_APP_NAME = "theme"
 
 MIDDLEWARE = [
     # The order of MIDDLEWARE is important.
@@ -91,6 +89,7 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "django_browser_reload.middleware.BrowserReloadMiddleware",
 ]
 
 ROOT_URLCONF = "core.urls"
@@ -151,6 +150,7 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+# Authentication settings
 LOGIN_REDIRECT_URL = "home"
 LOGOUT_REDIRECT_URL = "home"
 

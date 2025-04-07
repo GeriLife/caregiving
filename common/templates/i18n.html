@@ -1,25 +1,24 @@
 {% load i18n %}
 {% get_current_language as LANGUAGE_CODE %}
+{% get_available_languages as LANGUAGES %}
+{% get_language_info_list for LANGUAGES as languages %}
 
-<div class="btn-group navbar-right language menu">
-    <button class="btn btn-outline-secondary btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-        {% get_language_info for LANGUAGE_CODE as lang %}
-        {{ lang.name_local }} ({{ lang.code }})
-    </button>
+<form action="{% url 'set_language' %}" method="post" class="flex items-center" id="language-form">
+  {% csrf_token %}
+  <input name="next" type="hidden" value="{{ redirect_to }}" />
 
-    {% get_current_language as LANGUAGE_CODE %}
-    {% get_available_languages as LANGUAGES %}
-    {% get_language_info_list for LANGUAGES as languages %}
-    <ul class="dropdown-menu">
-        {% for language in languages %}
-            <li>
-                <form action="{% url 'set_language' %}" method="post">
-                    {% csrf_token %}
-                    <input name="next" type="hidden" value="{{ redirect_to }}" />
-                    <input name="language" type="hidden" value="{{ language.code }}" />
-                    <input class="dropdown-item" type="submit" value="{{ language.name_local }} ({{ language.code }})" />
-                </form>
-            </li>
-        {% endfor %}
-    </ul>
-</div>
+  <div class="relative">
+    <select name="language" onchange="this.form.submit()" class="appearance-none bg-base-200 border border-base-300 rounded-md py-1 pl-3 pr-8 text-sm focus:outline-none focus:ring-2 focus:ring-primary">
+      {% for language in languages %}
+        <option value="{{ language.code }}" {% if language.code == LANGUAGE_CODE %}selected{% endif %}>
+          {{ language.name_local }} ({{ language.code }})
+        </option>
+      {% endfor %}
+    </select>
+    <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-400">
+      <svg class="h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+        <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+      </svg>
+    </div>
+  </div>
+</form>

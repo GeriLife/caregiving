@@ -1,15 +1,12 @@
 {% extends 'base.html' %}
-
 {% load i18n %}
-
-{% block css %}
-{% endblock css %}
-
 {% block title %}{% translate "Home" %}{% endblock title %}
-
 {% block content %}
-    <h1>{% translate "Welcome" %}</h1>
+    <div class="card bg-base-100 shadow-xl">
+        <div class="card-body">
+            <h1 class="card-title text-3xl mb-4">{% translate "Welcome" %}</h1>
 
-{% comment %}Translators: Leave the text "GeriLife Caregivers" as it is.{% endcomment %}
-    <p>{% translate "Welcome to GeriLife Caregivers." %}</p>
+            <p class="text-lg">{% translate "Welcome to GeriLife Caregivers." %}</p>
+        </div>
+    </div>
 {% endblock content %}

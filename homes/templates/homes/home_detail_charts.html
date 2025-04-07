@@ -1,56 +1,43 @@
 {% load i18n %}
 
-<div class="row">
+<div class="w-full mb-6">
     {{ activity_counts_by_resident_and_activity_type_chart|safe }}
 </div>
 
-<div class="row">
-    <!--
-        Note: these column dimensions must be specified,
-        so that Plotly charts will not overlap.
-    -->
-    <div class="col-sm-12 col-md-12 col-lg-6">
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+    <div class="w-full">
         {{ monthly_activity_hours_by_type_chart|safe }}
     </div>
 
-
-    <div class="col-sm-12 col-md-12 col-lg-6">
+    <div class="w-full">
         {{ monthly_activity_hours_by_caregiver_role_chart|safe }}
     </div>
 </div>
 
-<h2>{% translate "Work" %}</h2>
+<h2 class="text-xl font-bold mb-4">{% translate "Work" %}</h2>
 
-<p>{% translate "Work recorded in the past 30 days." %}</p>
+<p class="mb-4">{% translate "Work recorded in the past 30 days." %}</p>
 
-<div class="row">
+<div class="w-full mb-6">
     {{ daily_work_percent_by_caregiver_role_and_type_chart|safe }}
 </div>
 
-<div class="row">
-    <!--
-        Note: these column dimensions must be specified,
-        so that Plotly charts will not overlap.
-    -->
-    <div class="col-sm-12 col-md-6 col-lg-6">
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+    <div class="w-full">
         {{ work_by_type_chart|safe }}
     </div>
 
-    <div class="col-sm-12 col-md-6 col-lg-6">
+    <div class="w-full">
         {{ work_by_caregiver_role_chart|safe }}
     </div>
 </div>
 
-<div class="row">
-    <!--
-        Note: these column dimensions must be specified,
-        so that Plotly charts will not overlap.
-    -->
-    <div class="col-sm-12 col-md-6 col-lg-6">
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <div class="w-full">
         {{ work_percent_by_caregiver_role_and_type_chart|safe }}
     </div>
 
-    <div class="col-sm-12 col-md-6 col-lg-6">
+    <div class="w-full">
         {{ work_by_caregiver_role_and_type_chart|safe }}
     </div>
 </div>

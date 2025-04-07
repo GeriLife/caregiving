@@ -1,11 +1,21 @@
 {% extends "base.html" %}
+{% load i18n %}
 
 {% block content %}
-    <form action="{% url 'work-form-view' %}" method="post">
-        {% csrf_token %}
+    <div class="card bg-base-100 shadow-xl">
+        <div class="card-body">
+            <h2 class="card-title">{% translate "Add Work" %}</h2>
+            <form action="{% url 'work-form-view' %}" method="post" class="space-y-6">
+                {% csrf_token %}
 
-        {{ work_form|crispy }}
+                {% with show_help_text=True %}
+                    {% include "work/form_fields.html" %}
+                {% endwith %}
 
-        <button type="submit" class="btn btn-primary">Add work</button>
-    </form>
+                <div class="card-actions justify-end mt-4">
+                    <button type="submit" class="btn btn-primary">{% translate "Add work" %}</button>
+                </div>
+            </form>
+        </div>
+    </div>
 {% endblock content %}

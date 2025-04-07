@@ -3,62 +3,65 @@
 {% load i18n %}
 
 {% block content %}
-    <h1>{% translate "Homes" %}</h1>
+    <h1 class="text-2xl font-bold mb-4">{% translate "Homes" %}</h1>
 
-    <p>{% translate "Homes showing the percent of residents by activity level" %}</p>
+    <p class="mb-6">{% translate "Homes showing the percent of residents by activity level" %}</p>
 
     {% for home_group in home_groups_with_homes %}
-        <div class="card mb-2">
-            <div class="card-header">
-                <i class="bi bi-collection-fill"></i>
-                {{ home_group.group_name }}
-            </div>
-            <ul class="list-group list-group-flush">
-                {% for home in home_group.homes %}
-                    <li class="list-group-item d-flex align-items-center">
-                        <div class="container">
-                            <div class="row">
-                                <div class="col-md-3">
-                                    <i class="bi bi-house-heart-fill fs-3 me-2"></i>
-                                    <a href="{{ home.get_absolute_url }}">
+        <div class="card bg-base-100 shadow-xl mb-6">
+            <div class="card-body p-4">
+                <h2 class="card-title">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                    </svg>
+                    {{ home_group.group_name }}
+                </h2>
+                <div class="divide-y divide-base-300">
+                    {% for home in home_group.homes %}
+                        <div class="py-4">
+                            <div class="grid grid-cols-1 md:grid-cols-12 gap-4 items-center">
+                                <div class="md:col-span-3 flex items-center">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                                    </svg>
+                                    <a href="{{ home.get_absolute_url }}" class="link link-primary">
                                         {{ home }}
                                     </a>
                                 </div>
 
                                 {% if home.resident_counts_by_activity_level_chart_data %}
-                                    <div class="col-md-9">
-                                        <div class="mt-3">
-                                            {% include "homes/home_residents_activity_percents.html" with data=home.resident_counts_by_activity_level_chart_data %}
-                                        </div>
+                                    <div class="md:col-span-9 w-full">
+                                        {% include "homes/home_residents_activity_percents.html" with data=home.resident_counts_by_activity_level_chart_data %}
                                     </div>
                                 {% endif %}
                             </div>
                         </div>
-                    </li>
-                {% endfor %}
-            </ul>
+                    {% endfor %}
+                </div>
+            </div>
         </div>
     {% endfor %}
 
     {% for home in homes_without_group %}
-        <div class="container">
-            <div class="row">
-                <div class="col-md-3">
-                    <i class="bi bi-house-heart-fill fs-3 me-2"></i>
-                    <a href="{{ home.get_absolute_url }}">
-                        {{ home }}
-                    </a>
-                </div>
+        <div class="card bg-base-100 shadow-xl mb-6">
+            <div class="card-body p-4">
+                <div class="grid grid-cols-1 md:grid-cols-12 gap-4 items-center">
+                    <div class="md:col-span-3 flex items-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                        </svg>
+                        <a href="{{ home.get_absolute_url }}" class="link link-primary">
+                            {{ home }}
+                        </a>
+                    </div>
 
-                {% if home.resident_counts_by_activity_level_chart_data %}
-                    <div class="col-md-9">
-                        <div class="mt-3">
+                    {% if home.resident_counts_by_activity_level_chart_data %}
+                        <div class="md:col-span-9 w-full">
                             {% include "homes/home_residents_activity_percents.html" with data=home.resident_counts_by_activity_level_chart_data %}
                         </div>
-                    </div>
-                {% endif %}
+                    {% endif %}
+                </div>
             </div>
         </div>
-        <hr>
     {% endfor %}
 {% endblock content %}

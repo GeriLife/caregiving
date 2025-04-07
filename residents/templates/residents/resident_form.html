@@ -1,19 +1,80 @@
 {% extends 'base.html' %}
 {% load i18n %}
-{% load crispy_forms_tags %}
 
 {% block content %}
-    <h1>
-        {% translate "Resident" %}
-    </h1>
+    <div class="card bg-base-100 shadow-xl">
+        <div class="card-body">
+            <h1 class="card-title text-2xl mb-4">{% translate "Resident" %}</h1>
 
-    <form action="" method="post">
-        {% csrf_token %}
+            <form action="" method="post" class="space-y-6">
+                {% csrf_token %}
 
-        {{ form | crispy }}
+                <!-- First Name field -->
+                <div class="form-control w-full">
+                    <label class="label">
+                        <span class="label-text">{{ form.first_name.label }}</span>
+                    </label>
+                    <input type="text" name="{{ form.first_name.name }}"
+                           class="input input-bordered w-full {% if form.first_name.errors %}input-error{% endif %}"
+                           value="{{ form.first_name.value|default:'' }}" />
+                    {% if form.first_name.errors %}
+                        <label class="label">
+                            <span class="label-text-alt text-error">{{ form.first_name.errors }}</span>
+                        </label>
+                    {% endif %}
+                    {% if form.first_name.help_text %}
+                        <label class="label">
+                            <span class="label-text-alt">{{ form.first_name.help_text }}</span>
+                        </label>
+                    {% endif %}
+                </div>
 
-        <button type="submit" class="btn btn-success">
-            {% translate "Save" %}
-        </button>
-    </form>
+                <!-- Last Initial field -->
+                <div class="form-control w-full">
+                    <label class="label">
+                        <span class="label-text">{{ form.last_initial.label }}</span>
+                    </label>
+                    <input type="text" name="{{ form.last_initial.name }}"
+                           class="input input-bordered w-full {% if form.last_initial.errors %}input-error{% endif %}"
+                           value="{{ form.last_initial.value|default:'' }}" />
+                    {% if form.last_initial.errors %}
+                        <label class="label">
+                            <span class="label-text-alt text-error">{{ form.last_initial.errors }}</span>
+                        </label>
+                    {% endif %}
+                    {% if form.last_initial.help_text %}
+                        <label class="label">
+                            <span class="label-text-alt">{{ form.last_initial.help_text }}</span>
+                        </label>
+                    {% endif %}
+                </div>
+
+                <!-- On Hiatus field -->
+                <div class="form-control">
+                    <label class="label cursor-pointer justify-start gap-4">
+                        <input type="checkbox" name="{{ form.on_hiatus.name }}"
+                               class="checkbox checkbox-primary"
+                               {% if form.on_hiatus.value %}checked{% endif %} />
+                        <span class="label-text">{{ form.on_hiatus.label }}</span>
+                    </label>
+                    {% if form.on_hiatus.errors %}
+                        <label class="label">
+                            <span class="label-text-alt text-error">{{ form.on_hiatus.errors }}</span>
+                        </label>
+                    {% endif %}
+                    {% if form.on_hiatus.help_text %}
+                        <label class="label">
+                            <span class="label-text-alt">{{ form.on_hiatus.help_text }}</span>
+                        </label>
+                    {% endif %}
+                </div>
+
+                <div class="card-actions justify-end mt-4">
+                    <button type="submit" class="btn btn-primary">
+                        {% translate "Save" %}
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
 {% endblock content %}
