@@ -56,18 +56,24 @@
 
     <dialog id="add_caregiver_modal" class="modal">
         <div class="modal-box">
-            <form action="" method="post">
-                {% csrf_token %}
-                <h3 class="font-bold text-lg mb-4">{% translate "Add Caregiver" %}</h3>
-                <p class="mb-4">{% translate "Enter the email of the caregiver you want to add." %}</p>
+            <!-- Close button outside the form -->
+            <form method="dialog" class="absolute right-2 top-2">
+                <button class="btn btn-sm btn-circle btn-ghost">✕</button>
+            </form>
 
+            <h3 class="font-bold text-lg mb-4">{% translate "Add Caregiver" %}</h3>
+            <p class="mb-4">{% translate "Enter the email of the caregiver you want to add." %}</p>
+
+            <!-- Main form for adding caregiver -->
+            <form action="" method="post" class="pt-2">
+                {% csrf_token %}
                 <div class="form-control w-full">
                     <label class="label">
                         <span class="label-text">{{ form.email.label }}</span>
                     </label>
                     <input type="email" name="{{ form.email.name }}"
                            class="input input-bordered w-full {% if form.email.errors %}input-error{% endif %}"
-                           value="{{ form.email.value|default:'' }}" />
+                           value="{{ form.email.value|default:'' }}" required />
                     {% if form.email.errors %}
                         <label class="label">
                             <span class="label-text-alt text-error">{{ form.email.errors }}</span>
@@ -76,13 +82,15 @@
                 </div>
 
                 <div class="modal-action">
-                    <form method="dialog">
-                        <button class="btn btn-outline">{% translate "Close" %}</button>
-                    </form>
                     <button type="submit" class="btn btn-primary">{% translate "Add Caregiver" %}</button>
                 </div>
             </form>
         </div>
+
+        <!-- Backdrop click to close -->
+        <form method="dialog" class="modal-backdrop">
+            <button>close</button>
+        </form>
     </dialog>
 {% endblock content %}
 
