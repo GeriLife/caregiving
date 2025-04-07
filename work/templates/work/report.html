@@ -4,12 +4,19 @@
 {% load static %}
 
 {% block content %}
-    <h1 class="h2">{% translate "Work report" %}</h1>
+    <div class="card bg-base-100 shadow-xl mb-6">
+        <div class="card-body">
+            <h1 class="card-title text-2xl">{% translate "Work report" %}</h1>
 
-    <!-- only load analytics charts if work has been recorded -->
-    {% if work_has_been_recorded %}
-        {% include "work/charts.html" %}
-    {% else %}
-        <p>{% translate "No work has been recorded yet." %}</p>
-    {% endif %}
+            <!-- only load analytics charts if work has been recorded -->
+            {% if work_has_been_recorded %}
+                {% include "work/charts.html" %}
+            {% else %}
+                <div class="alert alert-info mt-4">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="stroke-current shrink-0 w-6 h-6"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                    <span>{% translate "No work has been recorded yet." %}</span>
+                </div>
+            {% endif %}
+        </div>
+    </div>
 {% endblock content %}
