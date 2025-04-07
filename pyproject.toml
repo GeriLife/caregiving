@@ -22,7 +22,6 @@ dependencies = [
 
 [dependency-groups]
 dev = [
-    "cookiecutter>=2.6.0",
     "coverage>=7.3.3,<8.0",
     "django-tailwind[reload]>=4.0.1",
     "factory-boy>=3.3.0,<4.0",
