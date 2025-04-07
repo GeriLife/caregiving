@@ -1,25 +1,42 @@
-{% load i18n %}
-{% get_current_language as LANGUAGE_CODE %}
+{% load i18n %} {% get_current_language as LANGUAGE_CODE %}
 
-<div class="btn-group navbar-right language menu">
-    <button class="btn btn-outline-secondary btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-        {% get_language_info for LANGUAGE_CODE as lang %}
-        {{ lang.name_local }} ({{ lang.code }})
-    </button>
+<div class="dropdown dropdown-end">
+  <div tabindex="0" role="button" class="btn btn-ghost btn-sm m-1">
+    {% get_language_info for LANGUAGE_CODE as lang %}
+    {{ lang.name_local }} ({{lang.code }})
+    <svg
+      class="h-4 w-4 ml-1"
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 20 20"
+      fill="currentColor"
+    >
+      <path
+        fill-rule="evenodd"
+        d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+        clip-rule="evenodd"
+      />
+    </svg>
+  </div>
 
-    {% get_current_language as LANGUAGE_CODE %}
-    {% get_available_languages as LANGUAGES %}
-    {% get_language_info_list for LANGUAGES as languages %}
-    <ul class="dropdown-menu">
-        {% for language in languages %}
-            <li>
-                <form action="{% url 'set_language' %}" method="post">
-                    {% csrf_token %}
-                    <input name="next" type="hidden" value="{{ redirect_to }}" />
-                    <input name="language" type="hidden" value="{{ language.code }}" />
-                    <input class="dropdown-item" type="submit" value="{{ language.name_local }} ({{ language.code }})" />
-                </form>
-            </li>
-        {% endfor %}
-    </ul>
+  {% get_current_language as LANGUAGE_CODE %}
+  {% get_available_languages as LANGUAGES %}
+  {% get_language_info_list for LANGUAGES as languages %}
+
+  <ul
+    tabindex="0"
+    class="dropdown-content z-[1] menu p-2 shadow bg-base-200 rounded-box w-52"
+  >
+    {% for language in languages %}
+      <li>
+        <form action="{% url 'set_language' %}" method="post">
+          {% csrf_token %}
+          <input name="next" type="hidden" value="{{ redirect_to }}" />
+          <input name="language" type="hidden" value="{{ language.code }}" />
+          <button type="submit" class="w-full text-left">
+            {{ language.name_local }} ({{ language.code }})
+          </button>
+        </form>
+      </li>
+    {% endfor %}
+  </ul>
 </div>

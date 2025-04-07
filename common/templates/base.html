@@ -1,7 +1,7 @@
 {% load static tailwind_tags %}
 
 <!DOCTYPE html>
-<html lang="en" data-bs-theme="dark">
+<html lang="en" data-theme="dark">
   <head>
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
@@ -10,49 +10,34 @@
 
     {% tailwind_css %}
 
-    <link
-      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
-      rel="stylesheet"
-      integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN"
-      crossorigin="anonymous"
-    />
-    <link
-      rel="stylesheet"
-      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.2/font/bootstrap-icons.css"
-    />
-
     <!-- extra CSS to load after primary CSS -->
     <link rel="stylesheet" href="{% static 'style.css' %}" />
     {% block extra_css %}{% endblock extra_css %}
   </head>
   <body>
     {% include "navigation.html" %} {% if messages %}
-      <div class="container mt-3">
+      <div class="max-w-7xl mx-auto px-4 mt-4 sm:px-6 lg:px-8">
         {% for message in messages %}
           <div
-            class="alert {{ message.tags }} alert-dismissible fade show"
-            role="alert"
+            class="alert {% if message.tags == 'error' %}alert-error{% elif message.tags == 'success' %}alert-success{% elif message.tags == 'warning' %}alert-warning{% else %}alert-info{% endif %} mb-4"
           >
-            {{ message }}
+            <span>{{ message }}</span>
             <button
-              type="button"
-              class="btn-close"
-              data-bs-dismiss="alert"
-              aria-label="Close"
-            ></button>
+              class="btn btn-circle btn-xs btn-ghost"
+              onclick="this.parentElement.remove()"
+            >
+              ✕
+            </button>
           </div>
         {% endfor %}
       </div>
     {% endif %}
 
-    <div class="container">{% block content %} {% endblock content %}</div>
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+      {% block content %} {% endblock content %}
+    </div>
 
     <!-- extra JavaScript to load after other page elements -->
     {% block extra_js %}{% endblock extra_js %}
-    <script
-      src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
-      integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
-      crossorigin="anonymous"
-    ></script>
   </body>
 </html>

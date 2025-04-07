@@ -1,94 +1,152 @@
-{% load crispy_forms_tags %}
-{% load i18n %}
+{% load crispy_forms_tags %} {% load i18n %}
 
-<nav class="navbar navbar-expand-lg">
-    <div class="container">
-        <a class="navbar-brand" href="/">
-            GeriLife Caregiving
-        </a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="{% translate 'Toggle navigation' %}">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarSupportedContent">
-            <ul class="navbar-nav me-auto">
+<div class="navbar bg-base-200">
+    <div class="container mx-auto">
+        <div class="navbar-start">
+            <div class="dropdown">
+                <div tabindex="0" role="button" class="btn btn-ghost lg:hidden">
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        class="h-5 w-5"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor">
+                        <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="2"
+                            d="M4 6h16M4 12h8m-8 6h16"/>
+                    </svg>
+                </div>
+                <ul
+                    tabindex="0"
+                    class="menu menu-sm dropdown-content mt-3 z-[1] p-2 shadow bg-base-200 rounded-box w-52"
+                >
+                    {% if user.is_authenticated %}
+                        <li>
+                            <button
+                                class="btn btn-primary btn-sm"
+                                onclick="add_work_modal.showModal()"
+                            >
+                                {% translate "Add work" %}
+                            </button>
+                        </li>
+                        {% if request.user.can_add_activity %}
+                            <li>
+                                <a
+                                    href="{% url 'resident-activity-form-view' %}"
+                                    class="btn btn-primary btn-sm mt-2"
+                                >
+                                    {% translate "Add activity" %}
+                                </a>
+                            </li>
+                        {% endif %} {% endif %}
+                    <li>
+                        <a href="{% url 'work-report-view' %}">
+                            {% translate "Work Report" %}
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{% url 'home-list-view' %}">
+                            {% translate "Homes" %}
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{% url 'resident-list-view' %}">
+                            {% translate "Residents" %}
+                        </a>
+                    </li>
+                </ul>
+            </div>
+            <a href="/" class="btn btn-ghost text-xl">GeriLife Caregiving</a>
+        </div>
+
+        <div class="navbar-center hidden lg:flex">
+            <ul class="menu menu-horizontal px-1">
                 {% if user.is_authenticated %}
-                    <li class="nav-item">
-                        <button class="btn btn-outline-primary"  data-bs-toggle="modal" data-bs-target="#addWorkModal">
+                    <li>
+                        <button
+                            class="btn btn-primary btn-sm"
+                            onclick="add_work_modal.showModal()">
                             {% translate "Add work" %}
                         </button>
                     </li>
                     {% if request.user.can_add_activity %}
-                        <li class="nav-item">
+                        <li class="ml-2">
                             <a
                                 href="{% url 'resident-activity-form-view' %}"
-                                class="btn btn-outline-primary ms-lg-1 mt-1 mt-lg-0">
+                                class="btn btn-primary btn-sm"
+                            >
                                 {% translate "Add activity" %}
                             </a>
                         </li>
                     {% endif %}
                 {% endif %}
-                <li class="nav-item">
-                    <a href="{% url 'work-report-view' %}" class="nav-link">
+                <li>
+                    <a href="{% url 'work-report-view' %}">
                         {% translate "Work Report" %}
                     </a>
                 </li>
-
-                <li class="nav-item">
-                    <a href="{% url 'home-list-view' %}" class="nav-link">
+                <li>
+                    <a href="{% url 'home-list-view' %}">
                         {% translate "Homes" %}
                     </a>
                 </li>
-
-                <li class="nav-item">
-                    <a href="{% url 'resident-list-view' %}" class="nav-link">
+                <li>
+                    <a href="{% url 'resident-list-view' %}">
                         {% translate "Residents" %}
                     </a>
                 </li>
             </ul>
-            <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
-                {% include "i18n.html" %}
+        </div>
+        <div class="navbar-end">
+            {% include "i18n.html" %}
 
+            <ul class="menu menu-horizontal px-1">
                 {% if user.is_authenticated %}
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'logout' %}">{% translate "Log out" %}</a>
+                    <li>
+                        <a href="{% url 'logout' %}">
+                            {% translate "Log out" %}
+                        </a>
                     </li>
                 {% else %}
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'login' %}">{% translate "Log in" %}</a>
+                    <li>
+                        <a href="{% url 'login' %}">
+                            {% translate "Log in" %}
+                        </a>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'signup' %}">{% translate "Sign up" %}</a>
+                    <li>
+                        <a href="{% url 'signup' %}">
+                            {% translate "Sign up" %}
+                        </a>
                     </li>
                 {% endif %}
             </ul>
         </div>
     </div>
-</nav>
-
-<!-- Modal -->
-<div class="modal fade" id="addWorkModal" tabindex="-1" aria-labelledby="addWorkModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2 class="modal-title" id="addWorkModalLabel">
-                    {% translate "Add work" %}
-                </h2>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <form action="{% url 'work-form-view' %}" method="post">
-                {% csrf_token %}
-                <div class="modal-body">
-                    {{ work_form|crispy }}
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
-                        {% translate "Cancel" %}
-                    </button>
-                    <button type="submit" class="btn btn-primary">
-                        {% translate "Add work" %}
-                    </button>
-                </div>
-            </form>
-        </div>
-    </div>
 </div>
+
+<!-- Modal using daisyUI dialog -->
+<dialog id="add_work_modal" class="modal">
+    <div class="modal-box">
+        <form method="dialog">
+            <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">
+                ✕
+            </button>
+        </form>
+        <h3 class="font-bold text-lg">{% translate "Add work" %}</h3>
+
+        <form action="{% url 'work-form-view' %}" method="post">
+            {% csrf_token %}
+            <div class="py-4">{{ work_form|crispy }}</div>
+            <div class="modal-action">
+                <form method="dialog">
+                    <button class="btn btn-outline">{% translate "Cancel" %}</button>
+                </form>
+                <button type="submit" class="btn btn-primary">
+                    {% translate "Add work" %}
+                </button>
+            </div>
+        </form>
+    </div>
+</dialog>
