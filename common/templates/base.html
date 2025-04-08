@@ -6,13 +6,13 @@
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>{% block title %}{% endblock title %}</title>
+    <title>{% block title %}{% endblock %}</title>
 
     {% tailwind_css %}
 
     <!-- extra CSS to load after primary CSS -->
     <link rel="stylesheet" href="{% static 'style.css' %}" />
-    {% block extra_css %}{% endblock extra_css %}
+    {% block extra_css %}{% endblock %}
   </head>
   <body>
     {% include "navigation.html" %} {% if messages %}
@@ -34,10 +34,10 @@
     {% endif %}
 
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-      {% block content %} {% endblock content %}
+      {% block content %} {% endblock %}
     </div>
 
     <!-- extra JavaScript to load after other page elements -->
-    {% block extra_js %}{% endblock extra_js %}
+    {% block extra_js %}{% endblock %}
   </body>
 </html>
