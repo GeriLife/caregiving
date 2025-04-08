@@ -6,7 +6,7 @@
         <div
             class="h-full {% if item.activity_level_class == 'success' %}bg-success{% elif item.activity_level_class == 'warning' %}bg-warning{% elif item.activity_level_class == 'danger' %}bg-error{% else %}bg-info{% endif %}"
             style="width: {{ item.value|unlocalize }}%;"
-            aria-label="{{ item.activity_level_label }}: {{ item.value|floatformat:'0'}}%"
+            aria-label="{{ item.activity_level_label }}: {{ item.value|floatformat:'0' }}%"
             title="{{ item.activity_level_label }}: {{ item.value|floatformat:'0' }}%"></div>
     {% endfor %}
 </div>

@@ -1,11 +1,10 @@
 {% extends "base.html" %}
 
-{% load i18n %}
-{% load l10n %}
+{% load i18n l10n %}
 
 {% block title %}
     {% translate "Activities" %}
-{% endblock %}
+{% endblock title %}
 
 {% block content %}
     <div class="flex justify-between items-center mb-6">
@@ -81,4 +80,4 @@
             {% endif %}
         </div>
     </div>
-{% endblock %}
+{% endblock content %}
